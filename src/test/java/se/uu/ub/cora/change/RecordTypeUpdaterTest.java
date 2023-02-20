@@ -21,31 +21,18 @@ package se.uu.ub.cora.change;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.change.spies.CoraClientSpy;
-import se.uu.ub.cora.clientdata.ClientDataGroup;
-import se.uu.ub.cora.clientdata.ClientDataRecord;
-
 public class RecordTypeUpdaterTest {
-	private CoraClientSpy coraClient;
+
 	private RecordTypeUpdater updater;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		coraClient = new CoraClientSpy();
-		updater = new RecordTypeUpdater(coraClient);
+		updater = new RecordTypeUpdater();
 	}
 
 	@Test
 	public void testListRecordTypes() throws Exception {
-		updater.addValidationTypeToAllRecordTypes();
-
-		coraClient.MCR.assertParameters("readListAsDataRecords", 0, "recordType");
-	}
-
-	@Test
-	public void testOneRecordType() throws Exception {
-		ClientDataRecord cdr = new ClientDataRecordSpy();
-		ClientDataGroup cdg = new ClientDataGroupSpy();
+		updater.updateAllRecordInfosForAllGroupForAllRecordTypes();
 	}
 
 }
