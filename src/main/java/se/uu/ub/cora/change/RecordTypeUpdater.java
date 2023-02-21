@@ -35,17 +35,15 @@ import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
 
 public class RecordTypeUpdater {
 
+	private static final String REF_PARENT_ID = "refParentId";
+	private static final String REF = "ref";
 	private static final String CHILD_REFERENCES = "childReferences";
 	private static final String CHILD_REFERENCE = "childReference";
-	// private String apptokenUrl = "https://cora.epc.ub.uu.se/systemone/apptokenverifier/rest/";
-	// private String baseUrl = "https://cora.epc.ub.uu.se/systemone/rest/";
-	private String apptokenUrl = "http://localhost:8180/apptokenverifier/rest/";
-	private String baseUrl = "http://localhost:8080/systemone/rest/";
 	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
 	private ClientDataGroup validationLinkChildReference;
 
-	public RecordTypeUpdater() {
+	public RecordTypeUpdater(String apptokenUrl, String baseUrl) {
 		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
 				baseUrl);
 		dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
@@ -60,17 +58,17 @@ public class RecordTypeUpdater {
 		childReference
 				.addChild(ClientDataProvider.createAtomicUsingNameInDataAndValue("repeatMin", "0"));
 		childReference
-				.addChild(ClientDataProvider.createAtomicUsingNameInDataAndValue("repeatMax", "0"));
-		childReference.addChild(ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId(
-				"ref", "metadataRecordLink", "validationTypeLink"));
+				.addChild(ClientDataProvider.createAtomicUsingNameInDataAndValue("repeatMax", "1"));
+		childReference.addChild(ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId(REF,
+				"metadataRecordLink", "validationTypeLink"));
 		return childReference;
 	}
 
-	public void updateAllRecordInfosForAllGroupForAllRecordTypes() throws Exception {
+	public void updateAllRecordInfosForAllGroupForAllRecordTypes() {
 		List<ClientData> listOfRecordTypes = readAllRecordTypes();
-		Set<ClientDataRecordGroup> recordInfoIds = getAllRecordInfosFromRecordTypes(
+		Set<ClientDataRecordGroup> recordInfoRecordsToModify = getAllRecordInfosFromRecordTypes(
 				listOfRecordTypes);
-		updateRecordInfos(recordInfoIds);
+		updateRecordInfoRecords(recordInfoRecordsToModify);
 	}
 
 	private List<ClientData> readAllRecordTypes() {
@@ -80,30 +78,32 @@ public class RecordTypeUpdater {
 
 	private Set<ClientDataRecordGroup> getAllRecordInfosFromRecordTypes(
 			List<ClientData> listOfRecordTypes) {
-		Set<ClientDataRecordGroup> recordInfoIds = new LinkedHashSet<>();
+		Set<ClientDataRecordGroup> recordInfoRecordsToModify = new LinkedHashSet<>();
 		Set<String> addedRecordInfoIds = new LinkedHashSet<>();
 		for (ClientData recordType : listOfRecordTypes) {
-			extractGroupAndNewGroup(recordInfoIds, addedRecordInfoIds,
+			extractGroupAndNewGroup(recordInfoRecordsToModify, addedRecordInfoIds,
 					(ClientDataRecord) recordType);
 		}
-		return recordInfoIds;
+		return recordInfoRecordsToModify;
 	}
 
-	private void extractGroupAndNewGroup(Set<ClientDataRecordGroup> recordInfoIds,
+	private void extractGroupAndNewGroup(Set<ClientDataRecordGroup> recordInfoRecordsToModify,
 			Set<String> addedRecordInfoIds, ClientDataRecord recordType) {
 		ClientDataRecordGroup dataRecordGroup = recordType.getDataRecordGroup();
 
-		extractAndAddGroup(recordInfoIds, addedRecordInfoIds, dataRecordGroup, "newMetadataId");
-		extractAndAddGroup(recordInfoIds, addedRecordInfoIds, dataRecordGroup, "metadataId");
+		extractAndAddGroup(recordInfoRecordsToModify, addedRecordInfoIds, dataRecordGroup,
+				"newMetadataId");
+		extractAndAddGroup(recordInfoRecordsToModify, addedRecordInfoIds, dataRecordGroup,
+				"metadataId");
 	}
 
-	private void extractAndAddGroup(Set<ClientDataRecordGroup> recordInfoIds,
+	private void extractAndAddGroup(Set<ClientDataRecordGroup> recordInfoRecordsToModify,
 			Set<String> addedRecordInfoIds, ClientDataRecordGroup dataRecordGroup,
 			String groupNameInData) {
 		ClientDataRecordGroup recordInfoGroup = getRecordInfo(dataRecordGroup, groupNameInData);
 		if (!addedRecordInfoIds.contains(recordInfoGroup.getId())) {
 			addedRecordInfoIds.add(recordInfoGroup.getId());
-			recordInfoIds.add(recordInfoGroup);
+			recordInfoRecordsToModify.add(recordInfoGroup);
 		}
 	}
 
@@ -139,29 +139,58 @@ public class RecordTypeUpdater {
 
 	private ClientDataRecord readChildren(ClientDataChild clientDataChild) {
 		ClientDataRecordLink ref = (ClientDataRecordLink) ((ClientDataGroup) clientDataChild)
-				.getFirstChildWithNameInData("ref");
+				.getFirstChildWithNameInData(REF);
 		return dataClient.read(ref.getLinkedRecordType(), ref.getLinkedRecordId());
 	}
 
-	private void updateRecordInfos(Set<ClientDataRecordGroup> recordsToModify) {
-		for (ClientDataRecordGroup clientDataRecordGroup : recordsToModify) {
-			addLinkAndUpdate(clientDataRecordGroup);
+	private void updateRecordInfoRecords(Set<ClientDataRecordGroup> recordInfoRecordsToModify) {
+		for (ClientDataRecordGroup recordInfoRecordToModify : recordInfoRecordsToModify) {
+			addLinkAndUpdate(recordInfoRecordToModify);
+		}
+	}
+
+	private void addLinkAndUpdate(ClientDataRecordGroup recordInfoRecordToModify) {
+		if (recordInfoRecordToModify.containsChildWithNameInData(REF_PARENT_ID)) {
+			ClientDataRecord parent = readParentRecord(recordInfoRecordToModify);
+			addLinkAndUpdate(parent.getDataRecordGroup());
+		}
+		updateGroup(validationLinkChildReference, recordInfoRecordToModify);
+	}
+
+	private ClientDataRecord readParentRecord(ClientDataRecordGroup recordInfoRecordToModify) {
+		ClientDataRecordLink parentLink = (ClientDataRecordLink) recordInfoRecordToModify
+				.getFirstChildWithNameInData(REF_PARENT_ID);
+		return dataClient.read(parentLink.getLinkedRecordType(), parentLink.getLinkedRecordId());
+	}
+
+	private void updateGroup(ClientDataGroup validationLinkChildReference,
+			ClientDataRecordGroup recordInfoRecordToModify) {
+		if (!hasLinkToValidationTypeSinceBefore(recordInfoRecordToModify)) {
+			addValidationTypeToGroup(validationLinkChildReference, recordInfoRecordToModify);
+		} else {
+			System.out.println(
+					"Already has validation type link: " + recordInfoRecordToModify.getId());
 		}
 	}
 
 	private boolean hasLinkToValidationTypeSinceBefore(
-			ClientDataRecordGroup clientDataRecordGroup) {
-		ClientDataGroup childRefrences = clientDataRecordGroup
-				.getFirstGroupWithNameInData(CHILD_REFERENCES);
-		List<ClientDataGroup> allChildRefrences = childRefrences
-				.getAllGroupsWithNameInData(CHILD_REFERENCE);
+			ClientDataRecordGroup recordInfoRecordToModify) {
+		List<ClientDataGroup> allChildRefrences = getChildRefrencesFromGroup(
+				recordInfoRecordToModify);
 		return hasValidationType(allChildRefrences);
+	}
+
+	private List<ClientDataGroup> getChildRefrencesFromGroup(
+			ClientDataRecordGroup recordInfoRecordToModify) {
+		ClientDataGroup childRefrences = recordInfoRecordToModify
+				.getFirstGroupWithNameInData(CHILD_REFERENCES);
+		return childRefrences.getAllGroupsWithNameInData(CHILD_REFERENCE);
 	}
 
 	private boolean hasValidationType(List<ClientDataGroup> allChildRefrences) {
 		for (ClientDataGroup childRefrence : allChildRefrences) {
 			ClientDataRecordLink refLink = (ClientDataRecordLink) childRefrence
-					.getFirstChildWithNameInData("ref");
+					.getFirstChildWithNameInData(REF);
 			if ("validationTypeLink".equals(refLink.getLinkedRecordId())) {
 				return true;
 			}
@@ -169,38 +198,14 @@ public class RecordTypeUpdater {
 		return false;
 	}
 
-	private void addLinkAndUpdate(ClientDataRecordGroup clientDataRecordGroup) {
-		if (clientDataRecordGroup.containsChildWithNameInData("refParentId")) {
-			ClientDataRecord parent = readParentRecord(clientDataRecordGroup);
-			addLinkAndUpdate(parent.getDataRecordGroup());
-		}
-		updateGroup(validationLinkChildReference, clientDataRecordGroup);
-	}
-
-	private ClientDataRecord readParentRecord(ClientDataRecordGroup clientDataRecordGroup) {
-		ClientDataRecordLink parentLink = (ClientDataRecordLink) clientDataRecordGroup
-				.getFirstChildWithNameInData("refParentId");
-		return dataClient.read(parentLink.getLinkedRecordType(), parentLink.getLinkedRecordId());
-	}
-
-	private void updateGroup(ClientDataGroup validationLinkChildReference,
-			ClientDataRecordGroup clientDataRecordGroup) {
-		if (!hasLinkToValidationTypeSinceBefore(clientDataRecordGroup)) {
-			addValidationTypeToGroup(validationLinkChildReference, clientDataRecordGroup);
-		} else {
-			System.out
-					.println("Already has validation type link: " + clientDataRecordGroup.getId());
-		}
-	}
-
 	private void addValidationTypeToGroup(ClientDataGroup validationLinkChildReference,
-			ClientDataRecordGroup clientDataRecordGroup) {
-		ClientDataGroup childReferences = clientDataRecordGroup
+			ClientDataRecordGroup recordInfoRecordToModify) {
+		ClientDataGroup childReferences = recordInfoRecordToModify
 				.getFirstGroupWithNameInData(CHILD_REFERENCES);
 		childReferences.addChild(validationLinkChildReference);
-		dataClient.update(clientDataRecordGroup.getType(), clientDataRecordGroup.getId(),
-				clientDataRecordGroup);
-		System.out.println("recordInfo: " + clientDataRecordGroup.getId());
+		dataClient.update(recordInfoRecordToModify.getType(), recordInfoRecordToModify.getId(),
+				recordInfoRecordToModify);
+		System.out.println("recordInfo: " + recordInfoRecordToModify.getId());
 	}
 
 }
