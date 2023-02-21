@@ -42,6 +42,7 @@ public class RecordTypeUpdater {
 	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
 	private ClientDataGroup validationLinkChildReference;
+	private int groupsUpdated;
 
 	public RecordTypeUpdater(String apptokenUrl, String baseUrl) {
 		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
@@ -49,6 +50,7 @@ public class RecordTypeUpdater {
 		dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
 				"63e6bd34-02a1-4c82-8001-158c104cae0e");
 		validationLinkChildReference = createNewValidationLinkReference();
+		groupsUpdated = 0;
 	}
 
 	private ClientDataGroup createNewValidationLinkReference() {
@@ -69,6 +71,13 @@ public class RecordTypeUpdater {
 		Set<ClientDataRecordGroup> recordInfoRecordsToModify = getAllRecordInfosFromRecordTypes(
 				listOfRecordTypes);
 		updateRecordInfoRecords(recordInfoRecordsToModify);
+		writeRapport();
+	}
+
+	private void writeRapport() {
+		System.out.println();
+		System.out.println("==============================");
+		System.out.println(groupsUpdated + " gorups updated");
 	}
 
 	private List<ClientData> readAllRecordTypes() {
@@ -206,6 +215,7 @@ public class RecordTypeUpdater {
 		dataClient.update(recordInfoRecordToModify.getType(), recordInfoRecordToModify.getId(),
 				recordInfoRecordToModify);
 		System.out.println("recordInfo: " + recordInfoRecordToModify.getId());
+		groupsUpdated++;
 	}
 
 }
