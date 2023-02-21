@@ -71,10 +71,10 @@ public class RecordTypeUpdater {
 		Set<ClientDataRecordGroup> recordInfoRecordsToModify = getAllRecordInfosFromRecordTypes(
 				listOfRecordTypes);
 		updateRecordInfoRecords(recordInfoRecordsToModify);
-		writeRapport();
+		writeReport();
 	}
 
-	private void writeRapport() {
+	private void writeReport() {
 		System.out.println();
 		System.out.println("==============================");
 		System.out.println(groupsUpdated + " gorups updated");
