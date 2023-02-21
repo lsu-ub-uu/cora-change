@@ -47,39 +47,45 @@ public class RecordTypeUpdaterTest {
 	public void beforeMethod() {
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void testListRecordTypes_SystemOne_Utv() throws Exception {
 		updater = new RecordTypeUpdater(SYSTEMONE_UTV_APPTOKEN_URL, SYSTEMONE_UTV_BASE_URL);
 		updater.updateAllRecordInfosForAllGroupForAllRecordTypes();
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void testListRecordTypes_Alvin_Utv() throws Exception {
 		updater = new RecordTypeUpdater(ALVIN_UTV_APPTOKEN_URL, ALVIN_UTV_BASE_URL);
 		updater.updateAllRecordInfosForAllGroupForAllRecordTypes();
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void testListRecordTypes_Diva_Utv() throws Exception {
 		updater = new RecordTypeUpdater(DIVA_UTV_APPTOKEN_URL, DIVA_UTV_BASE_URL);
 		updater.updateAllRecordInfosForAllGroupForAllRecordTypes();
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void testListRecordTypes_SystemOne_Dev() throws Exception {
 		updater = new RecordTypeUpdater(SYSTEMONE_DEV_APPTOKEN_URL, SYSTEMONE_DEV_BASE_URL);
 		updater.updateAllRecordInfosForAllGroupForAllRecordTypes();
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void testListRecordTypes_Alvin_Dev() throws Exception {
 		updater = new RecordTypeUpdater(ALVIN_DEV_APPTOKEN_URL, ALVIN_DEV_BASE_URL);
 		updater.updateAllRecordInfosForAllGroupForAllRecordTypes();
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void testListRecordTypes_Diva_Dev() throws Exception {
 		updater = new RecordTypeUpdater(DIVA_DEV_APPTOKEN_URL, DIVA_DEV_BASE_URL);
 		updater.updateAllRecordInfosForAllGroupForAllRecordTypes();
+	}
+
+	@Test(enabled = true)
+	public void updatePresentations_SystemOne_Utv() throws Exception {
+		updater = new RecordTypeUpdater(SYSTEMONE_UTV_APPTOKEN_URL, SYSTEMONE_UTV_BASE_URL);
+		updater.updateAllPresentationsAndAddAValidationType();
 	}
 }

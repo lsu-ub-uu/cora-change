@@ -90,20 +90,19 @@ public class RecordTypeUpdater {
 		Set<ClientDataRecordGroup> recordInfoRecordsToModify = new LinkedHashSet<>();
 		Set<String> addedRecordInfoIds = new LinkedHashSet<>();
 		for (ClientData recordType : listOfRecordTypes) {
-			extractGroupAndNewGroup(recordInfoRecordsToModify, addedRecordInfoIds,
-					(ClientDataRecord) recordType);
+			extractGivenGroups(recordInfoRecordsToModify, addedRecordInfoIds,
+					(ClientDataRecord) recordType, "newMetadataId", "metadataId");
 		}
 		return recordInfoRecordsToModify;
 	}
 
-	private void extractGroupAndNewGroup(Set<ClientDataRecordGroup> recordInfoRecordsToModify,
-			Set<String> addedRecordInfoIds, ClientDataRecord recordType) {
+	private void extractGivenGroups(Set<ClientDataRecordGroup> recordInfoRecordsToModify,
+			Set<String> addedRecordInfoIds, ClientDataRecord recordType, String... groupNames) {
 		ClientDataRecordGroup dataRecordGroup = recordType.getDataRecordGroup();
-
-		extractAndAddGroup(recordInfoRecordsToModify, addedRecordInfoIds, dataRecordGroup,
-				"newMetadataId");
-		extractAndAddGroup(recordInfoRecordsToModify, addedRecordInfoIds, dataRecordGroup,
-				"metadataId");
+		for (String groupName : groupNames) {
+			extractAndAddGroup(recordInfoRecordsToModify, addedRecordInfoIds, dataRecordGroup,
+					groupName);
+		}
 	}
 
 	private void extractAndAddGroup(Set<ClientDataRecordGroup> recordInfoRecordsToModify,
@@ -216,6 +215,10 @@ public class RecordTypeUpdater {
 				recordInfoRecordToModify);
 		System.out.println("recordInfo: " + recordInfoRecordToModify.getId());
 		groupsUpdated++;
+	}
+
+	public void updateAllPresentationsAndAddAValidationType() {
+		List<ClientData> listOfRecordTypes = readAllRecordTypes();
 	}
 
 }
