@@ -216,9 +216,4 @@ public class RecordTypeUpdater {
 		System.out.println("recordInfo: " + recordInfoRecordToModify.getId());
 		groupsUpdated++;
 	}
-
-	public void updateAllPresentationsAndAddAValidationType() {
-		List<ClientData> listOfRecordTypes = readAllRecordTypes();
-	}
-
 }

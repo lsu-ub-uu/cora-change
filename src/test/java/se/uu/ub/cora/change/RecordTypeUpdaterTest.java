@@ -82,10 +82,4 @@ public class RecordTypeUpdaterTest {
 		updater = new RecordTypeUpdater(DIVA_DEV_APPTOKEN_URL, DIVA_DEV_BASE_URL);
 		updater.updateAllRecordInfosForAllGroupForAllRecordTypes();
 	}
-
-	@Test(enabled = true)
-	public void updatePresentations_SystemOne_Utv() throws Exception {
-		updater = new RecordTypeUpdater(SYSTEMONE_UTV_APPTOKEN_URL, SYSTEMONE_UTV_BASE_URL);
-		updater.updateAllPresentationsAndAddAValidationType();
-	}
 }
