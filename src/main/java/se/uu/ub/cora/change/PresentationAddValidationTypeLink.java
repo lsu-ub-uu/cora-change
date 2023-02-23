@@ -46,27 +46,51 @@ public class PresentationAddValidationTypeLink {
 	private DataClient dataClient;
 	private ClientDataGroup inputLink;
 	private ClientDataGroup outputLink;
+	private int groupsUpdated;
+	private ClientDataGroup referenceToValidationLinkText;
 
 	public PresentationAddValidationTypeLink(String apptokenUrl, String baseUrl) {
 		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
 				baseUrl);
 		dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
 				"63e6bd34-02a1-4c82-8001-158c104cae0e");
-		// groupsUpdated = 0;
-		inputLink = createNewValidationLinkInputPresentation("validationTypePLink");
-		outputLink = createNewValidationLinkInputPresentation("validationTypeOutputPLink");
+		groupsUpdated = 0;
+		inputLink = createNewValidationLinkPresentation("validationTypePLink");
+		outputLink = createNewValidationLinkPresentation("validationTypeOutputPLink");
+		referenceToValidationLinkText = createTextReferenceForValidationLink();
 	}
 
-	private ClientDataGroup createNewValidationLinkInputPresentation(String validationTypePLinkId) {
+	private ClientDataGroup createNewValidationLinkPresentation(String validationTypePLinkId) {
 		ClientDataGroup childReference = ClientDataProvider
 				.createGroupUsingNameInData(CHILD_REFERENCE);
 		childReference.setRepeatId("111");
+
 		ClientDataGroup refGroup = ClientDataProvider.createGroupUsingNameInData(REF_GROUP);
 		refGroup.setRepeatId("111");
+		childReference.addChild(refGroup);
+
 		ClientDataRecordLink link = ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId(
 				REF, "presentationRecordLink", validationTypePLinkId);
 		link.addAttributeByIdWithValue("type", "presentation");
 		refGroup.addChild(link);
+
+		return childReference;
+	}
+
+	private ClientDataGroup createTextReferenceForValidationLink() {
+		ClientDataGroup childReference = ClientDataProvider
+				.createGroupUsingNameInData(CHILD_REFERENCE);
+		childReference.setRepeatId("112");
+
+		ClientDataGroup refGroup = ClientDataProvider.createGroupUsingNameInData(REF_GROUP);
+		refGroup.setRepeatId("112");
+		childReference.addChild(refGroup);
+
+		ClientDataRecordLink link = ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId(
+				REF, "coraText", "validationTypeLinkText");
+		link.addAttributeByIdWithValue("type", "text");
+		refGroup.addChild(link);
+
 		return childReference;
 	}
 
@@ -76,7 +100,13 @@ public class PresentationAddValidationTypeLink {
 				allRecordTypes);
 
 		updateRecordInfoPGroupRecords(allPresentationsForRecordInfosFromRecordTypes);
+		writeReport();
+	}
 
+	private void writeReport() {
+		System.out.println();
+		System.out.println("==============================");
+		System.out.println(groupsUpdated + " gorups updated");
 	}
 
 	private List<ClientData> readAllRecordTypes() {
@@ -130,6 +160,7 @@ public class PresentationAddValidationTypeLink {
 	private Optional<ClientDataRecordGroup> getPresentationGroupForRecordInfo(
 			ClientDataRecordLink linkToDataGroup) {
 		List<ClientDataChild> childRefrences = getChildren(linkToDataGroup);
+		System.out.print(".");
 		for (ClientDataChild childReference : childRefrences) {
 			ClientDataGroup refGrorup = (ClientDataGroup) ((ClientDataGroup) childReference)
 					.getFirstChildWithNameInData(REF_GROUP);
@@ -141,15 +172,18 @@ public class PresentationAddValidationTypeLink {
 						.read(refLink.getLinkedRecordType(), refLink.getLinkedRecordId())
 						.getDataRecordGroup();
 
-				ClientDataRecordLink presentationOf = (ClientDataRecordLink) presentationGroup
-						.getFirstChildWithNameInData("presentationOf");
-				ClientDataRecordGroup metadataGroupForPresentation = dataClient
-						.read(presentationOf.getLinkedRecordType(),
-								presentationOf.getLinkedRecordId())
-						.getDataRecordGroup();
-				if (metadataGroupForPresentation.getFirstAtomicValueWithNameInData("nameInData")
-						.equals("recordInfo")) {
-					return Optional.of(presentationGroup);
+				if (presentationGroup.containsChildWithNameInData("presentationOf")) {
+					// System.out.println("NO presentation of.... " + refLink.getLinkedRecordId());
+					ClientDataRecordLink presentationOf = (ClientDataRecordLink) presentationGroup
+							.getFirstChildWithNameInData("presentationOf");
+					ClientDataRecordGroup metadataGroupForPresentation = dataClient
+							.read(presentationOf.getLinkedRecordType(),
+									presentationOf.getLinkedRecordId())
+							.getDataRecordGroup();
+					if (metadataGroupForPresentation.getFirstAtomicValueWithNameInData("nameInData")
+							.equals("recordInfo")) {
+						return Optional.of(presentationGroup);
+					}
 				}
 			}
 		}
@@ -199,6 +233,9 @@ public class PresentationAddValidationTypeLink {
 			ClientDataRecordGroup presentationRecordGroup) {
 		ClientDataGroup childReferences = presentationRecordGroup
 				.getFirstGroupWithNameInData(CHILD_REFERENCES);
+
+		childReferences.addChild(referenceToValidationLinkText);
+
 		if (presentationRecordGroup.getFirstAtomicValueWithNameInData("mode").equals("input")) {
 			childReferences.addChild(inputLink);
 			System.out.println("Adding inputLink: " + presentationRecordGroup.getId());
@@ -206,6 +243,11 @@ public class PresentationAddValidationTypeLink {
 			childReferences.addChild(outputLink);
 			System.out.println("Adding outputLink: " + presentationRecordGroup.getId());
 		}
+
+		dataClient.update(presentationRecordGroup.getType(), presentationRecordGroup.getId(),
+				presentationRecordGroup);
+		System.out.println("recordInfo: " + presentationRecordGroup.getId());
+		groupsUpdated++;
 	}
 
 	private boolean hasLinkToValidationTypePresentationSinceBefore(
