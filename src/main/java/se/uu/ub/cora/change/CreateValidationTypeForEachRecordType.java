@@ -75,17 +75,27 @@ public class CreateValidationTypeForEachRecordType {
 		ClientDataGroup readRecordInfo = (ClientDataGroup) readRecordTypeRecordGroup
 				.getFirstChildWithNameInData("recordInfo");
 		ClientDataGroup recordInfo = ClientDataProvider.createGroupUsingNameInData("recordInfo");
+		recordInfo.addChild(copyLink(readRecordInfo, "dataDivider"));
+
 		ClientDataAtomic id = ClientDataProvider.createAtomicUsingNameInDataAndValue("id",
 				readRecordTypeRecordGroup.getId());
 		recordInfo.addChild(id);
-		recordInfo.addChild(copyLink(readRecordInfo, "dataDivider"));
-		recordInfo.addChild(createLink("validationType", "validationType",
-				getValidatesRecordType(readRecordTypeRecordGroup)));
+		// create defText
+		createAndStoreDefTextForValidationType(readRecordTypeRecordGroup);
+
+		// recordInfo.addChild(createLink("validationType", "validationType",
+		// getValidatesRecordType(readRecordTypeRecordGroup)));
+		// can not be added until we have created the validation type for validationType
+		// recordInfo.addChild(createLink("validationType", "validationType",
+		// "validationType"));
 
 		dataRecordGroup.addChild(recordInfo);
 		dataRecordGroup.addChild(copyLink((ClientDataGroup) readRecordTypeRecordGroup, "textId"));
-		dataRecordGroup
-				.addChild(copyLink((ClientDataGroup) readRecordTypeRecordGroup, "defTextId"));
+		// dataRecordGroup
+		// .addChild(copyLink((ClientDataGroup) readRecordTypeRecordGroup, "defTextId"));
+		dataRecordGroup.addChild(ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId(
+				"defTextId", "coraText", readRecordTypeRecordGroup.getId() + "ValidationDefText"));
+
 		dataRecordGroup.addChild(createLink("validatesRecordType", "recordType",
 				getValidatesRecordType(readRecordTypeRecordGroup)));
 		dataRecordGroup
@@ -107,6 +117,40 @@ public class CreateValidationTypeForEachRecordType {
 		// dataRecordGroup.addChild(copyLink(recordTypeRecordGroup,
 		// "recordTypeFilterPresentation"));
 		return dataRecordGroup;
+	}
+
+	private void createAndStoreDefTextForValidationType(
+			ClientDataRecordGroup readRecordTypeRecordGroup) {
+		ClientDataGroup readRecordInfo = (ClientDataGroup) readRecordTypeRecordGroup
+				.getFirstChildWithNameInData("recordInfo");
+		ClientDataRecordGroup dataRecordGroupText = ClientDataProvider
+				.createRecordGroupUsingNameInData("text");
+		ClientDataGroup recordInfoText = ClientDataProvider
+				.createGroupUsingNameInData("recordInfo");
+		recordInfoText.addChild(copyLink(readRecordInfo, "dataDivider"));
+
+		ClientDataAtomic idText = ClientDataProvider.createAtomicUsingNameInDataAndValue("id",
+				readRecordTypeRecordGroup.getId() + "ValidationDefText");
+		recordInfoText.addChild(idText);
+		dataRecordGroupText.addChild(recordInfoText);
+		// sv
+		ClientDataGroup textPartSv = ClientDataProvider.createGroupUsingNameInData("textPart");
+		dataRecordGroupText.addChild(textPartSv);
+		textPartSv.addAttributeByIdWithValue("type", "default");
+		textPartSv.addAttributeByIdWithValue("lang", "sv");
+		ClientDataAtomic defTextSv = ClientDataProvider.createAtomicUsingNameInDataAndValue("text",
+				"Validerings typ för posttypen " + readRecordTypeRecordGroup.getId());
+		textPartSv.addChild(defTextSv);
+		// en
+		ClientDataGroup textPartEn = ClientDataProvider.createGroupUsingNameInData("textPart");
+		dataRecordGroupText.addChild(textPartEn);
+		textPartEn.addAttributeByIdWithValue("type", "alternative");
+		textPartEn.addAttributeByIdWithValue("lang", "en");
+		ClientDataAtomic defTextEn = ClientDataProvider.createAtomicUsingNameInDataAndValue("text",
+				"Validation type for the record type " + readRecordTypeRecordGroup.getId());
+		textPartEn.addChild(defTextEn);
+
+		dataClient.create("coraText", dataRecordGroupText);
 	}
 
 	private ClientDataRecordLink copyLink(ClientDataGroup recordTypeRecordGroup,
