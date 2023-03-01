@@ -103,15 +103,15 @@ public class CreateValidationTypeForEachRecordType {
 		dataRecordGroup
 				.addChild(copyLink((ClientDataGroup) readRecordTypeRecordGroup, "metadataId"));
 		dataRecordGroup.addChild(
-				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "presentationViewId"));
-		dataRecordGroup.addChild(
-				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "menuPresentationViewId"));
-		dataRecordGroup.addChild(
 				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "newPresentationFormId"));
 		dataRecordGroup.addChild(
-				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "presentationFormId"));
-		dataRecordGroup.addChild(
-				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "listPresentationViewId"));
+				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "presentationViewId"));
+		// dataRecordGroup.addChild(
+		// copyLink((ClientDataGroup) readRecordTypeRecordGroup, "menuPresentationViewId"));
+		// dataRecordGroup.addChild(
+		// copyLink((ClientDataGroup) readRecordTypeRecordGroup, "presentationFormId"));
+		// dataRecordGroup.addChild(
+		// copyLink((ClientDataGroup) readRecordTypeRecordGroup, "listPresentationViewId"));
 		// dataRecordGroup.addChild(copyLink(recordTypeRecordGroup,
 		// "autocompletePresentationView"));
 		// dataRecordGroup.addChild(copyLink(recordTypeRecordGroup,
