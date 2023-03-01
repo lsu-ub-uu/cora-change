@@ -23,10 +23,64 @@ public class CreateValidationTypeForEachRecordTypeTest {
 	private static final String DIVA_DEV_BASE_URL = "http://130.238.171.238:38082/diva/rest/";
 
 	@Test(enabled = false)
-	public void testName() throws Exception {
+	public void testUtvSystemOne() throws Exception {
 
 		CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
 				SYSTEMONE_UTV_APPTOKEN_URL, SYSTEMONE_UTV_BASE_URL);
+
+		updater.createValidationTypes();
+	}
+
+	@Test(enabled = false)
+	public void deleteDefTextsUtvSystemOne() throws Exception {
+
+		CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
+				SYSTEMONE_UTV_APPTOKEN_URL, SYSTEMONE_UTV_BASE_URL);
+
+		updater.deleteValidationTypeTexts();
+	}
+
+	@Test(enabled = false)
+	public void deleteValidationTypesUtvSystemOne() throws Exception {
+
+		CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
+				SYSTEMONE_UTV_APPTOKEN_URL, SYSTEMONE_UTV_BASE_URL);
+
+		updater.deleteValidationTypes();
+	}
+
+	@Test(enabled = false)
+	public void testUtvDiva() throws Exception {
+
+		CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
+				DIVA_UTV_APPTOKEN_URL, DIVA_UTV_BASE_URL);
+
+		updater.createValidationTypes();
+	}
+
+	@Test(enabled = false)
+	public void testUtvAlvin() throws Exception {
+
+		CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
+				ALVIN_UTV_APPTOKEN_URL, ALVIN_UTV_BASE_URL);
+
+		updater.createValidationTypes();
+	}
+
+	@Test(enabled = false)
+	public void testDevSystemOne() throws Exception {
+
+		CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
+				SYSTEMONE_DEV_APPTOKEN_URL, SYSTEMONE_DEV_BASE_URL);
+
+		updater.createValidationTypes();
+	}
+
+	@Test(enabled = false)
+	public void testDevDiva() throws Exception {
+
+		CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
+				DIVA_DEV_APPTOKEN_URL, DIVA_DEV_BASE_URL);
 
 		updater.createValidationTypes();
 	}
