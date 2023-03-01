@@ -29,7 +29,6 @@ public class CreateValidationTypeForEachRecordTypeTest {
 				SYSTEMONE_UTV_APPTOKEN_URL, SYSTEMONE_UTV_BASE_URL);
 
 		updater.createValidationTypes();
-
 	}
 
 }

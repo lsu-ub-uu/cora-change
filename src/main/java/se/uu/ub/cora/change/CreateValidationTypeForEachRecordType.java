@@ -13,6 +13,9 @@ import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
 
 public class CreateValidationTypeForEachRecordType {
 
+	private static final String ID = "id";
+	private static final String DATA_DIVIDER = "dataDivider";
+	private static final String RECORD_INFO = "recordInfo";
 	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
 
@@ -73,11 +76,11 @@ public class CreateValidationTypeForEachRecordType {
 		// recordTypeFilterPresentationLink
 
 		ClientDataGroup readRecordInfo = (ClientDataGroup) readRecordTypeRecordGroup
-				.getFirstChildWithNameInData("recordInfo");
-		ClientDataGroup recordInfo = ClientDataProvider.createGroupUsingNameInData("recordInfo");
-		recordInfo.addChild(copyLink(readRecordInfo, "dataDivider"));
+				.getFirstChildWithNameInData(RECORD_INFO);
+		ClientDataGroup recordInfo = ClientDataProvider.createGroupUsingNameInData(RECORD_INFO);
+		recordInfo.addChild(copyLink(readRecordInfo, DATA_DIVIDER));
 
-		ClientDataAtomic id = ClientDataProvider.createAtomicUsingNameInDataAndValue("id",
+		ClientDataAtomic id = ClientDataProvider.createAtomicUsingNameInDataAndValue(ID,
 				readRecordTypeRecordGroup.getId());
 		recordInfo.addChild(id);
 		// create defText
@@ -102,16 +105,16 @@ public class CreateValidationTypeForEachRecordType {
 				.addChild(copyLink((ClientDataGroup) readRecordTypeRecordGroup, "newMetadataId"));
 		dataRecordGroup
 				.addChild(copyLink((ClientDataGroup) readRecordTypeRecordGroup, "metadataId"));
-		dataRecordGroup.addChild(
-				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "presentationViewId"));
-		dataRecordGroup.addChild(
-				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "menuPresentationViewId"));
+		// dataRecordGroup.addChild(
+		// copyLink((ClientDataGroup) readRecordTypeRecordGroup, "presentationViewId"));
+		// dataRecordGroup.addChild(
+		// copyLink((ClientDataGroup) readRecordTypeRecordGroup, "menuPresentationViewId"));
 		dataRecordGroup.addChild(
 				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "newPresentationFormId"));
 		dataRecordGroup.addChild(
 				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "presentationFormId"));
-		dataRecordGroup.addChild(
-				copyLink((ClientDataGroup) readRecordTypeRecordGroup, "listPresentationViewId"));
+		// dataRecordGroup.addChild(
+		// copyLink((ClientDataGroup) readRecordTypeRecordGroup, "listPresentationViewId"));
 		// dataRecordGroup.addChild(copyLink(recordTypeRecordGroup,
 		// "autocompletePresentationView"));
 		// dataRecordGroup.addChild(copyLink(recordTypeRecordGroup,
@@ -122,14 +125,13 @@ public class CreateValidationTypeForEachRecordType {
 	private void createAndStoreDefTextForValidationType(
 			ClientDataRecordGroup readRecordTypeRecordGroup) {
 		ClientDataGroup readRecordInfo = (ClientDataGroup) readRecordTypeRecordGroup
-				.getFirstChildWithNameInData("recordInfo");
+				.getFirstChildWithNameInData(RECORD_INFO);
 		ClientDataRecordGroup dataRecordGroupText = ClientDataProvider
 				.createRecordGroupUsingNameInData("text");
-		ClientDataGroup recordInfoText = ClientDataProvider
-				.createGroupUsingNameInData("recordInfo");
-		recordInfoText.addChild(copyLink(readRecordInfo, "dataDivider"));
+		ClientDataGroup recordInfoText = ClientDataProvider.createGroupUsingNameInData(RECORD_INFO);
+		recordInfoText.addChild(copyLink(readRecordInfo, DATA_DIVIDER));
 
-		ClientDataAtomic idText = ClientDataProvider.createAtomicUsingNameInDataAndValue("id",
+		ClientDataAtomic idText = ClientDataProvider.createAtomicUsingNameInDataAndValue(ID,
 				readRecordTypeRecordGroup.getId() + "ValidationDefText");
 		recordInfoText.addChild(idText);
 		dataRecordGroupText.addChild(recordInfoText);
