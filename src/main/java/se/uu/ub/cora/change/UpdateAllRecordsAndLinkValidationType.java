@@ -26,28 +26,62 @@ public class UpdateAllRecordsAndLinkValidationType {
 	private DataClient dataClient;
 	private int count = 0;
 
-	public UpdateAllRecordsAndLinkValidationType(String apptokenUrl, String baseUrl) {
+	public UpdateAllRecordsAndLinkValidationType(String apptokenUrl, String baseUrl, String user,
+			String appToken) {
 		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
 				baseUrl);
-		dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
-				"63e6bd34-02a1-4c82-8001-158c104cae0e");
+		dataClient = dataClientFactory.factorUsingUserIdAndAppToken(user, appToken);
 	}
 
-	public void updateAllRecords() {
+	public void updateOnlyRecordsForTheseTypes(List<String> runOnlyThisListOfRecordTypes) {
 		ClientDataList listOfRecordTypes = dataClient.readList("recordType");
 
 		for (ClientData recordTypeData : listOfRecordTypes.getDataList()) {
 			ClientDataRecord recordTypeDataRecord = (ClientDataRecord) recordTypeData;
+			if (runOnlyThisListOfRecordTypes.isEmpty()
+					|| runOnlyThisListOfRecordTypes.contains(recordTypeDataRecord.getId())) {
+				System.out.println("Listing type: " + recordTypeDataRecord.getId()
+						+ " partial counting: " + count);
+				if (allowedRecordType(recordTypeDataRecord)) {
+					updateAllRecordsForRecordType(recordTypeDataRecord);
+				}
+				System.out.println();
+			}
+		}
+		System.out.println("Updated records: " + count);
+	}
 
+	public void updateAllRecordsExceptTheseTypes(List<String> runOthersThisListOfRecordTypes) {
+		ClientDataList listOfRecordTypes = dataClient.readList("recordType");
+
+		for (ClientData recordTypeData : listOfRecordTypes.getDataList()) {
+			ClientDataRecord recordTypeDataRecord = (ClientDataRecord) recordTypeData;
+			if (runOthersThisListOfRecordTypes.isEmpty()
+					|| !runOthersThisListOfRecordTypes.contains(recordTypeDataRecord.getId())) {
+				System.out.println("Listing type: " + recordTypeDataRecord.getId()
+						+ " partial counting: " + count);
+				if (allowedRecordType(recordTypeDataRecord)) {
+					updateAllRecordsForRecordType(recordTypeDataRecord);
+				}
+				System.out.println();
+			}
+		}
+		System.out.println("Updated records " + count);
+	}
+
+	public void updateAllRecords(List<String> runOnlyThislistOfRecordTypes) {
+		ClientDataList listOfRecordTypes = dataClient.readList("recordType");
+
+		for (ClientData recordTypeData : listOfRecordTypes.getDataList()) {
+			ClientDataRecord recordTypeDataRecord = (ClientDataRecord) recordTypeData;
 			System.out.println("Listing type: " + recordTypeDataRecord.getId()
 					+ " partial counting: " + count);
-
 			if (allowedRecordType(recordTypeDataRecord)) {
 				updateAllRecordsForRecordType(recordTypeDataRecord);
 			}
 			System.out.println();
 		}
-		System.out.println("Records in the system: " + count);
+		System.out.println("Updated records " + count);
 	}
 
 	private void updateAllRecordsForRecordType(ClientDataRecord recordTypeDataRecord) {
@@ -179,7 +213,6 @@ public class UpdateAllRecordsAndLinkValidationType {
 	}
 
 	private String capitalize(String recordType) {
-		// TODO Auto-generated method stub
 		return recordType.substring(0, 1).toUpperCase() + recordType.substring(1);
 	}
 
