@@ -18,19 +18,53 @@
  */
 package se.uu.ub.cora.change.utils;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertSame;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.change.spy.DataClientSpy;
+import se.uu.ub.cora.clientdata.ClientDataRecord;
+import se.uu.ub.cora.clientdata.ClientDataRecordLink;
+import se.uu.ub.cora.clientdata.spies.ClientDataListSpy;
+import se.uu.ub.cora.clientdata.spies.ClientDataRecordGroupSpy;
+import se.uu.ub.cora.clientdata.spies.ClientDataRecordLinkSpy;
+import se.uu.ub.cora.clientdata.spies.ClientDataRecordSpy;
+import se.uu.ub.cora.javaclient.cora.DataClient;
+
 public class RecordTypeUtilTest {
-	private RecordTypeUtil recordTypeUtil;
+	private static final String PARENT_ID = "parentId";
+	private RecordTypeUtilImp recordTypeUtil;
+	private DataClientSpy dataClient;
+	private List<ClientDataRecord> listOfTypes;
 
 	@BeforeMethod
+
 	private void beforeMethod() {
-		recordTypeUtil = new RecordTypeUtilImp();
+		listOfTypes = new ArrayList<>();
+		dataClient = new DataClientSpy();
+		setDataClientToReturnListOfTypes();
+
+		recordTypeUtil = RecordTypeUtilImp.usingDataClient(dataClient);
+	}
+
+	private void setDataClientToReturnListOfTypes() {
+		ClientDataListSpy clientDataList = new ClientDataListSpy();
+		clientDataList.MRV.setDefaultReturnValuesSupplier("getDataList", () -> listOfTypes);
+		dataClient.MRV.setSpecificReturnValuesSupplier("readList", () -> clientDataList,
+				"recordType");
+	}
+
+	@Test
+	public void testOnlyForTestGetDataClient() throws Exception {
+		DataClient dataClient = recordTypeUtil.onlyForTestGetDataClient();
+		assertSame(dataClient, this.dataClient);
 	}
 
 	@Test
@@ -38,5 +72,96 @@ public class RecordTypeUtilTest {
 		Map<String, String> mapOfImp = recordTypeUtil.getMapOfImplementingToParent();
 
 		assertNotNull(mapOfImp);
+	}
+
+	@Test
+	public void testOneRecordTypeWithoutParentReturnsMapWithIdForBothKeyAndValue()
+			throws Exception {
+		setUpDataClientToReturnOneRecordTypeWithoutParent("someId");
+
+		Map<String, String> mapOfImp = recordTypeUtil.getMapOfImplementingToParent();
+
+		assertEquals(mapOfImp.size(), 1);
+		assertEquals(mapOfImp.get("someId"), "someId");
+	}
+
+	private void setUpDataClientToReturnOneRecordTypeWithoutParent(String recordId) {
+		ClientDataRecordSpy clientDataRecord = createClientDataRecordSpyContainsParentId(recordId,
+				false);
+		listOfTypes.add(clientDataRecord);
+	}
+
+	private ClientDataRecordSpy createClientDataRecordSpyContainsParentId(String recordId,
+			boolean containsParentId) {
+		ClientDataRecordSpy clientDataRecord = new ClientDataRecordSpy();
+		ClientDataRecordGroupSpy recordGroup = new ClientDataRecordGroupSpy();
+		clientDataRecord.MRV.setDefaultReturnValuesSupplier("getId", () -> recordId);
+		clientDataRecord.MRV.setDefaultReturnValuesSupplier("getDataRecordGroup",
+				() -> recordGroup);
+		recordGroup.MRV.setSpecificReturnValuesSupplier("containsChildOfTypeAndName",
+				() -> containsParentId, ClientDataRecordLink.class, PARENT_ID);
+		return clientDataRecord;
+	}
+
+	@Test
+	public void testTwoRecordTypeThatAreAnImplementingTypes() throws Exception {
+		setUpDataClientToReturnOneRecordTypeWithoutParent("someId");
+		setUpDataClientToReturnOneRecordTypeWithoutParent("someId2");
+
+		Map<String, String> mapOfImp = recordTypeUtil.getMapOfImplementingToParent();
+
+		assertEquals(mapOfImp.size(), 2);
+		assertEquals(mapOfImp.get("someId"), "someId");
+		assertEquals(mapOfImp.get("someId2"), "someId2");
+	}
+
+	@Test
+	public void testOneRecordTypeWithOneParent() throws Exception {
+		setUpDataClientToReturnOneRecordTypeWithParent("someId", "someParentId");
+		setUpDataClientToReturnOneRecordTypeWithoutParent("someParentId");
+
+		Map<String, String> mapOfImp = recordTypeUtil.getMapOfImplementingToParent();
+
+		assertEquals(mapOfImp.size(), 2);
+		assertEquals(mapOfImp.get("someId"), "someParentId");
+		assertEquals(mapOfImp.get("someParentId"), "someParentId");
+	}
+
+	private void setUpDataClientToReturnOneRecordTypeWithParent(String recordId, String parentId) {
+		ClientDataRecordSpy clientDataRecord = createClientDataRecordSpyWithRecordAndParentId(
+				recordId, parentId);
+
+		listOfTypes.add(clientDataRecord);
+	}
+
+	private ClientDataRecordSpy createClientDataRecordSpyWithRecordAndParentId(String recordId,
+			String parentId) {
+		ClientDataRecordSpy clientDataRecord = new ClientDataRecordSpy();
+		ClientDataRecordGroupSpy recordGroup = new ClientDataRecordGroupSpy();
+		clientDataRecord.MRV.setDefaultReturnValuesSupplier("getId", () -> recordId);
+		clientDataRecord.MRV.setDefaultReturnValuesSupplier("getDataRecordGroup",
+				() -> recordGroup);
+		recordGroup.MRV.setSpecificReturnValuesSupplier("containsChildOfTypeAndName", () -> true,
+				ClientDataRecordLink.class, PARENT_ID);
+
+		ClientDataRecordLinkSpy parentLink = new ClientDataRecordLinkSpy();
+		parentLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId", () -> parentId);
+		recordGroup.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName",
+				() -> parentLink, ClientDataRecordLink.class, PARENT_ID);
+		return clientDataRecord;
+	}
+
+	@Test
+	public void testOneRecordTypeWithOneGrandParent() throws Exception {
+		setUpDataClientToReturnOneRecordTypeWithParent("someId", "someParentId");
+		setUpDataClientToReturnOneRecordTypeWithParent("someParentId", "someGrandParentId");
+		setUpDataClientToReturnOneRecordTypeWithoutParent("someGrandParentId");
+
+		Map<String, String> mapOfImp = recordTypeUtil.getMapOfImplementingToParent();
+
+		assertEquals(mapOfImp.size(), 3);
+		assertEquals(mapOfImp.get("someId"), "someGrandParentId");
+		assertEquals(mapOfImp.get("someParentId"), "someGrandParentId");
+		assertEquals(mapOfImp.get("someGrandParentId"), "someGrandParentId");
 	}
 }

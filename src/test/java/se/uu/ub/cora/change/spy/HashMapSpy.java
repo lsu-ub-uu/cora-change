@@ -16,19 +16,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.change.utils;
+package se.uu.ub.cora.change.spy;
 
-import java.util.Map;
+import java.util.HashMap;
 
-public interface RecordTypeUtil {
-	/**
-	 * getMapOfImplementingToParent return a Map with all existing recordType ids as key and the
-	 * abstract parent id for the recordType as value. If there are more than one level of parents
-	 * is the top one set as value. If the recordType is an implementing type the recordTypes own id
-	 * set as value.
-	 * 
-	 * @return A {@link Map} with all recordType ids as key and parent as value
-	 */
-	Map<String, String> getMapOfImplementingToParent();
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
+
+public class HashMapSpy extends HashMap {
+
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
+	public HashMapSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("get", String::new);
+	}
+
+	@Override
+	public Object get(Object key) {
+		return MCR.addCallAndReturnFromMRV(key);
+	}
 
 }

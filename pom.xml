@@ -33,8 +33,9 @@
 
 	<properties>
 		<json.version>3.7.0</json.version>
-		<testutils.version>1.9.0</testutils.version>
 		<javaclient.version>2.0-SNAPSHOT</javaclient.version>
+		<testutils.version>1.9.0</testutils.version>
+		<clientdata-spies.version>1.0-SNAPSHOT</clientdata-spies.version>
 	</properties>
 
 	<scm>
@@ -46,16 +47,22 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>${testng.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>json</artifactId>
 			<version>${json.version}</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>javaclient</artifactId>
+			<version>${javaclient.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
@@ -65,9 +72,9 @@
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>javaclient</artifactId>
-			<version>${javaclient.version}</version>
-			<scope>compile</scope>
+			<artifactId>clientdata-spies</artifactId>
+			<version>${clientdata-spies.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
