@@ -22,10 +22,11 @@ import java.util.List;
 import java.util.Map;
 
 import se.uu.ub.cora.change.utils.RecordTypeUtil;
+import se.uu.ub.cora.change.utils.RecordTypeUtilImp;
 import se.uu.ub.cora.clientdata.ClientData;
-import se.uu.ub.cora.clientdata.ClientDataGroup;
 import se.uu.ub.cora.clientdata.ClientDataList;
 import se.uu.ub.cora.clientdata.ClientDataProvider;
+import se.uu.ub.cora.clientdata.ClientDataRecord;
 import se.uu.ub.cora.clientdata.ClientDataRecordGroup;
 import se.uu.ub.cora.clientdata.ClientDataRecordLink;
 import se.uu.ub.cora.javaclient.cora.CoraClientFactory;
@@ -41,60 +42,75 @@ public class RecordLinkUpdateToTopLevelType {
 	private CoraClientFactory clientFactory;
 	private DataClient dataClient;
 	private Map<String, String> mapOfTopLevelTypes;
+	private String user;
+	private String apptoken;
 
 	public static RecordLinkUpdateToTopLevelType usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(
-			String apptokenUrl, String baseUrl, RecordTypeUtil recordTypeUtil) {
+			String apptokenUrl, String baseUrl, String user, String apptoken) {
 
-		return new RecordLinkUpdateToTopLevelType(apptokenUrl, baseUrl, recordTypeUtil);
+		return new RecordLinkUpdateToTopLevelType(apptokenUrl, baseUrl, user, apptoken);
 	}
 
-	private RecordLinkUpdateToTopLevelType(String apptokenUrl, String baseUrl,
-			RecordTypeUtil recordTypeUtil) {
+	private RecordLinkUpdateToTopLevelType(String apptokenUrl, String baseUrl, String user,
+			String apptoken) {
 		this.apptokenUrl = apptokenUrl;
 		this.baseUrl = baseUrl;
+		this.user = user;
+		this.apptoken = apptoken;
 
 		clientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
 				baseUrl);
 
-		mapOfTopLevelTypes = recordTypeUtil.getMapOfImplementingToParent();
 	}
 
 	public void updateAllRecordLinksWithTopLevelType() {
+		System.out.println("START SCRIPT");
 		factorDataClient();
 
 		ClientDataList recordLinks = dataClient.readList("metadataRecordLink");
 		List<ClientData> listOfClientData = recordLinks.getDataList();
+		System.out.println("RecordsFound: " + listOfClientData.size());
 		// SPIKE
 		for (ClientData data : listOfClientData) {
-			ClientDataGroup group = (ClientDataGroup) data;
-			ClientDataRecordLink linkedRecordType = group
-					.getFirstChildOfTypeAndName(ClientDataRecordLink.class, LINKED_RECORD_TYPE);
-			String linkType = linkedRecordType.getLinkedRecordType();
-			String linkId = linkedRecordType.getLinkedRecordId();
-			String topLevelType = mapOfTopLevelTypes.get(linkType);
+			ClientDataRecord record = (ClientDataRecord) data;
+			ClientDataRecordGroup recordGroup = record.getDataRecordGroup();
 
-			if (!linkType.equals(topLevelType)) {
-				updateLinkToPointTopLevelType(group, linkId, topLevelType);
+			System.out.println("RecordId: " + recordGroup.getId());
+
+			ClientDataRecordLink linkedRecordType = recordGroup
+					.getFirstChildOfTypeAndName(ClientDataRecordLink.class, LINKED_RECORD_TYPE);
+
+			String linkId = linkedRecordType.getLinkedRecordId();
+			String topLevelType = mapOfTopLevelTypes.get(linkId);
+
+			System.out.println("LinkId: " + linkId + " TopLeveleType: " + topLevelType);
+
+			if (!linkId.equals(topLevelType)) {
+				System.out.println("Update link!!");
+				updateLinkToPointTopLevelType(recordGroup, topLevelType);
 			}
+			System.out.println();
 		}
+		System.out.println("STOP SCRIPT");
 	}
 
-	private void updateLinkToPointTopLevelType(ClientDataGroup group, String linkId,
-			String topLevelType) {
-		group.removeFirstChildWithTypeAndName(ClientDataRecordLink.class,
-				LINKED_RECORD_TYPE);
+	private void updateLinkToPointTopLevelType(ClientDataRecordGroup recordGroup,
+			String topLevelTypeId) {
+		recordGroup.removeFirstChildWithTypeAndName(ClientDataRecordLink.class, LINKED_RECORD_TYPE);
+
 		ClientDataRecordLink newLinkToTopLeveltype = ClientDataProvider
-				.createRecordLinkUsingNameInDataAndTypeAndId(LINKED_RECORD_TYPE,
-						topLevelType, linkId);
-		group.addChild(newLinkToTopLeveltype);
-		ClientDataRecordGroup recordGroup = ClientDataProvider
-				.createRecordGroupFromDataGroup(group);
+				.createRecordLinkUsingNameInDataAndTypeAndId(LINKED_RECORD_TYPE, "recordType",
+						topLevelTypeId);
+		recordGroup.addChild(newLinkToTopLeveltype);
+
 		dataClient.update("metadataRecordLink", recordGroup.getId(), recordGroup);
 	}
 
 	private void factorDataClient() {
-		dataClient = clientFactory.factorUsingUserIdAndAppToken("141414",
-				"63e6bd34-02a1-4c82-8001-158c104cae0e");
+		dataClient = clientFactory.factorUsingUserIdAndAppToken(user, apptoken);
+
+		RecordTypeUtil recordTypeUtil = RecordTypeUtilImp.usingDataClient(dataClient);
+		mapOfTopLevelTypes = recordTypeUtil.getMapOfImplementingToParent();
 	}
 
 	public String onlyForTestGetApptokenUrl() {

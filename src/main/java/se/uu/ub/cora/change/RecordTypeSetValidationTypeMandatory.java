@@ -33,7 +33,7 @@ import se.uu.ub.cora.clientdata.ClientDataRecordLink;
 import se.uu.ub.cora.javaclient.cora.DataClient;
 import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
 
-public class RecordTypeUpdater {
+public class RecordTypeSetValidationTypeMandatory {
 
 	private static final String REF_PARENT_ID = "refParentId";
 	private static final String REF = "ref";
@@ -41,29 +41,14 @@ public class RecordTypeUpdater {
 	private static final String CHILD_REFERENCE = "childReference";
 	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
-	private ClientDataGroup validationLinkChildReference;
 	private int groupsUpdated;
 
-	public RecordTypeUpdater(String apptokenUrl, String baseUrl) {
+	public RecordTypeSetValidationTypeMandatory(String apptokenUrl, String baseUrl) {
 		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
 				baseUrl);
 		dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
 				"63e6bd34-02a1-4c82-8001-158c104cae0e");
-		validationLinkChildReference = createNewValidationLinkReference();
 		groupsUpdated = 0;
-	}
-
-	private ClientDataGroup createNewValidationLinkReference() {
-		ClientDataGroup childReference = ClientDataProvider
-				.createGroupUsingNameInData(CHILD_REFERENCE);
-		childReference.setRepeatId("111");
-		childReference
-				.addChild(ClientDataProvider.createAtomicUsingNameInDataAndValue("repeatMin", "1"));
-		childReference
-				.addChild(ClientDataProvider.createAtomicUsingNameInDataAndValue("repeatMax", "1"));
-		childReference.addChild(ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId(REF,
-				"metadataRecordLink", "validationTypeLink"));
-		return childReference;
 	}
 
 	public void updateAllRecordInfosForAllGroupForAllRecordTypes() {
@@ -162,7 +147,7 @@ public class RecordTypeUpdater {
 			ClientDataRecord parent = readParentRecord(recordInfoRecordToModify);
 			addLinkAndUpdate(parent.getDataRecordGroup());
 		}
-		updateGroup(validationLinkChildReference, recordInfoRecordToModify);
+		updateGroup(recordInfoRecordToModify);
 	}
 
 	private ClientDataRecord readParentRecord(ClientDataRecordGroup recordInfoRecordToModify) {
@@ -171,10 +156,9 @@ public class RecordTypeUpdater {
 		return dataClient.read(parentLink.getLinkedRecordType(), parentLink.getLinkedRecordId());
 	}
 
-	private void updateGroup(ClientDataGroup validationLinkChildReference,
-			ClientDataRecordGroup recordInfoRecordToModify) {
-		if (!hasLinkToValidationTypeSinceBefore(recordInfoRecordToModify)) {
-			addValidationTypeToGroup(validationLinkChildReference, recordInfoRecordToModify);
+	private void updateGroup(ClientDataRecordGroup recordInfoRecordToModify) {
+		if (hasLinkToValidationTypeSinceBefore(recordInfoRecordToModify)) {
+			setValidationTypeMandatory(recordInfoRecordToModify);
 		} else {
 			System.out.println(
 					"Already has validation type link: " + recordInfoRecordToModify.getId());
@@ -206,14 +190,32 @@ public class RecordTypeUpdater {
 		return false;
 	}
 
-	private void addValidationTypeToGroup(ClientDataGroup validationLinkChildReference,
-			ClientDataRecordGroup recordInfoRecordToModify) {
+	private void setValidationTypeMandatory(ClientDataRecordGroup recordInfoRecordToModify) {
 		ClientDataGroup childReferences = recordInfoRecordToModify
 				.getFirstGroupWithNameInData(CHILD_REFERENCES);
-		childReferences.addChild(validationLinkChildReference);
-		dataClient.update(recordInfoRecordToModify.getType(), recordInfoRecordToModify.getId(),
-				recordInfoRecordToModify);
-		System.out.println("recordInfo: " + recordInfoRecordToModify.getId());
-		groupsUpdated++;
+		boolean updated = false;
+		for (ClientDataChild childreference : childReferences.getChildren()) {
+			ClientDataGroup childReferenceGroup = (ClientDataGroup) childreference;
+			ClientDataRecordLink refLink = childReferenceGroup
+					.getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
+			if ("validationTypeLink".equals(refLink.getLinkedRecordId())) {
+				String repeatMin = childReferenceGroup
+						.getFirstAtomicValueWithNameInData("repeatMin");
+				if ("0".equals(repeatMin)) {
+
+					childReferenceGroup.removeFirstChildWithNameInData("repeatMin");
+					childReferenceGroup.addChild(ClientDataProvider
+							.createAtomicUsingNameInDataAndValue("repeatMin", "1"));
+					updated = true;
+				}
+			}
+		}
+		if (updated) {
+
+			dataClient.update(recordInfoRecordToModify.getType(), recordInfoRecordToModify.getId(),
+					recordInfoRecordToModify);
+			System.out.println("recordInfo: " + recordInfoRecordToModify.getId());
+			groupsUpdated++;
+		}
 	}
 }

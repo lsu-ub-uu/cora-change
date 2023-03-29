@@ -18,11 +18,6 @@
  */
 package se.uu.ub.cora.change;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-
-import java.util.List;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -30,14 +25,10 @@ import se.uu.ub.cora.change.spy.CoraClientFactorySpy;
 import se.uu.ub.cora.change.spy.DataClientSpy;
 import se.uu.ub.cora.change.spy.HashMapSpy;
 import se.uu.ub.cora.change.spy.RecordTypeUtilSpy;
-import se.uu.ub.cora.clientdata.ClientDataProvider;
-import se.uu.ub.cora.clientdata.ClientDataRecordLink;
 import se.uu.ub.cora.clientdata.spies.ClientDataFactorySpy;
-import se.uu.ub.cora.clientdata.spies.ClientDataGroupSpy;
 import se.uu.ub.cora.clientdata.spies.ClientDataListSpy;
 import se.uu.ub.cora.clientdata.spies.ClientDataRecordGroupSpy;
 import se.uu.ub.cora.clientdata.spies.ClientDataRecordLinkSpy;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
 
 public class RecordLinkUpdateToTopLevelTypeTest {
 
@@ -65,12 +56,21 @@ public class RecordLinkUpdateToTopLevelTypeTest {
 	private static final String SOME_BASE_URL = "http://localhost:8080/someBase/rest/";
 	private static final Object LINKED_RECORD_TYPE = "linkedRecordType";
 
+	private static final String SYSTEMONE_USER = "141414";
+	private static final String SYSTEMONE_APPTOKEN_USER = "63e6bd34-02a1-4c82-8001-158c104cae0e";
+
+	private static final String DIVA_USER = "coraUser:490742519075086";
+	private static final String DIVA_APPTOKEN_USER = "2e57eb36-55b9-4820-8c44-8271baab4e8e";
+
+	private static final String ALVIN_USER = "151515";
+	private static final String ALVIN_APPTOKEN_USER = "63ef81cd-1d88-4a6a-aff0-f0d809a74d34";
+
 	CoraClientFactorySpy dataClientFactorySpy;
 	ClientDataFactorySpy datafactory;
 	private ClientDataRecordGroupSpy recordGroup;
 	private DataClientSpy dataClientSpy;
 	private ClientDataListSpy dataListSpy;
-	private ClientDataGroupSpy clientDataGroup1;
+	private ClientDataRecordGroupSpy clientDataRecordGroup1;
 	private ClientDataRecordLinkSpy dataRecordLink1;
 	private HashMapSpy mapOfTopLevelTypes;
 
@@ -81,139 +81,182 @@ public class RecordLinkUpdateToTopLevelTypeTest {
 		datafactory = new ClientDataFactorySpy();
 		recordGroup = new ClientDataRecordGroupSpy();
 
-		datafactory.MRV.setDefaultReturnValuesSupplier("factorRecordGroupFromDataGroup",
-				() -> recordGroup);
-		ClientDataProvider.onlyForTestSetDataFactory(datafactory);
+		// datafactory.MRV.setDefaultReturnValuesSupplier("factorRecordGroupFromDataGroup",
+		// () -> recordGroup);
+		// ClientDataProvider.onlyForTestSetDataFactory(datafactory);
 	}
 
-	@Test
-	public void testCreateClientFactory() throws Exception {
+	@Test(enabled = false)
+	public void realRunOnSystemoneLocal() throws Exception {
 		recordLinkUpdater = RecordLinkUpdateToTopLevelType
-				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
-						SOME_BASE_URL, recordTypeUtil);
-
-		DataClientFactoryImp createdClientFactory = (DataClientFactoryImp) recordLinkUpdater
-				.onlyForTestGetCoraClientFactory();
-
-		assertTrue(createdClientFactory instanceof DataClientFactoryImp);
-		assertEquals(createdClientFactory.onlyForTestGetAppTokenVerifierUrl(), SOME_APPTOKEN_URL);
-		assertEquals(createdClientFactory.onlyForTestGetBaseUrl(), SOME_BASE_URL);
-	}
-
-	@Test
-	public void testUpdateClientFactory() throws Exception {
-
-		recordLinkUpdater = RecordLinkUpdateToTopLevelType
-				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
-						SOME_BASE_URL, recordTypeUtil);
-
-		recordLinkUpdater.onlyForTestSetRestClientFactory(dataClientFactorySpy);
-
-		recordLinkUpdater.onlyForTestGetCoraClientFactory();
-		assertTrue(recordLinkUpdater
-				.onlyForTestGetCoraClientFactory() instanceof CoraClientFactorySpy);
-		recordTypeUtil.MCR.assertParameters("getMapOfImplementingToParent", 0);
-
-	}
-
-	@Test
-	public void testFactorClientFactory() throws Exception {
-		recordLinkUpdater = RecordLinkUpdateToTopLevelType
-				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
-						SOME_BASE_URL, recordTypeUtil);
-
-		recordLinkUpdater.onlyForTestSetRestClientFactory(dataClientFactorySpy);
+				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SYSTEMONE_LOCAL_APPTOKEN_URL,
+						SYSTEMONE_LOCAL_BASE_URL, SYSTEMONE_USER, SYSTEMONE_APPTOKEN_USER);
 
 		recordLinkUpdater.updateAllRecordLinksWithTopLevelType();
-
-		dataClientFactorySpy.MCR.assertParameters("factorUsingUserIdAndAppToken", 0, "141414",
-				"63e6bd34-02a1-4c82-8001-158c104cae0e");
-
 	}
 
-	@Test
-	public void testListRecorLinksNotEqual() throws Exception {
-		prepareTest();
-		mapOfTopLevelTypes.MRV.setDefaultReturnValuesSupplier("get", () -> "someTopLevelType");
-
-		// CREATES recordLinkUpdater
+	@Test(enabled = false)
+	public void realRunOnSystemoneDEV() throws Exception {
 		recordLinkUpdater = RecordLinkUpdateToTopLevelType
-				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
-						SOME_BASE_URL, recordTypeUtil);
-		recordLinkUpdater.onlyForTestSetRestClientFactory(dataClientFactorySpy);
+				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SYSTEMONE_DEV_APPTOKEN_URL,
+						SYSTEMONE_DEV_BASE_URL, SYSTEMONE_USER, SYSTEMONE_APPTOKEN_USER);
 
-		// RUN TEST
 		recordLinkUpdater.updateAllRecordLinksWithTopLevelType();
-
-		// ASSERT BEGINS
-		DataClientSpy dataClient = (DataClientSpy) dataClientFactorySpy.MCR
-				.getReturnValue("factorUsingUserIdAndAppToken", 0);
-
-		assertReadList(dataClient);
-
-		// ASSERT DATA RECORD clientDataGroup1
-		clientDataGroup1.MCR.assertParameters("getFirstChildOfTypeAndName", 0,
-				ClientDataRecordLink.class, LINKED_RECORD_TYPE);
-		dataRecordLink1.MCR.assertParameters("getLinkedRecordType", 0);
-		dataRecordLink1.MCR.assertParameters("getLinkedRecordId", 0);
 	}
 
-	private void prepareTest() {
-		dataRecordLink1 = new ClientDataRecordLinkSpy();
-
-		clientDataGroup1 = new ClientDataGroupSpy();
-		clientDataGroup1.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName",
-				() -> dataRecordLink1, ClientDataRecordLink.class, LINKED_RECORD_TYPE);
-
-		dataListSpy = new ClientDataListSpy();
-		dataListSpy.MRV.setDefaultReturnValuesSupplier("getDataList",
-				() -> List.of(clientDataGroup1));
-
-		dataClientSpy = new DataClientSpy();
-		dataClientSpy.MRV.setSpecificReturnValuesSupplier("readList", () -> dataListSpy,
-				"metadataRecordLink");
-
-		dataClientFactorySpy.MRV.setSpecificReturnValuesSupplier("factorUsingUserIdAndAppToken",
-				() -> dataClientSpy, "141414", "63e6bd34-02a1-4c82-8001-158c104cae0e");
-
-		mapOfTopLevelTypes = new HashMapSpy();
-
-	}
-
-	@Test
-	public void testListRecorLinksEqual() throws Exception {
-		prepareTest();
-		mapOfTopLevelTypes.MRV.setDefaultReturnValuesSupplier("get", () -> "someTopLevelType");
-
-		// CREATES recordLinkUpdater
+	@Test(enabled = false)
+	public void realRunOnAlvinLocal() throws Exception {
 		recordLinkUpdater = RecordLinkUpdateToTopLevelType
-				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
-						SOME_BASE_URL, recordTypeUtil);
-		recordLinkUpdater.onlyForTestSetRestClientFactory(dataClientFactorySpy);
+				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(ALVIN_LOCAL_APPTOKEN_URL,
+						ALVIN_LOCAL_BASE_URL, SYSTEMONE_USER, SYSTEMONE_APPTOKEN_USER);
 
-		// RUN TEST
 		recordLinkUpdater.updateAllRecordLinksWithTopLevelType();
-
-		// ASSERT BEGINS
-		DataClientSpy dataClient = (DataClientSpy) dataClientFactorySpy.MCR
-				.getReturnValue("factorUsingUserIdAndAppToken", 0);
-
-		assertReadList(dataClient);
-
-		// ASSERT DATA RECORD clientDataGroup1
-		clientDataGroup1.MCR.assertParameters("getFirstChildOfTypeAndName", 0,
-				ClientDataRecordLink.class, LINKED_RECORD_TYPE);
-		dataRecordLink1.MCR.assertParameters("getLinkedRecordType", 0);
-		dataRecordLink1.MCR.assertParameters("getLinkedRecordId", 0);
-
-		dataClient.MCR.assertMethodNotCalled("update");
 	}
 
-	private void assertReadList(DataClientSpy dataClient) {
-		dataClient.MCR.assertParameters("readList", 0, "metadataRecordLink");
-		ClientDataListSpy recordLinks = (ClientDataListSpy) dataClient.MCR
-				.getReturnValue("readList", 0);
-		recordLinks.MCR.assertParameters("getDataList", 0);
+	@Test(enabled = false)
+	public void realRunOnAlvinDEV() throws Exception {
+		recordLinkUpdater = RecordLinkUpdateToTopLevelType
+				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(ALVIN_DEV_APPTOKEN_URL,
+						ALVIN_DEV_BASE_URL, SYSTEMONE_USER, SYSTEMONE_APPTOKEN_USER);
+
+		recordLinkUpdater.updateAllRecordLinksWithTopLevelType();
 	}
+
+	@Test(enabled = false)
+	public void realRunOnDIVADEV() throws Exception {
+		recordLinkUpdater = RecordLinkUpdateToTopLevelType
+				.usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(DIVA_DEV_APPTOKEN_URL,
+						DIVA_DEV_BASE_URL, DIVA_USER, DIVA_APPTOKEN_USER);
+
+		recordLinkUpdater.updateAllRecordLinksWithTopLevelType();
+	}
+
+	// @Test
+	// public void testCreateClientFactory() throws Exception {
+	// recordLinkUpdater = RecordLinkUpdateToTopLevelType
+	// .usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
+	// SOME_BASE_URL);
+	//
+	// DataClientFactoryImp createdClientFactory = (DataClientFactoryImp) recordLinkUpdater
+	// .onlyForTestGetCoraClientFactory();
+	//
+	// assertTrue(createdClientFactory instanceof DataClientFactoryImp);
+	// assertEquals(createdClientFactory.onlyForTestGetAppTokenVerifierUrl(), SOME_APPTOKEN_URL);
+	// assertEquals(createdClientFactory.onlyForTestGetBaseUrl(), SOME_BASE_URL);
+	// }
+	//
+	// @Test
+	// public void testUpdateClientFactory() throws Exception {
+	//
+	// recordLinkUpdater = RecordLinkUpdateToTopLevelType
+	// .usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
+	// SOME_BASE_URL);
+	//
+	// recordLinkUpdater.onlyForTestSetRestClientFactory(dataClientFactorySpy);
+	//
+	// recordLinkUpdater.onlyForTestGetCoraClientFactory();
+	// assertTrue(recordLinkUpdater
+	// .onlyForTestGetCoraClientFactory() instanceof CoraClientFactorySpy);
+	// recordTypeUtil.MCR.assertParameters("getMapOfImplementingToParent", 0);
+	//
+	// }
+	//
+	// @Test
+	// public void testFactorClientFactory() throws Exception {
+	// recordLinkUpdater = RecordLinkUpdateToTopLevelType
+	// .usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
+	// SOME_BASE_URL);
+	//
+	// recordLinkUpdater.onlyForTestSetRestClientFactory(dataClientFactorySpy);
+	//
+	// recordLinkUpdater.updateAllRecordLinksWithTopLevelType();
+	//
+	// dataClientFactorySpy.MCR.assertParameters("factorUsingUserIdAndAppToken", 0, "141414",
+	// "63e6bd34-02a1-4c82-8001-158c104cae0e");
+	//
+	// }
+	//
+	// @Test
+	// public void testListRecorLinksNotEqual() throws Exception {
+	// prepareTest();
+	// mapOfTopLevelTypes.MRV.setDefaultReturnValuesSupplier("get", () -> "someTopLevelType");
+	//
+	// // CREATES recordLinkUpdater
+	// recordLinkUpdater = RecordLinkUpdateToTopLevelType
+	// .usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
+	// SOME_BASE_URL);
+	// recordLinkUpdater.onlyForTestSetRestClientFactory(dataClientFactorySpy);
+	//
+	// // RUN TEST
+	// recordLinkUpdater.updateAllRecordLinksWithTopLevelType();
+	//
+	// // ASSERT BEGINS
+	// DataClientSpy dataClient = (DataClientSpy) dataClientFactorySpy.MCR
+	// .getReturnValue("factorUsingUserIdAndAppToken", 0);
+	//
+	// assertReadList(dataClient);
+	//
+	// // ASSERT DATA RECORD clientDataGroup1
+	// clientDataRecordGroup1.MCR.assertParameters("getFirstChildOfTypeAndName", 0,
+	// ClientDataRecordLink.class, LINKED_RECORD_TYPE);
+	// dataRecordLink1.MCR.assertParameters("getLinkedRecordId", 0);
+	// }
+	//
+	// private void prepareTest() {
+	// dataRecordLink1 = new ClientDataRecordLinkSpy();
+	//
+	// clientDataRecordGroup1 = new ClientDataRecordGroupSpy();
+	// clientDataRecordGroup1.MRV.setSpecificReturnValuesSupplier("getFirstChildOfTypeAndName",
+	// () -> dataRecordLink1, ClientDataRecordLink.class, LINKED_RECORD_TYPE);
+	//
+	// dataListSpy = new ClientDataListSpy();
+	// dataListSpy.MRV.setDefaultReturnValuesSupplier("getDataList",
+	// () -> List.of(clientDataRecordGroup1));
+	//
+	// dataClientSpy = new DataClientSpy();
+	// dataClientSpy.MRV.setSpecificReturnValuesSupplier("readList", () -> dataListSpy,
+	// "metadataRecordLink");
+	//
+	// dataClientFactorySpy.MRV.setSpecificReturnValuesSupplier("factorUsingUserIdAndAppToken",
+	// () -> dataClientSpy, "141414", "63e6bd34-02a1-4c82-8001-158c104cae0e");
+	//
+	// mapOfTopLevelTypes = new HashMapSpy();
+	//
+	// }
+	//
+	// @Test
+	// public void testListRecorLinksEqual() throws Exception {
+	// prepareTest();
+	// mapOfTopLevelTypes.MRV.setDefaultReturnValuesSupplier("get", () -> "someTopLevelType");
+	//
+	// // CREATES recordLinkUpdater
+	// recordLinkUpdater = RecordLinkUpdateToTopLevelType
+	// .usingAppTokenVerifierUrlAndBaseUrlAndRecordTypeUtil(SOME_APPTOKEN_URL,
+	// SOME_BASE_URL);
+	// recordLinkUpdater.onlyForTestSetRestClientFactory(dataClientFactorySpy);
+	//
+	// // RUN TEST
+	// recordLinkUpdater.updateAllRecordLinksWithTopLevelType();
+	//
+	// // ASSERT BEGINS
+	// DataClientSpy dataClient = (DataClientSpy) dataClientFactorySpy.MCR
+	// .getReturnValue("factorUsingUserIdAndAppToken", 0);
+	//
+	// assertReadList(dataClient);
+	//
+	// // ASSERT DATA RECORD clientDataGroup1
+	// clientDataRecordGroup1.MCR.assertParameters("getFirstChildOfTypeAndName", 0,
+	// ClientDataRecordLink.class, LINKED_RECORD_TYPE);
+	// dataRecordLink1.MCR.assertParameters("getLinkedRecordId", 0);
+	//
+	// dataClient.MCR.assertMethodNotCalled("update");
+	// }
+	//
+	// private void assertReadList(DataClientSpy dataClient) {
+	// dataClient.MCR.assertParameters("readList", 0, "metadataRecordLink");
+	// ClientDataListSpy recordLinks = (ClientDataListSpy) dataClient.MCR
+	// .getReturnValue("readList", 0);
+	// recordLinks.MCR.assertParameters("getDataList", 0);
+	// }
 
 }

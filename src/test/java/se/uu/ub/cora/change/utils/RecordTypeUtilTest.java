@@ -25,6 +25,7 @@ import static org.testng.Assert.assertSame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -37,6 +38,7 @@ import se.uu.ub.cora.clientdata.spies.ClientDataRecordGroupSpy;
 import se.uu.ub.cora.clientdata.spies.ClientDataRecordLinkSpy;
 import se.uu.ub.cora.clientdata.spies.ClientDataRecordSpy;
 import se.uu.ub.cora.javaclient.cora.DataClient;
+import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
 
 public class RecordTypeUtilTest {
 	private static final String PARENT_ID = "parentId";
@@ -163,5 +165,22 @@ public class RecordTypeUtilTest {
 		assertEquals(mapOfImp.get("someId"), "someGrandParentId");
 		assertEquals(mapOfImp.get("someParentId"), "someGrandParentId");
 		assertEquals(mapOfImp.get("someGrandParentId"), "someGrandParentId");
+	}
+
+	@Test(enabled = false)
+	public void realTest() throws Exception {
+		String apptokenUrl = "http://130.238.171.238:38180/apptokenverifier/rest/";
+		String baseUrl = "http://130.238.171.238:38080/systemone/rest/";
+		DataClientFactoryImp dataClientFactory = DataClientFactoryImp
+				.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl, baseUrl);
+		DataClient dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
+				"63e6bd34-02a1-4c82-8001-158c104cae0e");
+		RecordTypeUtilImp recordTypeUtil = RecordTypeUtilImp.usingDataClient(dataClient);
+
+		Map<String, String> mapOfImp = recordTypeUtil.getMapOfImplementingToParent();
+		for (Entry<String, String> entry : mapOfImp.entrySet()) {
+
+			System.out.println(entry.getKey() + " --> " + entry.getValue());
+		}
 	}
 }
