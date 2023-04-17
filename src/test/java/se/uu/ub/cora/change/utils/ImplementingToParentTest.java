@@ -44,17 +44,17 @@ public class ImplementingToParentTest {
 		return Optional.empty();
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void storeImplementingToParentForSystemOne() throws Exception {
 		writeToDisk(SYSTEMONE_LOCAL_APPTOKEN_URL, SYSTEMONE_LOCAL_BASE_URL, "SystemOne");
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void storeImplementingToParentForAlvin() throws Exception {
 		writeToDisk(ALVIN_LOCAL_APPTOKEN_URL, ALVIN_LOCAL_BASE_URL, "Alvin");
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void storeImplementingToParentForDiVA() throws Exception {
 		writeToDisk(DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL, "DiVA");
 	}
