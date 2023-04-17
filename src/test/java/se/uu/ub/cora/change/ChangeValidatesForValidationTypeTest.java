@@ -30,6 +30,33 @@ public class ChangeValidatesForValidationTypeTest {
 
 		updater.changeValidationTypes();
 	}
+
+	@Test(enabled = false)
+	public void runChangeValidationTypesSystemOneDev() throws Exception {
+
+		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
+				SYSTEMONE_DEV_APPTOKEN_URL, SYSTEMONE_DEV_BASE_URL);
+
+		updater.changeValidationTypes();
+	}
+
+	@Test(enabled = false)
+	public void runChangeValidationTypesAlvinDev() throws Exception {
+
+		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
+				ALVIN_DEV_APPTOKEN_URL, ALVIN_DEV_BASE_URL);
+
+		updater.changeValidationTypes();
+	}
+
+	@Test(enabled = false)
+	public void runChangeValidationTypesDivaDev() throws Exception {
+
+		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
+				DIVA_DEV_APPTOKEN_URL, DIVA_DEV_BASE_URL);
+
+		updater.changeValidationTypes();
+	}
 }
 
 // @Test(enabled = false)
