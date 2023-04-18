@@ -53,6 +53,10 @@ public class CollectAllFieldsForAbstractRecordTypes {
 
 			ClientDataRecordGroup addToGroupWithGroup = null;
 			for (String idToAddStuffFrom : idsToAddStuffFrom) {
+
+				/**
+				 * WRONG, fix tomorrow, mixed metadata and recordTypes...
+				 */
 				addToGroupWithGroup = addToGroupWithGroup(idToAddStuffTo, idToAddStuffFrom);
 
 			}
