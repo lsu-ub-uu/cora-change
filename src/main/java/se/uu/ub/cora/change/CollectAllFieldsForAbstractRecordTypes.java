@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import se.uu.ub.cora.clientdata.ClientData;
-import se.uu.ub.cora.clientdata.ClientDataAttribute;
-import se.uu.ub.cora.clientdata.ClientDataChild;
 import se.uu.ub.cora.clientdata.ClientDataGroup;
 import se.uu.ub.cora.clientdata.ClientDataList;
+import se.uu.ub.cora.clientdata.ClientDataParent;
 import se.uu.ub.cora.clientdata.ClientDataProvider;
 import se.uu.ub.cora.clientdata.ClientDataRecord;
 import se.uu.ub.cora.clientdata.ClientDataRecordGroup;
@@ -26,7 +26,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
 	Map<String, List<String>> mapWithListOfGroupIds = new HashMap<>();
-	Map<String, ClientDataRecordGroup> metadataToStore = new HashMap<>();
+	Map<String, ClientDataRecordGroup> metadataRecordGroupToStore = new HashMap<>();
 
 	public CollectAllFieldsForAbstractRecordTypes(String apptokenUrl, String baseUrl) {
 		// TODO Auto-generated constructor stub
@@ -54,7 +54,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 			ClientDataRecordGroup addToRecordGroup = addToRecord.getDataRecordGroup();
 			resetChildReferences(addToRecordGroup);
 
-			metadataToStore.put(idToAddStuffTo, addToRecordGroup);
+			metadataRecordGroupToStore.put(idToAddStuffTo, addToRecordGroup);
 
 			ClientDataRecordGroup addToGroupWithGroup = null;
 			for (String idToAddStuffFrom : idsToAddStuffFrom) {
@@ -98,45 +98,78 @@ public class CollectAllFieldsForAbstractRecordTypes {
 		return link.getLinkedRecordId();
 	}
 
-	private ClientDataRecordGroup addToGroupWithGroup(String idToAddStuffTo,
-			String idToAddStuffFrom) {
+	private ClientDataRecordGroup addToGroupWithGroup(String toId, String fromId) {
+		ClientDataRecordGroup toRecordGroup = getToMetadataRecordGroupFromHolderOrServer(toId);
+		ClientDataGroup toChildReferences = toRecordGroup
+				.getFirstChildOfTypeAndName(ClientDataGroup.class, "childReferences");
+
+		ClientDataRecordGroup fromRecordGroup = getFromMetadataRecordGroupFromServer(fromId);
+		// ClientDataGroup definitionForUpdate = getDefinitionIdForUpdate(addFrom);
+		List<ClientDataGroup> fromChildReferences = getChildRefrencesList(fromRecordGroup);
+
+		// for (ClientDataChild fromChildReferenceChild : fromChildReferences
+		// .getAllChildrenWithNameInData("childReference")) {
+		for (ClientDataGroup fromChildReference : fromChildReferences) {
+			// ClientDataRecordLink fromRefLink = fromChildReference
+			// .getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
+			// // ClientDataRecord field = dataClient.read(fromRefLink.getLinkedRecordType(),
+			// // fromRefLink.getLinkedRecordId());
+			// // ClientDataRecordGroup fieldDataRecordGroup = field.getDataRecordGroup();
+			// ClientDataRecordGroup childDataRecordGroup = getFromMetadataRecordGroupFromServer(
+			// fromRefLink.getLinkedRecordId());
+			//
+			// ClientDataAttribute fieldType = childDataRecordGroup.getAttribute("type");
+			// if (fieldType.equals("group")) {
+			// addToGroupWithGroup(fromId, childDataRecordGroup.getId());
+			// }
+			//
+			// toChildReferences.addChild(fromChildReferences);
+			Optional<ClientDataGroup> oToChildReference = getMatchingChildReference(
+					toChildReferences, fromChildReference);
+			if (oToChildReference.isPresent()) {
+				// fix min max constraints
+
+			} else {
+				int size = toChildReferences.getChildren().size();
+				fromChildReference.setRepeatId(Integer.toString(size + 1));
+				toChildReferences.addChild(fromChildReference);
+			}
+		}
+		return toRecordGroup;
+
+	}
+
+	private Optional<ClientDataGroup> getMatchingChildReference(ClientDataGroup toChildReferences,
+			ClientDataGroup fromChildReference) {
+		// simple, if same linked id, just return it
+
+		// harder, read and see if nameInData and attributes match
+
+		return Optional.empty();
+	}
+
+	private ClientDataRecordGroup getFromMetadataRecordGroupFromServer(String idToAddStuffFrom) {
+		ClientDataRecordGroup addFrom = dataClient.read("metadata", idToAddStuffFrom)
+				.getDataRecordGroup();
+		return addFrom;
+	}
+
+	private ClientDataRecordGroup getToMetadataRecordGroupFromHolderOrServer(
+			String idToAddStuffTo) {
 		ClientDataRecordGroup addTo = null;
-		if (metadataToStore.containsKey(idToAddStuffTo)) {
-			addTo = metadataToStore.get(idToAddStuffTo);
+		if (metadataRecordGroupToStore.containsKey(idToAddStuffTo)) {
+			addTo = metadataRecordGroupToStore.get(idToAddStuffTo);
 		} else {
 			addTo = dataClient.read("metadata", idToAddStuffTo).getDataRecordGroup();
 
 		}
-
-		ClientDataGroup childReferencesAddTo = addTo
-				.getFirstChildOfTypeAndName(ClientDataGroup.class, "childReferences");
-
-		ClientDataRecordGroup addFrom = dataClient.read("recordType", idToAddStuffFrom)
-				.getDataRecordGroup();
-		ClientDataGroup definitionForUpdate = getDefinitionIdForUpdate(addFrom);
-		ClientDataGroup childReferences = getChildReferncesGroup(definitionForUpdate);
-		for (ClientDataChild childReferenceChild : childReferences
-				.getAllChildrenWithNameInData("childReference")) {
-			ClientDataGroup childReference = (ClientDataGroup) childReferenceChild;
-			ClientDataRecordLink refLink = childReference
-					.getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
-			ClientDataRecord field = dataClient.read(refLink.getLinkedRecordType(),
-					refLink.getLinkedRecordId());
-			ClientDataRecordGroup fieldDataRecordGroup = field.getDataRecordGroup();
-			ClientDataAttribute fieldType = fieldDataRecordGroup.getAttribute("type");
-			if (fieldType.equals("group")) {
-				addToGroupWithGroup(idToAddStuffFrom, fieldDataRecordGroup.getId());
-			}
-
-			childReferencesAddTo.addChild(childReferences);
-		}
 		return addTo;
-
 	}
 
-	private ClientDataGroup getChildReferncesGroup(ClientDataGroup definitionForUpdate) {
-		return definitionForUpdate.getFirstChildOfTypeAndName(ClientDataGroup.class,
-				"childReferences");
+	private List<ClientDataGroup> getChildRefrencesList(ClientDataParent definitionForUpdate) {
+		ClientDataGroup childReferencesGroup = definitionForUpdate
+				.getFirstChildOfTypeAndName(ClientDataGroup.class, "childReferences");
+		return childReferencesGroup.getAllGroupsWithNameInData("childReference");
 	}
 
 	private void collectAbstractRecordTypes() {
