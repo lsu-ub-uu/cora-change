@@ -25,7 +25,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 
 	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
-	Map<String, List<String>> abstractRecordTypes = new HashMap<>();
+	Map<String, List<String>> mapWithListOfGroupIds = new HashMap<>();
 	Map<String, ClientDataRecordGroup> metadataToStore = new HashMap<>();
 
 	public CollectAllFieldsForAbstractRecordTypes(String apptokenUrl, String baseUrl) {
@@ -39,20 +39,29 @@ public class CollectAllFieldsForAbstractRecordTypes {
 	public void collectAndStoreGroupForAbstract() {
 		collectAbstractRecordTypes();
 		collectRecordTypesRelatedToAbstractRecordTypes();
-		System.out.println(abstractRecordTypes);
+		System.out.println(mapWithListOfGroupIds);
 
 		agregateMetadataGroupPerRecordType();
 	}
 
 	private void agregateMetadataGroupPerRecordType() {
 
-		for (Entry<String, List<String>> abstractRecordType : abstractRecordTypes.entrySet()) {
-			String idToAddStuffTo = abstractRecordType.getKey();
-			List<String> idsToAddStuffFrom = abstractRecordType.getValue();
-			readDefinitionRemoveChildrenRefAndStoreInMap(idToAddStuffTo);
+		for (Entry<String, List<String>> mapWithListOfGroupId : mapWithListOfGroupIds.entrySet()) {
+			String idToAddStuffTo = mapWithListOfGroupId.getKey();
+			List<String> idsToAddStuffFrom = mapWithListOfGroupId.getValue();
+
+			ClientDataRecord addToRecord = dataClient.read("metadata", idToAddStuffTo);
+			ClientDataRecordGroup addToRecordGroup = addToRecord.getDataRecordGroup();
+			resetChildReferences(addToRecordGroup);
+
+			metadataToStore.put(idToAddStuffTo, addToRecordGroup);
 
 			ClientDataRecordGroup addToGroupWithGroup = null;
 			for (String idToAddStuffFrom : idsToAddStuffFrom) {
+
+				// ClientDataRecordGroup addFrom = dataClient.read("metadata", idToAddStuffFrom)
+				// .getDataRecordGroup();
+				// ClientDataGroup idToAddStuffFromGroup = getDefinitionIdForUpdate(addFrom);
 
 				/**
 				 * WRONG, fix tomorrow, mixed metadata and recordTypes...
@@ -76,17 +85,17 @@ public class CollectAllFieldsForAbstractRecordTypes {
 
 	}
 
-	private void readDefinitionRemoveChildrenRefAndStoreInMap(String idToAddStuffTo) {
-		ClientDataRecordGroup addTo = dataClient.read("recordType", idToAddStuffTo)
-				.getDataRecordGroup();
-		ClientDataGroup addToDataGroup = getDefinitionForUpdate(addTo);
-		addToDataGroup.removeFirstChildWithTypeAndName(ClientDataGroup.class, "childReferences");
-		ClientDataProvider.createGroupUsingNameInData("childReferences");
-		metadataToStore.put(idToAddStuffTo, addTo);
+	private void resetChildReferences(ClientDataRecordGroup addToRecordGroup) {
+		addToRecordGroup.removeFirstChildWithTypeAndName(ClientDataGroup.class, "childReferences");
+		ClientDataGroup childReferences = ClientDataProvider
+				.createGroupUsingNameInData("childReferences");
+		addToRecordGroup.addChild(childReferences);
 	}
 
-	private ClientDataGroup getDefinitionForUpdate(ClientDataRecordGroup addTo) {
-		return addTo.getFirstChildOfTypeAndName(ClientDataGroup.class, "metadataId");
+	private String getDefinitionIdForUpdate(ClientDataRecordGroup addTo) {
+		ClientDataRecordLink link = addTo.getFirstChildOfTypeAndName(ClientDataRecordLink.class,
+				"metadataId");
+		return link.getLinkedRecordId();
 	}
 
 	private ClientDataRecordGroup addToGroupWithGroup(String idToAddStuffTo,
@@ -95,22 +104,16 @@ public class CollectAllFieldsForAbstractRecordTypes {
 		if (metadataToStore.containsKey(idToAddStuffTo)) {
 			addTo = metadataToStore.get(idToAddStuffTo);
 		} else {
-			addTo = dataClient.read("recordType", idToAddStuffTo).getDataRecordGroup();
+			addTo = dataClient.read("metadata", idToAddStuffTo).getDataRecordGroup();
 
 		}
-
-		System.out.println("id:" + addTo.getId());
-
-		/**
-		 * WRONG, fix tomorrow, mixed metadata and recordTypes...
-		 */
 
 		ClientDataGroup childReferencesAddTo = addTo
 				.getFirstChildOfTypeAndName(ClientDataGroup.class, "childReferences");
 
 		ClientDataRecordGroup addFrom = dataClient.read("recordType", idToAddStuffFrom)
 				.getDataRecordGroup();
-		ClientDataGroup definitionForUpdate = getDefinitionForUpdate(addFrom);
+		ClientDataGroup definitionForUpdate = getDefinitionIdForUpdate(addFrom);
 		ClientDataGroup childReferences = getChildReferncesGroup(definitionForUpdate);
 		for (ClientDataChild childReferenceChild : childReferences
 				.getAllChildrenWithNameInData("childReference")) {
@@ -145,7 +148,12 @@ public class CollectAllFieldsForAbstractRecordTypes {
 			ClientDataRecordGroup recordTypeRecordGroup = recordTypeRecord.getDataRecordGroup();
 
 			if (isRecordTypeAbstract(recordTypeRecordGroup) && !hasParent(recordTypeRecordGroup)) {
-				abstractRecordTypes.put(recordTypeRecordGroup.getId(), new ArrayList<>());
+				String id = recordTypeRecordGroup.getId();
+				ClientDataRecordGroup addTo1 = dataClient.read("recordType", id)
+						.getDataRecordGroup();
+				String addToDataGroupId = getDefinitionIdForUpdate(addTo1);
+
+				mapWithListOfGroupIds.put(addToDataGroupId, new ArrayList<>());
 			}
 
 		}
@@ -165,9 +173,14 @@ public class CollectAllFieldsForAbstractRecordTypes {
 
 			if (isRecordImplementing(recordTypeRecordGroup)
 					&& isRelatedToAbstract(recordTypeRecordGroup)) {
-				List<String> list = abstractRecordTypes
+				List<String> list = mapWithListOfGroupIds
 						.get(getValidatesRecordType(recordTypeRecordGroup));
-				list.add(recordTypeRecordGroup.getId());
+				String id = recordTypeRecordGroup.getId();
+				ClientDataRecordGroup addTo1 = dataClient.read("recordType", id)
+						.getDataRecordGroup();
+				String addToDataGroupId = getDefinitionIdForUpdate(addTo1);
+
+				list.add(addToDataGroupId);
 			}
 		}
 	}
@@ -177,7 +190,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 	}
 
 	private boolean isRelatedToAbstract(ClientDataRecordGroup recordTypeRecordGroup) {
-		return abstractRecordTypes.containsKey(getValidatesRecordType(recordTypeRecordGroup));
+		return mapWithListOfGroupIds.containsKey(getValidatesRecordType(recordTypeRecordGroup));
 	}
 
 	private boolean isRecordTypeAbstract(ClientDataRecordGroup recordTypeRecordGroup) {
