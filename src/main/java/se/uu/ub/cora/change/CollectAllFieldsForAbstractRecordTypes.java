@@ -141,9 +141,21 @@ public class CollectAllFieldsForAbstractRecordTypes {
 
 	private Optional<ClientDataGroup> getMatchingChildReference(ClientDataGroup toChildReferences,
 			ClientDataGroup fromChildReference) {
+		ClientDataRecordLink fromLink = fromChildReference
+				.getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
+		String fromLinkedRecordId = fromLink.getLinkedRecordId();
 		// simple, if same linked id, just return it
+		for (ClientDataGroup toChildReference : toChildReferences
+				.getAllGroupsWithNameInData("childReference")) {
+			ClientDataRecordLink toLink = toChildReference
+					.getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
+			String toLinkedRecordId = toLink.getLinkedRecordId();
+			if (fromLinkedRecordId.equals(toLinkedRecordId)) {
+				return Optional.of(toChildReference);
+			}
+		}
 
-		// harder, read and see if nameInData and attributes match
+		// TODO: harder, read and see if nameInData and attributes match
 
 		return Optional.empty();
 	}
