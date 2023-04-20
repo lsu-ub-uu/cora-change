@@ -15,9 +15,6 @@ import se.uu.ub.cora.clientdata.ClientDataProvider;
 import se.uu.ub.cora.clientdata.ClientDataRecord;
 import se.uu.ub.cora.clientdata.ClientDataRecordGroup;
 import se.uu.ub.cora.clientdata.ClientDataRecordLink;
-import se.uu.ub.cora.clientdata.converter.ClientDataToJsonConverter;
-import se.uu.ub.cora.clientdata.converter.ClientDataToJsonConverterFactory;
-import se.uu.ub.cora.clientdata.converter.ClientDataToJsonConverterProvider;
 import se.uu.ub.cora.javaclient.cora.DataClient;
 import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
 
@@ -73,14 +70,14 @@ public class CollectAllFieldsForAbstractRecordTypes {
 			 * Just for write out latest addToGroupWithGroup
 			 */
 
-			ClientDataToJsonConverterFactory converterFactory = ClientDataToJsonConverterProvider
-					.createImplementingFactory();
-			ClientDataToJsonConverter converter = converterFactory
-					.factorUsingConvertible(addToGroupWithGroup);
-			String json = converter.toJson();
-
-			System.out.println(json);
-			System.out.println();
+			// ClientDataToJsonConverterFactory converterFactory = ClientDataToJsonConverterProvider
+			// .createImplementingFactory();
+			// ClientDataToJsonConverter converter = converterFactory
+			// .factorUsingConvertible(addToGroupWithGroup);
+			// String json = converter.toJson();
+			//
+			// System.out.println(json);
+			// System.out.println();
 		}
 
 	}
@@ -124,12 +121,33 @@ public class CollectAllFieldsForAbstractRecordTypes {
 			// }
 			//
 			// toChildReferences.addChild(fromChildReferences);
-			Optional<ClientDataGroup> oToChildReference = getMatchingChildReference(
+			Optional<ClientDataGroup> oToChildReference = getMatchingChildReferenceOnId(
 					toChildReferences, fromChildReference);
 			if (oToChildReference.isPresent()) {
+				ClientDataGroup toChildReference = oToChildReference.get();
+				System.out.println("Match on id");
 				// fix min max constraints
 
+				// on id, check min max etc
+				// sysout if they don't match
+				sysOutReferenceInfo(toChildReference, fromChildReference);
+
 			} else {
+				Optional<ClientDataGroup> oToChildReference2 = getMatchingChildReferenceOnNameAttrib(
+						toChildReferences, fromChildReference);
+				if (oToChildReference2.isPresent()) {
+					System.out.println("Match on name attrib");
+					ClientDataGroup toChildReference = oToChildReference.get();
+					sysOutReferenceInfo(toChildReference, fromChildReference);
+
+					// on name+attribs, check min max etc + barnen
+					// Always sysout
+					// olika fall
+					// grupp, rekursiv
+					// atomic, skriv ut regexp för manuell kontroll
+					// lista, kolla collection (möjliga val)
+				}
+				// Create a new instance of the linked metadata
 				int size = toChildReferences.getChildren().size();
 				fromChildReference.setRepeatId(Integer.toString(size + 1));
 				toChildReferences.addChild(fromChildReference);
@@ -139,8 +157,14 @@ public class CollectAllFieldsForAbstractRecordTypes {
 
 	}
 
-	private Optional<ClientDataGroup> getMatchingChildReference(ClientDataGroup toChildReferences,
+	private void sysOutReferenceInfo(ClientDataGroup toChildReference,
 			ClientDataGroup fromChildReference) {
+		System.out.println(getRecordLinkIdFromChildReference(toChildReference) + " : "
+				+ getRecordLinkIdFromChildReference(fromChildReference));
+	}
+
+	private Optional<ClientDataGroup> getMatchingChildReferenceOnId(
+			ClientDataGroup toChildReferences, ClientDataGroup fromChildReference) {
 		ClientDataRecordLink fromLink = fromChildReference
 				.getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
 		String fromLinkedRecordId = fromLink.getLinkedRecordId();
@@ -155,8 +179,18 @@ public class CollectAllFieldsForAbstractRecordTypes {
 			}
 		}
 
-		// TODO: harder, read and see if nameInData and attributes match
+		return Optional.empty();
+	}
 
+	private String getRecordLinkIdFromChildReference(ClientDataGroup fromChildReference) {
+		ClientDataRecordLink fromLink = fromChildReference
+				.getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
+		return fromLink.getLinkedRecordId();
+	}
+
+	private Optional<ClientDataGroup> getMatchingChildReferenceOnNameAttrib(
+			ClientDataGroup toChildReferences, ClientDataGroup fromChildReference) {
+		// TODO: harder, read and see if nameInData and attributes match
 		return Optional.empty();
 	}
 
