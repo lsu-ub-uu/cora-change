@@ -27,7 +27,6 @@ public class CollectAllFieldsForAbstractRecordTypes {
 	private Map<String, String> mapWithRecordTypeGroupId = new HashMap<>();
 
 	public CollectAllFieldsForAbstractRecordTypes(String apptokenUrl, String baseUrl) {
-		// TODO Auto-generated constructor stub
 		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
 				baseUrl);
 		dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
@@ -61,7 +60,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 			for (String idToAddStuffFrom : idsToAddStuffFrom) {
 				System.out.println();
 				System.out.println("Matching with: " + idToAddStuffFrom);
-				System.out.println("--------------------------------------------------");
+				System.out.println("------------------------------------------------------");
 
 				addToGroupWithGroup = addToGroupWithGroup(idToAddStuffTo, idToAddStuffFrom);
 
@@ -79,7 +78,9 @@ public class CollectAllFieldsForAbstractRecordTypes {
 			// System.out.println(json);
 			// System.out.println();
 		}
-
+		System.out.println();
+		System.out.println("======================================================");
+		System.out.println();
 	}
 
 	private void resetChildReferences(ClientDataRecordGroup addToRecordGroup) {
@@ -101,27 +102,10 @@ public class CollectAllFieldsForAbstractRecordTypes {
 				.getFirstChildOfTypeAndName(ClientDataGroup.class, "childReferences");
 
 		ClientDataRecordGroup fromRecordGroup = getFromMetadataRecordGroupFromServer(fromId);
-		// ClientDataGroup definitionForUpdate = getDefinitionIdForUpdate(addFrom);
 		List<ClientDataGroup> fromChildReferences = getChildRefrencesList(fromRecordGroup);
 
-		// for (ClientDataChild fromChildReferenceChild : fromChildReferences
-		// .getAllChildrenWithNameInData("childReference")) {
 		for (ClientDataGroup fromChildReference : fromChildReferences) {
 
-			// ClientDataRecordLink fromRefLink = fromChildReference
-			// .getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
-			// // ClientDataRecord field = dataClient.read(fromRefLink.getLinkedRecordType(),
-			// // fromRefLink.getLinkedRecordId());
-			// // ClientDataRecordGroup fieldDataRecordGroup = field.getDataRecordGroup();
-			// ClientDataRecordGroup childDataRecordGroup = getFromMetadataRecordGroupFromServer(
-			// fromRefLink.getLinkedRecordId());
-			//
-			// ClientDataAttribute fieldType = childDataRecordGroup.getAttribute("type");
-			// if (fieldType.equals("group")) {
-			// addToGroupWithGroup(fromId, childDataRecordGroup.getId());
-			// }
-			//
-			// toChildReferences.addChild(fromChildReferences);
 			Optional<ClientDataGroup> oToChildReference = getMatchingChildReferenceOnId(
 					toChildReferences, fromChildReference);
 			if (oToChildReference.isPresent()) {
@@ -140,6 +124,18 @@ public class CollectAllFieldsForAbstractRecordTypes {
 					System.out.print("Match on name attrib: ");
 					ClientDataGroup toChildReference = oToChildReference2.get();
 					sysOutReferenceInfo(toChildReference, fromChildReference);
+
+					String fromLinkedRecordId = getRecordLinkIdFromChildReference(
+							fromChildReference);
+					ClientDataRecordGroup fromFieldRecordGroup = getFromMetadataRecordGroupFromServer(
+							fromLinkedRecordId);
+
+					if (fromFieldRecordGroup.getAttribute("type").getValue().equals("group")) {
+						System.out.println("<RECURSIVE>");
+						addToGroupWithGroup(getRecordLinkIdFromChildReference(toChildReference),
+								fromLinkedRecordId);
+						System.out.println("</RECURSIVE>");
+					}
 
 					// on name+attribs, check min max etc + barnen
 					// Always sysout
@@ -219,60 +215,46 @@ public class CollectAllFieldsForAbstractRecordTypes {
 
 	private boolean sameAttributes(ClientDataRecordGroup toFieldRecordGroup,
 			ClientDataRecordGroup fromFieldRecordGroup) {
-		boolean toHasAttributes = toFieldRecordGroup
-				.containsChildOfTypeAndName(ClientDataRecordLink.class, "ref");
-		boolean fromHasAttributes = fromFieldRecordGroup
-				.containsChildOfTypeAndName(ClientDataRecordLink.class, "ref");
 
-		if (!toHasAttributes && !fromHasAttributes) {
-			return true;
-		}
-		if (toHasAttributes != fromHasAttributes) {
-			return false;
-		}
-
-		ClientDataGroup fromAttributesReferences = fromFieldRecordGroup
-				.getFirstGroupWithNameInData("attributeReferences");
-		ClientDataGroup toAttributesReferences = toFieldRecordGroup
-				.getFirstGroupWithNameInData("attributeReferences");
-
-		getAllAttributes(fromFieldRecordGroup);
-		getAllAttributes(toFieldRecordGroup);
-
-		boolean a = getAllAttributes(fromFieldRecordGroup)
-				.containsAll(getAllAttributes(toFieldRecordGroup))
-				&& getAllAttributes(toFieldRecordGroup)
-						.containsAll(getAllAttributes(fromFieldRecordGroup));
-
-		// return fromAttributesReferences.getChildrenOfTypeAndName(ClientDataRecordLink.class,
-		// "ref")
-		// .size() == toAttributesReferences
-		// .getChildrenOfTypeAndName(ClientDataRecordLink.class, "ref").size();
-		return a;
-
+		return compareFinalValues(toFieldRecordGroup, fromFieldRecordGroup);
 	}
 
-	private List<List<String>> getAllAttributes(ClientDataRecordGroup dataRecordGroup) {
-		ClientDataGroup attributeReferences = dataRecordGroup
-				.getFirstChildOfTypeAndName(ClientDataGroup.class, "attributeReferences");
-		List<ClientDataRecordLink> refs = attributeReferences
-				.getChildrenOfTypeAndName(ClientDataRecordLink.class, "ref");
+	private boolean compareFinalValues(ClientDataRecordGroup toMetadataGroup,
+			ClientDataRecordGroup fromMetadataGroup) {
 
-		List<List<String>> attributeReferencesList = new ArrayList<>();
-		for (ClientDataRecordLink ref : refs) {
-			ClientDataRecordGroup itemCollection = getFromMetadataRecordGroupFromServer(
-					ref.getLinkedRecordId());
-			List<ClientDataRecordLink> itemRefs = itemCollection
-					.getFirstChildOfTypeAndName(ClientDataGroup.class, "collectionItemReferences")
+		List<Attribute> toAttributesFinalValues = getFinalValue(toMetadataGroup);
+		List<Attribute> fromAttributesFinalValues = getFinalValue(fromMetadataGroup);
+		// Write if both recordGroups ha no attributeReferences
+		if (!toMetadataGroup.containsChildWithNameInData("attributeReferences")
+				&& !fromMetadataGroup.containsChildWithNameInData("attributeReferences")) {
+			System.out.println("(!) No attributeReferences " + toMetadataGroup.getId() + " "
+					+ fromMetadataGroup.getId());
+		}
+		return toAttributesFinalValues.containsAll(fromAttributesFinalValues)
+				&& fromAttributesFinalValues.containsAll(toAttributesFinalValues);
+	}
+
+	private List<Attribute> getFinalValue(ClientDataRecordGroup metadataGroup) {
+		List<Attribute> attributeReferencesList = new ArrayList<>();
+		if (metadataGroup.containsChildWithNameInData("attributeReferences")) {
+			ClientDataGroup attributeReferences = metadataGroup
+					.getFirstGroupWithNameInData("attributeReferences");
+			List<ClientDataRecordLink> refs = attributeReferences
 					.getChildrenOfTypeAndName(ClientDataRecordLink.class, "ref");
-			List<String> itemCollectionList = new ArrayList<>();
-			for (ClientDataRecordLink itemRef : itemRefs) {
-				ClientDataRecordGroup collectionItem = getFromMetadataRecordGroupFromServer(
-						itemRef.getLinkedRecordId());
-				itemCollectionList
-						.add(collectionItem.getFirstAtomicValueWithNameInData("nameInData"));
+
+			for (ClientDataRecordLink ref : refs) {
+				ClientDataRecordGroup metadataCollectionVariable = getFromMetadataRecordGroupFromServer(
+						ref.getLinkedRecordId());
+
+				String attKey = metadataCollectionVariable
+						.getFirstAtomicValueWithNameInData("nameInData");
+				String attlValue = metadataCollectionVariable
+						.getFirstAtomicValueWithNameInData("finalValue");
+
+				Attribute attribute = new Attribute(attKey, attlValue);
+				attributeReferencesList.add(attribute);
+
 			}
-			attributeReferencesList.add(itemCollectionList);
 		}
 		return attributeReferencesList;
 	}
@@ -373,6 +355,9 @@ public class CollectAllFieldsForAbstractRecordTypes {
 		ClientDataRecord parentRecord = dataClient.read(parentLink.getLinkedRecordType(),
 				parentLink.getLinkedRecordId());
 		return parentRecord.getDataRecordGroup();
+	}
+
+	private record Attribute(String key, String value) {
 	}
 
 }
