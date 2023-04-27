@@ -144,7 +144,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 					}
 					if (fromFieldRecordGroup.getAttribute("type").getValue()
 							.equals("numberVariable")) {
-						System.out.println("Comparing number variables");
+						System.out.println("Comparing number variables: ");
 
 						String toLinkedRecordId = getRecordLinkIdFromChildReference("ref",
 								toChildReference);
@@ -162,7 +162,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 						checkNameInDataAndWriteOut("numberOfDecimals", toGroup, fromGroup);
 					}
 					if (fromFieldRecordGroup.getAttribute("type").getValue().equals("recordLink")) {
-						System.out.print("Comparing recordLink variables");
+						System.out.print("Comparing recordLink variables: ");
 
 						String toLinkedRecordId = getRecordLinkIdFromChildReference("ref",
 								toChildReference);
@@ -201,7 +201,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 					}
 					if (fromFieldRecordGroup.getAttribute("type").getValue()
 							.equals("collectionVariable")) {
-						System.out.println("Comparing list variables");
+						System.out.println("Comparing list variables: ");
 
 						boolean compareCollectionVariableValues = compareCollectionVariableValues(
 								toChildReference, fromChildReference);
