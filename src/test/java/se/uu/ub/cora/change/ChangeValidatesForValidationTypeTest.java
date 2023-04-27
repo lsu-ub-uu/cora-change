@@ -32,6 +32,24 @@ public class ChangeValidatesForValidationTypeTest {
 	}
 
 	@Test(enabled = false)
+	public void runChangeValidationTypesToAbstractLevel() throws Exception {
+
+		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
+				SYSTEMONE_LOCAL_APPTOKEN_URL, SYSTEMONE_LOCAL_BASE_URL);
+
+		updater.changeValidationTypesToAbstractLevel("SystemOne");
+	}
+
+	@Test(enabled = false)
+	public void runChangeAbstractRecordTypesToImplementing() throws Exception {
+
+		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
+				SYSTEMONE_LOCAL_APPTOKEN_URL, SYSTEMONE_LOCAL_BASE_URL);
+
+		updater.changeAbstractRecordTypesToImplementing();
+	}
+
+	@Test(enabled = false)
 	public void runChangeValidationTypesSystemOneDev() throws Exception {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
