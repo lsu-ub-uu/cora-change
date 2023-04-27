@@ -51,7 +51,7 @@ public class ImplementingToParentTest {
 		writeToDisk(ALVIN_LOCAL_APPTOKEN_URL, ALVIN_LOCAL_BASE_URL, "Alvin");
 	}
 
-	@Test(enabled = fasle)
+	@Test(enabled = false)
 	public void storeImplementingToParentForDiVA() throws Exception {
 		writeToDisk(DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL, "DiVA");
 	}
