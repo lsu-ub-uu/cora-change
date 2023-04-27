@@ -195,7 +195,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 									"linkedRecordType").getLinkedRecordId();
 						}
 						if (!to.equals(from)) {
-							System.out.print("(" + "linkedRecordType" + " not matching. to: " + to
+							System.err.print("(" + "linkedRecordType" + " not matching. to: " + to
 									+ " from:" + from + ") ");
 						}
 					}
@@ -222,7 +222,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 					// lista, kolla collection (möjliga val)
 				} else {
 					// Create a new instance of the linked metadata
-					System.out.println("Adding: "
+					System.err.println("Adding: "
 							+ getRecordLinkIdFromChildReference("ref", fromChildReference));
 					int size = toChildReferences.getChildren().size();
 					fromChildReference.setRepeatId(Integer.toString(size + 1));
@@ -245,7 +245,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 			to = toGroup.getFirstAtomicValueWithNameInData(nameInData);
 		}
 		if (!to.equals(from)) {
-			System.out
+			System.err
 					.print("(" + nameInData + " not matching. to: " + to + " from:" + from + ") ");
 		}
 	}
@@ -269,7 +269,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 		int fromMin = valueOfRepeat(
 				fromChildReference.getFirstAtomicValueWithNameInData("repeatMin"));
 		if (toMin > fromMin) {
-			System.out.print(
+			System.err.print(
 					"(Cardinality Min not matching to: " + toMin + " > from: " + fromMin + ") ");
 		}
 
@@ -277,7 +277,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 		int fromMax = valueOfRepeat(
 				fromChildReference.getFirstAtomicValueWithNameInData("repeatMax"));
 		if (toMax < fromMax) {
-			System.out.print(
+			System.err.print(
 					"(Cardinality Max not matching to: " + toMax + " < from: " + fromMax + " ) ");
 		}
 
@@ -300,7 +300,7 @@ public class CollectAllFieldsForAbstractRecordTypes {
 
 		if (!(toCollectTermLinkIds.containsAll(fromCollectTermLinkIds)
 				&& fromCollectTermLinkIds.containsAll(toCollectTermLinkIds))) {
-			System.out.print("(" + type + " not matching. to: " + toCollectTermLinkIds + " from:"
+			System.err.print("(" + type + " not matching. to: " + toCollectTermLinkIds + " from:"
 					+ fromCollectTermLinkIds + ") ");
 		}
 	}
@@ -574,8 +574,9 @@ public class CollectAllFieldsForAbstractRecordTypes {
 			ClientDataRecordGroup recordTypeRecordGroup = recordTypeRecord.getDataRecordGroup();
 
 			String validatesRecordType = getValidatesRecordType(recordTypeRecordGroup);
-			if (isRecordImplementing(recordTypeRecordGroup)
-					&& isRelatedToAbstract(validatesRecordType)) {
+			// if (isRecordImplementing(recordTypeRecordGroup)
+			// && isRelatedToAbstract(validatesRecordType)) {
+			if (isRelatedToAbstract(validatesRecordType)) {
 
 				String abstractGroupId = mapWithRecordTypeGroupId.get(validatesRecordType);
 				List<String> list = mapWithListOfGroupIds.get(abstractGroupId);

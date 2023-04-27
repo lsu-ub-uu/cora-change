@@ -10,9 +10,6 @@ import java.util.Optional;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.javaclient.cora.DataClient;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
-
 public class ImplementingToParentTest {
 	private static final String SYSTEMONE_LOCAL_APPTOKEN_URL = "http://localhost:8180/apptokenverifier/rest/";
 	private static final String SYSTEMONE_LOCAL_BASE_URL = "http://localhost:8080/systemone/rest/";
@@ -54,23 +51,23 @@ public class ImplementingToParentTest {
 		writeToDisk(ALVIN_LOCAL_APPTOKEN_URL, ALVIN_LOCAL_BASE_URL, "Alvin");
 	}
 
-	@Test(enabled = false)
+	@Test(enabled = fasle)
 	public void storeImplementingToParentForDiVA() throws Exception {
 		writeToDisk(DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL, "DiVA");
 	}
 
 	private void writeToDisk(String appTokenUrl, String baseUrl, String system) {
-		DataClientFactoryImp dataClientFactory = DataClientFactoryImp
-				.usingAppTokenVerifierUrlAndBaseUrl(appTokenUrl, baseUrl);
-		DataClient dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
-				"63e6bd34-02a1-4c82-8001-158c104cae0e");
-
-		RecordTypeUtil recordTypeUtil = RecordTypeUtilImp.usingDataClient(dataClient);
-		Map<String, String> mapToStore = recordTypeUtil.getMapOfImplementingToParent();
-
+		// DataClientFactoryImp dataClientFactory = DataClientFactoryImp
+		// .usingAppTokenVerifierUrlAndBaseUrl(appTokenUrl, baseUrl);
+		// DataClient dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
+		// "63e6bd34-02a1-4c82-8001-158c104cae0e");
+		//
+		// RecordTypeUtil recordTypeUtil = RecordTypeUtilImp.usingDataClient(dataClient);
+		// Map<String, String> mapToStore = recordTypeUtil.getMapOfImplementingToParent();
+		//
 		String filePath = System.getProperty("user.home") + "/workspace/cora-change/impToParent"
 				+ system + ".ser";
-		storeMap(mapToStore, filePath);
+		// storeMap(mapToStore, filePath);
 
 		Optional<Map<String, String>> readMapFromFile = readMapFromFile(filePath);
 		System.out.println(readMapFromFile);

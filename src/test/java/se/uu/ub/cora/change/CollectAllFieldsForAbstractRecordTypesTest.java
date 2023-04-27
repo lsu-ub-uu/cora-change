@@ -22,11 +22,29 @@ public class CollectAllFieldsForAbstractRecordTypesTest {
 	private static final String DIVA_DEV_APPTOKEN_URL = "http://130.238.171.238:38182/apptokenverifier/rest/";
 	private static final String DIVA_DEV_BASE_URL = "http://130.238.171.238:38082/diva/rest/";
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void runCollectAllFieldsForAbstractRecordTypes() throws Exception {
 
 		CollectAllFieldsForAbstractRecordTypes updater = new CollectAllFieldsForAbstractRecordTypes(
 				SYSTEMONE_LOCAL_APPTOKEN_URL, SYSTEMONE_LOCAL_BASE_URL);
+
+		updater.collectAndStoreGroupForAbstract();
+	}
+
+	@Test(enabled = false)
+	public void runCollectAllFieldsForAbstractRecordTypesDiVA() throws Exception {
+
+		CollectAllFieldsForAbstractRecordTypes updater = new CollectAllFieldsForAbstractRecordTypes(
+				DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL);
+
+		updater.collectAndStoreGroupForAbstract();
+	}
+
+	@Test(enabled = false)
+	public void runCollectAllFieldsForAbstractRecordTypesAlvin() throws Exception {
+
+		CollectAllFieldsForAbstractRecordTypes updater = new CollectAllFieldsForAbstractRecordTypes(
+				ALVIN_LOCAL_APPTOKEN_URL, ALVIN_LOCAL_BASE_URL);
 
 		updater.collectAndStoreGroupForAbstract();
 	}
