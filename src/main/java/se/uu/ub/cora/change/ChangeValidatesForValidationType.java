@@ -44,15 +44,6 @@ public class ChangeValidatesForValidationType {
 
 			ClientDataRecordGroup validationTypeRecordGroup = validationTypeRecord
 					.getDataRecordGroup();
-			// if (isImplementingType(validationTypeRecordGroup)) {
-			// System.out.println("Convert: " + validationTypeRecordGroup.getId());
-			//
-			// createValidationType(validationTypeRecordGroup);
-			//
-			// } else {
-			// System.out.println("Skip: " + validationTypeRecordGroup.getId() + " is abstract.");
-			// }
-			// System.out.println();
 			String id = validationTypeRecordGroup.getId();
 			validationTypeRecordGroup.removeChildrenWithTypeAndName(ClientDataRecordLink.class,
 					"validatesRecordType");
@@ -101,10 +92,8 @@ public class ChangeValidatesForValidationType {
 				validationTypeRecordGroup.addChild(newLink);
 				dataClient.update("validationType", validationTypeRecordGroup.getId(),
 						validationTypeRecordGroup);
-				System.out.println("""
-						-----
-						UpdatedvalidatesRecordTypeId: %s --> %s
-						""".formatted(currentValidatesId, id));
+				systemOutPrintlnBoldGreen("UpdatedvalidatesRecordTypeId: %s --> %s"
+						.formatted(currentValidatesId, id));
 			} else {
 				System.out.println("Skipping same in map: " + currentValidatesId);
 			}
@@ -112,6 +101,10 @@ public class ChangeValidatesForValidationType {
 			System.err.println(
 					"Current validatesRecordTypeId not found in map: " + currentValidatesId);
 		}
+	}
+
+	private void systemOutPrintlnBoldGreen(String string) {
+		System.out.println("\033[0;1m\u001B[32m" + string + "\u001B[0m");
 	}
 
 	private Optional<Map<String, String>> readFromDisk(String appTokenUrl, String baseUrl,
@@ -151,10 +144,12 @@ public class ChangeValidatesForValidationType {
 
 				recordTypeRecordGroup.addChild(newAtomic);
 
+				// if (!"metadata".equals(recordTypeRecordGroup.getId())) {
+				systemOutPrintlnBoldGreen(
+						"changing to implementing for: " + recordTypeRecordGroup.getId());
 				dataClient.update("recordType", recordTypeRecordGroup.getId(),
 						recordTypeRecordGroup);
-				System.out
-						.println("changing to implementing for: " + recordTypeRecordGroup.getId());
+				// }
 			}
 		}
 
