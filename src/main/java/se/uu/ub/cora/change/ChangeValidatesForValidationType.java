@@ -152,7 +152,5 @@ public class ChangeValidatesForValidationType {
 				// }
 			}
 		}
-
 	}
-
 }
