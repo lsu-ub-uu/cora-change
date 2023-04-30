@@ -1,0 +1,369 @@
+
+1. Export current state (commit to git)
+2. Run script to change validationTypes to implementing level (save console output, needed later)
+3. Export current state (commit to git)
+4. Pick out allchanges from console output and create sql changes 
+5. run sql scripts to update all abstract types to implementing
+6. Export current state (commit to git)
+7. Pick out allchanges from console output and create regexp changes 
+
+
+--select * from link where fromtype in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+
+ALTER TABLE link ALTER CONSTRAINT fk_fromrecord DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE storageterm ALTER CONSTRAINT fk_record DEFERRABLE INITIALLY IMMEDIATE;
+
+-- coraText, textSystemOne --> text
+-- problems that needed to be fixed:
+select * from record
+	where type in ('coraText', 'textSystemOne')
+	and id = 'idTextVarDefText';
+select * from link
+	where (fromtype = 'coraText' and fromid = 'idTextVarDefText')
+	or (totype = 'coraText' and toid = 'idTextVarDefText');
+
+delete from link
+	where (fromtype = 'coraText' and fromid = 'idTextVarDefText')
+	or (totype = 'coraText' and toid = 'idTextVarDefText');
+delete from record 
+	where type = 'coraText'
+	and id = 'idTextVarDefText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'idTextVarTextVarDefText')
+	or (totype = 'coraText' and toid = 'idTextVarTextVarDefText');
+delete from record 
+	where type = 'coraText'
+	and id = 'idTextVarTextVarDefText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'idTextVarTextVarText')
+	or (totype = 'coraText' and toid = 'idTextVarTextVarText');
+delete from record 
+	where type = 'coraText'
+	and id = 'idTextVarTextVarText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'systemOneUserText')
+	or (totype = 'coraText' and toid = 'systemOneUserText');
+delete from record 
+	where type = 'coraText'
+	and id = 'systemOneUserText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'systemOneUserDefText')
+	or (totype = 'coraText' and toid = 'systemOneUserDefText');
+delete from record 
+	where type = 'coraText'
+	and id = 'systemOneUserDefText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'userDefText')
+	or (totype = 'coraText' and toid = 'userDefText');
+delete from record 
+	where type = 'coraText'
+	and id = 'userDefText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'userText')
+	or (totype = 'coraText' and toid = 'userText');
+delete from record 
+	where type = 'coraText'
+	and id = 'userText';
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'bookTitleTextVarText')
+	or (totype = 'textSystemOne' and toid = 'bookTitleTextVarText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'bookTitleTextVarText';	
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'firstNameTextVarText')
+	or (totype = 'textSystemOne' and toid = 'firstNameTextVarText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'firstNameTextVarText';	
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'lastNameTextVarText')
+	or (totype = 'textSystemOne' and toid = 'lastNameTextVarText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'lastNameTextVarText';	
+delete from link
+	where (fromtype = 'coraText' and fromid = 'releatedPersonsGroupText')
+	or (totype = 'coraText' and toid = 'releatedPersonsGroupText');
+delete from record 
+	where type = 'coraText'
+	and id = 'releatedPersonsGroupText';
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'firstNameTextVarDefText')
+	or (totype = 'textSystemOne' and toid = 'firstNameTextVarDefText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'firstNameTextVarDefText';
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'lastNameTextVarDefText')
+	or (totype = 'textSystemOne' and toid = 'lastNameTextVarDefText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'lastNameTextVarDefText';
+	
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'text'  
+	where type in ('coraText', 'textSystemOne');
+update storageterm set recordtype = 'text'  
+	where recordtype in ('coraText', 'textSystemOne');
+update link set totype = 'text'  
+	where totype in ('coraText', 'textSystemOne');
+update link set fromtype = 'text'  
+	where fromtype in ('coraText', 'textSystemOne');
+COMMIT;
+
+
+-- metadataGroup, metadataItemCollection, genericCollectionItem, metadataNumberVariable, metadataResourceLink, metadataRecordLink, metadataTextVariable, metadataCollectionVariable --> metadata
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'metadata'  
+	where type in ('metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+update storageterm set recordtype = 'metadata'  
+	where recordtype in ('metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+update link set totype = 'metadata'  
+	where totype in ('metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+update link set fromtype = 'metadata'  
+	where fromtype in ('metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+COMMIT;
+
+-- presentationVar, presentationSurroundingContainer, presentationNumberVar, presentationGroup, presentationRecordLink, presentationCollectionVar, presentationResourceLink, presentationRepeatingContainer --> presentation
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'presentation'  
+	where type in ('presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+update storageterm set recordtype = 'presentation'  
+	where recordtype in ('presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+update link set totype = 'presentation'  
+	where totype in ('presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+update link set fromtype = 'presentation'  
+	where fromtype in ('presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+COMMIT;
+
+-- collectPermissionTerm, collectStorageTerm, collectIndexTerm --> collectTerm
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'collectTerm'  
+	where type in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm');
+update storageterm set recordtype = 'collectTerm'  
+	where recordtype in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm');
+update link set totype = 'collectTerm'  
+	where totype in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm');
+update link set fromtype = 'collectTerm'  
+	where fromtype in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm');
+COMMIT;
+
+-- genericBinary, image, sound --> binary
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'binary'  
+	where type in ('genericBinary', 'image', 'sound');
+update storageterm set recordtype = 'binary'  
+	where recordtype in ('genericBinary', 'image', 'sound');
+update link set totype = 'binary'  
+	where totype in ('genericBinary', 'image', 'sound');
+update link set fromtype = 'binary'  
+	where fromtype in ('genericBinary', 'image', 'sound');
+COMMIT;
+
+-- coraUser, systemOneUser --> user
+-- problems that needed to be fixed:
+select * from link
+	where totype in ('user','coraUser', 'systemOneUser')
+	and fromid = 'linkedTextIndexTerm';
+
+delete from link
+	where totype in ('user')
+	and fromid = 'linkedTextIndexTerm';
+delete from link
+	where totype in ('user')
+	and fromid = 'recordIdCollectIndexTerm';
+delete from link
+	where totype in ('user')
+	and fromid = 'autocompleteItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'blockChildStyleItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'compactChildStyleItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'defaultNameItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'familyNameItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'finalItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'indexTypeNumberItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'indexTypeStringItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'indexTypeTextItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'mapItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'metadataItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'multiQueryItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'permissionItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'idtemCollectionTextVarDefText';
+delete from link
+	where totype in ('user')
+	and fromid = 'recordRelationItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'textInCollectionItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'yesItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'collectIndexTermTypeCollectionVar';
+delete from link
+	where totype in ('user')
+	and fromid = 'collectStorageTermTypeCollectionVar';
+delete from link
+	where totype in ('user')
+	and fromid = 'collectTermTypeCollectionVar';
+delete from link
+	where totype in ('user')
+	and fromid = 'excludePGroupCreationCollectionVar';
+delete from link
+	where totype in ('user')
+	and fromid = 'groupOfRecordTypeCollectionVar';
+
+select l2.* from link l2
+	join link l on l.fromid = l2.fromid and l.toid = l2.toid 
+	where l.totype in ('user','coraUser')
+	and l2.totype = 'systemOneUser';
+	and l.fromid = 'languageCollectionVar';
+
+select l2.* into templink from link l2
+	join link l on l.fromid = l2.fromid and l.toid = l2.toid 
+	where l.totype in ('user','coraUser')
+	and l2.totype = 'systemOneUser';
+
+select * from templink;
+
+delete  from link l
+	using templink t 
+where  
+	l.fromtype = t.fromtype 
+	and l.fromid = t.fromid
+	and l.totype = t.totype
+	and l.toid = t.toid;
+
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'user'  
+	where type in ('coraUser', 'systemOneUser');
+update storageterm set recordtype = 'user'  
+	where recordtype in ('coraUser', 'systemOneUser');
+update link set totype = 'user'  
+	where totype in ('coraUser', 'systemOneUser');
+update link set fromtype = 'user'  
+	where fromtype in ('coraUser', 'systemOneUser');
+COMMIT;
+
+-- loginToken, loginWebRedirect, loginLDAP --> login
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'login'  
+	where type in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+update storageterm set recordtype = 'login'  
+	where recordtype in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+update link set totype = 'login'  
+	where totype in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+update link set fromtype = 'login'  
+	where fromtype in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+COMMIT;
+
+-- guiElementLink --> guiElement
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'guiElement'  
+	where type in ('guiElementLink');
+update storageterm set recordtype = 'guiElement'  
+	where recordtype in ('guiElementLink');
+update link set totype = 'guiElement'  
+	where totype in ('guiElementLink');
+update link set fromtype = 'guiElement'  
+	where fromtype in ('guiElementLink');
+COMMIT;
+
+
+
+\{"name": "linkedRecordType", "value": ("system"|"user")\}
+\{"name": "linkedRecordType", "value": "####"\}
+
+-- result of change to abstract level for Cora + SystemOne
+Optional[{presentationVar=presentation, collectPermissionTerm=collectTerm, metadata=metadata, presentationSurroundingContainer=presentation, coraText=text, presentationNumberVar=presentation, sound=binary, validationType=validationType, guiElement=guiElement, loginUnit=loginUnit, systemOneUser=user, collectStorageTerm=collectTerm, presentation=presentation, loginLDAP=login, metadataRecordLink=metadata, presentationCollectionVar=presentation, searchTerm=searchTerm, systemSecret=systemSecret, text=text, workOrder=workOrder, image=binary, permissionRole=permissionRole, textSystemOne=text, appToken=appToken, loginToken=login, permissionRule=permissionRule, system=system, metadataTextVariable=metadata, binary=binary, permissionUnit=permissionUnit, validationOrder=validationOrder, genericBinary=binary, collectTerm=collectTerm, indexBatchJob=indexBatchJob, metadataGroup=metadata, presentationRecordLink=presentation, login=login, demo=demo, genericCollectionItem=metadata, metadataNumberVariable=metadata, metadataResourceLink=metadata, example=example, guiElementLink=guiElement, loginWebRedirect=login, search=search, presentationResourceLink=presentation, collectIndexTerm=collectTerm, recordType=recordType, coraUser=user, metadataCollectionItem=metadata, presentationRepeatingContainer=presentation, metadataCollectionVariable=metadata, presentationGroup=presentation, user=user, metadataItemCollection=metadata}]
+
+UpdatedvalidatesRecordTypeId: coraText --> text
+UpdatedvalidatesRecordTypeId: textSystemOne --> text
+
+
+UpdatedvalidatesRecordTypeId: metadataGroup --> metadata
+UpdatedvalidatesRecordTypeId: metadataItemCollection --> metadata
+UpdatedvalidatesRecordTypeId: genericCollectionItem --> metadata
+UpdatedvalidatesRecordTypeId: metadataNumberVariable --> metadata
+UpdatedvalidatesRecordTypeId: metadataResourceLink --> metadata
+UpdatedvalidatesRecordTypeId: metadataRecordLink --> metadata
+UpdatedvalidatesRecordTypeId: metadataTextVariable --> metadata
+UpdatedvalidatesRecordTypeId: metadataCollectionVariable --> metadata
+
+UpdatedvalidatesRecordTypeId: presentationVar --> presentation
+UpdatedvalidatesRecordTypeId: presentationSurroundingContainer --> presentation
+UpdatedvalidatesRecordTypeId: presentationNumberVar --> presentation
+UpdatedvalidatesRecordTypeId: presentationGroup --> presentation
+UpdatedvalidatesRecordTypeId: presentationRecordLink --> presentation
+UpdatedvalidatesRecordTypeId: presentationCollectionVar --> presentation
+UpdatedvalidatesRecordTypeId: presentationResourceLink --> presentation
+UpdatedvalidatesRecordTypeId: presentationRepeatingContainer --> presentation
+
+UpdatedvalidatesRecordTypeId: collectPermissionTerm --> collectTerm
+UpdatedvalidatesRecordTypeId: collectStorageTerm --> collectTerm
+UpdatedvalidatesRecordTypeId: collectIndexTerm --> collectTerm
+
+UpdatedvalidatesRecordTypeId: genericBinary --> binary
+UpdatedvalidatesRecordTypeId: image --> binary
+UpdatedvalidatesRecordTypeId: sound --> binary
+
+UpdatedvalidatesRecordTypeId: coraUser --> user
+UpdatedvalidatesRecordTypeId: systemOneUser --> user
+
+UpdatedvalidatesRecordTypeId: loginToken --> login
+UpdatedvalidatesRecordTypeId: loginWebRedirect --> login
+UpdatedvalidatesRecordTypeId: loginLDAP --> login
+
+UpdatedvalidatesRecordTypeId: guiElementLink --> guiElement
+
+coraText, textSystemOne --> text
+metadataGroup, metadataItemCollection, genericCollectionItem, metadataNumberVariable, metadataResourceLink, metadataRecordLink, metadataTextVariable, metadataCollectionVariable --> metadata
+
+presentationVar, presentationSurroundingContainer, presentationNumberVar, presentationGroup, presentationRecordLink, presentationCollectionVar, presentationResourceLink, presentationRepeatingContainer --> presentation
+
+collectPermissionTerm, collectStorageTerm, collectIndexTerm --> collectTerm
+
+genericBinary, image, sound --> binary
+
+coraUser, systemOneUser --> user
+
+loginToken, loginWebRedirect, loginLDAP --> login
+
+guiElementLink --> guiElement
+
+
