@@ -3,9 +3,69 @@
 2. Run script to change validationTypes to implementing level (save console output, needed later)
 3. Export current state (commit to git)
 4. Pick out allchanges from console output and create sql changes 
-5. run sql scripts to update all abstract types to implementing
-6. Export current state (commit to git)
-7. Pick out allchanges from console output and create regexp changes 
+5. Alter table constraints to be possible to turn off in transaction
+6. run sql scripts to update all abstract types to implementing
+7. Export current state (commit to git)
+8. Pick out allchanges from console output and create regexp changes 
+9. Run regexp changes on all metadata and fitnesse files
+
+-- result of change to abstract level for Cora + SystemOne
+Optional[{presentationVar=presentation, collectPermissionTerm=collectTerm, metadata=metadata, presentationSurroundingContainer=presentation, coraText=text, presentationNumberVar=presentation, sound=binary, validationType=validationType, guiElement=guiElement, loginUnit=loginUnit, systemOneUser=user, collectStorageTerm=collectTerm, presentation=presentation, loginLDAP=login, metadataRecordLink=metadata, presentationCollectionVar=presentation, searchTerm=searchTerm, systemSecret=systemSecret, text=text, workOrder=workOrder, image=binary, permissionRole=permissionRole, textSystemOne=text, appToken=appToken, loginToken=login, permissionRule=permissionRule, system=system, metadataTextVariable=metadata, binary=binary, permissionUnit=permissionUnit, validationOrder=validationOrder, genericBinary=binary, collectTerm=collectTerm, indexBatchJob=indexBatchJob, metadataGroup=metadata, presentationRecordLink=presentation, login=login, demo=demo, genericCollectionItem=metadata, metadataNumberVariable=metadata, metadataResourceLink=metadata, example=example, guiElementLink=guiElement, loginWebRedirect=login, search=search, presentationResourceLink=presentation, collectIndexTerm=collectTerm, recordType=recordType, coraUser=user, metadataCollectionItem=metadata, presentationRepeatingContainer=presentation, metadataCollectionVariable=metadata, presentationGroup=presentation, user=user, metadataItemCollection=metadata}]
+
+UpdatedvalidatesRecordTypeId: coraText --> text
+UpdatedvalidatesRecordTypeId: textSystemOne --> text
+
+
+UpdatedvalidatesRecordTypeId: metadataGroup --> metadata
+UpdatedvalidatesRecordTypeId: metadataItemCollection --> metadata
+UpdatedvalidatesRecordTypeId: genericCollectionItem --> metadata
+UpdatedvalidatesRecordTypeId: metadataNumberVariable --> metadata
+UpdatedvalidatesRecordTypeId: metadataResourceLink --> metadata
+UpdatedvalidatesRecordTypeId: metadataRecordLink --> metadata
+UpdatedvalidatesRecordTypeId: metadataTextVariable --> metadata
+UpdatedvalidatesRecordTypeId: metadataCollectionVariable --> metadata
+
+UpdatedvalidatesRecordTypeId: presentationVar --> presentation
+UpdatedvalidatesRecordTypeId: presentationSurroundingContainer --> presentation
+UpdatedvalidatesRecordTypeId: presentationNumberVar --> presentation
+UpdatedvalidatesRecordTypeId: presentationGroup --> presentation
+UpdatedvalidatesRecordTypeId: presentationRecordLink --> presentation
+UpdatedvalidatesRecordTypeId: presentationCollectionVar --> presentation
+UpdatedvalidatesRecordTypeId: presentationResourceLink --> presentation
+UpdatedvalidatesRecordTypeId: presentationRepeatingContainer --> presentation
+
+UpdatedvalidatesRecordTypeId: collectPermissionTerm --> collectTerm
+UpdatedvalidatesRecordTypeId: collectStorageTerm --> collectTerm
+UpdatedvalidatesRecordTypeId: collectIndexTerm --> collectTerm
+
+UpdatedvalidatesRecordTypeId: genericBinary --> binary
+UpdatedvalidatesRecordTypeId: image --> binary
+UpdatedvalidatesRecordTypeId: sound --> binary
+
+UpdatedvalidatesRecordTypeId: coraUser --> user
+UpdatedvalidatesRecordTypeId: systemOneUser --> user
+
+UpdatedvalidatesRecordTypeId: loginToken --> login
+UpdatedvalidatesRecordTypeId: loginWebRedirect --> login
+UpdatedvalidatesRecordTypeId: loginLDAP --> login
+
+UpdatedvalidatesRecordTypeId: guiElementLink --> guiElement
+
+coraText, textSystemOne --> text
+metadataGroup, metadataItemCollection, genericCollectionItem, metadataNumberVariable, metadataResourceLink, metadataRecordLink, metadataTextVariable, metadataCollectionVariable --> metadata
+
+presentationVar, presentationSurroundingContainer, presentationNumberVar, presentationGroup, presentationRecordLink, presentationCollectionVar, presentationResourceLink, presentationRepeatingContainer --> presentation
+
+collectPermissionTerm, collectStorageTerm, collectIndexTerm --> collectTerm
+
+genericBinary, image, sound --> binary
+
+coraUser, systemOneUser --> user
+
+loginToken, loginWebRedirect, loginLDAP --> login
+
+guiElementLink --> guiElement
+
 
 
 --select * from link where fromtype in ('loginToken', 'loginWebRedirect', 'loginLDAP');
@@ -306,64 +366,29 @@ COMMIT;
 
 
 
-\{"name": "linkedRecordType", "value": ("system"|"user")\}
-\{"name": "linkedRecordType", "value": "####"\}
+\{"name": "linkedRecordType", "value": ("coraText"|"textSystemOne")\}
+\{"name": "linkedRecordType", "value": "text"\}
 
--- result of change to abstract level for Cora + SystemOne
-Optional[{presentationVar=presentation, collectPermissionTerm=collectTerm, metadata=metadata, presentationSurroundingContainer=presentation, coraText=text, presentationNumberVar=presentation, sound=binary, validationType=validationType, guiElement=guiElement, loginUnit=loginUnit, systemOneUser=user, collectStorageTerm=collectTerm, presentation=presentation, loginLDAP=login, metadataRecordLink=metadata, presentationCollectionVar=presentation, searchTerm=searchTerm, systemSecret=systemSecret, text=text, workOrder=workOrder, image=binary, permissionRole=permissionRole, textSystemOne=text, appToken=appToken, loginToken=login, permissionRule=permissionRule, system=system, metadataTextVariable=metadata, binary=binary, permissionUnit=permissionUnit, validationOrder=validationOrder, genericBinary=binary, collectTerm=collectTerm, indexBatchJob=indexBatchJob, metadataGroup=metadata, presentationRecordLink=presentation, login=login, demo=demo, genericCollectionItem=metadata, metadataNumberVariable=metadata, metadataResourceLink=metadata, example=example, guiElementLink=guiElement, loginWebRedirect=login, search=search, presentationResourceLink=presentation, collectIndexTerm=collectTerm, recordType=recordType, coraUser=user, metadataCollectionItem=metadata, presentationRepeatingContainer=presentation, metadataCollectionVariable=metadata, presentationGroup=presentation, user=user, metadataItemCollection=metadata}]
+\{"name": "linkedRecordType", "value": ("metadataGroup"|"metadataItemCollection"|"genericCollectionItem"|"genericCollectionItem"|"metadataNumberVariable"|"metadataResourceLink"|"metadataRecordLink"|"metadataTextVariable"|"metadataCollectionVariable")\}
+\{"name": "linkedRecordType", "value": "metadata"\}
 
-UpdatedvalidatesRecordTypeId: coraText --> text
-UpdatedvalidatesRecordTypeId: textSystemOne --> text
+\{"name": "linkedRecordType", "value": ("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
+\{"name": "linkedRecordType", "value": "presentation"\}
 
+\{"name": "linkedRecordType", "value": ("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
+\{"name": "linkedRecordType", "value": "collectTerm"\}
 
-UpdatedvalidatesRecordTypeId: metadataGroup --> metadata
-UpdatedvalidatesRecordTypeId: metadataItemCollection --> metadata
-UpdatedvalidatesRecordTypeId: genericCollectionItem --> metadata
-UpdatedvalidatesRecordTypeId: metadataNumberVariable --> metadata
-UpdatedvalidatesRecordTypeId: metadataResourceLink --> metadata
-UpdatedvalidatesRecordTypeId: metadataRecordLink --> metadata
-UpdatedvalidatesRecordTypeId: metadataTextVariable --> metadata
-UpdatedvalidatesRecordTypeId: metadataCollectionVariable --> metadata
+\{"name": "linkedRecordType", "value": ("genericBinary"|"image"|"sound")\}
+\{"name": "linkedRecordType", "value": "binary"\}
 
-UpdatedvalidatesRecordTypeId: presentationVar --> presentation
-UpdatedvalidatesRecordTypeId: presentationSurroundingContainer --> presentation
-UpdatedvalidatesRecordTypeId: presentationNumberVar --> presentation
-UpdatedvalidatesRecordTypeId: presentationGroup --> presentation
-UpdatedvalidatesRecordTypeId: presentationRecordLink --> presentation
-UpdatedvalidatesRecordTypeId: presentationCollectionVar --> presentation
-UpdatedvalidatesRecordTypeId: presentationResourceLink --> presentation
-UpdatedvalidatesRecordTypeId: presentationRepeatingContainer --> presentation
+\{"name": "linkedRecordType", "value": ("coraUser"|"systemOneUser")\}
+\{"name": "linkedRecordType", "value": "user"\}
 
-UpdatedvalidatesRecordTypeId: collectPermissionTerm --> collectTerm
-UpdatedvalidatesRecordTypeId: collectStorageTerm --> collectTerm
-UpdatedvalidatesRecordTypeId: collectIndexTerm --> collectTerm
+\{"name": "linkedRecordType", "value": ("loginToken"|"loginWebRedirect"|"loginLDAP")\}
+\{"name": "linkedRecordType", "value": "login"\}
 
-UpdatedvalidatesRecordTypeId: genericBinary --> binary
-UpdatedvalidatesRecordTypeId: image --> binary
-UpdatedvalidatesRecordTypeId: sound --> binary
+\{"name": "linkedRecordType", "value": ("guiElementLink")\}
+\{"name": "linkedRecordType", "value": "guiElement"\}
 
-UpdatedvalidatesRecordTypeId: coraUser --> user
-UpdatedvalidatesRecordTypeId: systemOneUser --> user
-
-UpdatedvalidatesRecordTypeId: loginToken --> login
-UpdatedvalidatesRecordTypeId: loginWebRedirect --> login
-UpdatedvalidatesRecordTypeId: loginLDAP --> login
-
-UpdatedvalidatesRecordTypeId: guiElementLink --> guiElement
-
-coraText, textSystemOne --> text
-metadataGroup, metadataItemCollection, genericCollectionItem, metadataNumberVariable, metadataResourceLink, metadataRecordLink, metadataTextVariable, metadataCollectionVariable --> metadata
-
-presentationVar, presentationSurroundingContainer, presentationNumberVar, presentationGroup, presentationRecordLink, presentationCollectionVar, presentationResourceLink, presentationRepeatingContainer --> presentation
-
-collectPermissionTerm, collectStorageTerm, collectIndexTerm --> collectTerm
-
-genericBinary, image, sound --> binary
-
-coraUser, systemOneUser --> user
-
-loginToken, loginWebRedirect, loginLDAP --> login
-
-guiElementLink --> guiElement
 
 
