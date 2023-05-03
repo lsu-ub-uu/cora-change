@@ -391,4 +391,30 @@ COMMIT;
 \{"name": "linkedRecordType", "value": "guiElement"\}
 
 
+-- changes for linkedRecordType = recordtype
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("coraText"|"textSystemOne")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "text"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("metadataGroup"|"metadataItemCollection"|"genericCollectionItem"|"genericCollectionItem"|"metadataNumberVariable"|"metadataResourceLink"|"metadataRecordLink"|"metadataTextVariable"|"metadataCollectionVariable")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "metadata"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "presentation"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "collectTerm"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("genericBinary"|"image"|"sound")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "binary"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("coraUser"|"systemOneUser")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "user"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("loginToken"|"loginWebRedirect"|"loginLDAP")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "login"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("guiElementLink")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "guiElement"\}
+
 
