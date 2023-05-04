@@ -24,6 +24,7 @@ UpdatedvalidatesRecordTypeId: metadataResourceLink --> metadata
 UpdatedvalidatesRecordTypeId: metadataRecordLink --> metadata
 UpdatedvalidatesRecordTypeId: metadataTextVariable --> metadata
 UpdatedvalidatesRecordTypeId: metadataCollectionVariable --> metadata
+-- metadataCollectionItem
 
 UpdatedvalidatesRecordTypeId: presentationVar --> presentation
 UpdatedvalidatesRecordTypeId: presentationSurroundingContainer --> presentation
@@ -363,6 +364,39 @@ update link set totype = 'guiElement'
 update link set fromtype = 'guiElement'  
 	where fromtype in ('guiElementLink');
 COMMIT;
+
+
+BEGIN;
+select distinct l.fromtype , l.fromid , l.totype , 'text' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in('text','coraText','textSystemOne');
+delete from link l where l.totype like 'recordType' and l.toid in('text','coraText','textSystemOne');
+insert into link select * from linktemp;
+drop table linktemp;
+COMMIT;
+
+BEGIN;
+select distinct l.fromtype , l.fromid , l.totype , 'metadata' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in('metadata','metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+delete from link l where l.totype like 'recordType' and l.toid in('metadata','metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+insert into link select * from linktemp;
+drop table linktemp;
+COMMIT;
+
+BEGIN;
+select distinct l.fromtype , l.fromid , l.totype , 'presentation' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in('presentation','presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+delete from link l where l.totype like 'recordType' and l.toid in('presentation','presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+insert into link select * from linktemp;
+drop table linktemp;
+COMMIT;
+
+update link set toid = 'collectTerm' where (totype = 'recordType' and toid in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm'));
+update link set toid = 'binary' where (totype = 'recordType' and toid in ('genericBinary', 'image', 'sound'));
+update link set toid = 'user' where (totype = 'recordType' and toid in ('coraUser', 'systemOneUser'));
+update link set toid = 'login' where (totype = 'recordType' and toid in ('loginToken', 'loginWebRedirect', 'loginLDAP'));
+update link set toid = 'guiElement' where (totype = 'recordType' and toid in ('guiElementLink'));
+
+
+
+
+
 
 
 
