@@ -399,7 +399,7 @@ update link set toid = 'guiElement' where (totype = 'recordType' and toid in ('g
 
 
 
-
+-- data changes
 \{"name": "linkedRecordType", "value": ("coraText"|"textSystemOne")\}
 \{"name": "linkedRecordType", "value": "text"\}
 
@@ -450,5 +450,104 @@ update link set toid = 'guiElement' where (totype = 'recordType' and toid in ('g
 
 \{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("guiElementLink")\}
 \{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "guiElement"\}
+
+
+
+
+
+
+
+
+
+
+-- FITNESSE
+\{"name":"linkedRecordType","value":("coraText"|"textSystemOne")\}
+\{"name":"linkedRecordType","value":"text"\}
+
+\{"name":"linkedRecordType","value":("metadataGroup"|"metadataItemCollection"|"genericCollectionItem"|"genericCollectionItem"|"metadataNumberVariable"|"metadataResourceLink"|"metadataRecordLink"|"metadataTextVariable"|"metadataCollectionVariable")\}
+\{"name":"linkedRecordType","value":"metadata"\}
+
+\{"name":"linkedRecordType","value":("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
+\{"name":"linkedRecordType","value":"presentation"\}
+
+\{"name":"linkedRecordType","value":("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
+\{"name":"linkedRecordType","value":"collectTerm"\}
+
+\{"name":"linkedRecordType","value":("genericBinary"|"image"|"sound")\}
+\{"name":"linkedRecordType","value":"binary"\}
+
+\{"name":"linkedRecordType","value":("coraUser"|"systemOneUser")\}
+\{"name":"linkedRecordType","value":"user"\}
+
+\{"name":"linkedRecordType","value":("loginToken"|"loginWebRedirect"|"loginLDAP")\}
+\{"name":"linkedRecordType","value":"login"\}
+
+\{"name":"linkedRecordType","value":("guiElementLink")\}
+\{"name":"linkedRecordType","value":"guiElement"\}
+
+
+--changesforlinkedRecordType=recordtype
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("coraText"|"textSystemOne")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"text"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("metadataGroup"|"metadataItemCollection"|"genericCollectionItem"|"genericCollectionItem"|"metadataNumberVariable"|"metadataResourceLink"|"metadataRecordLink"|"metadataTextVariable"|"metadataCollectionVariable")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"metadata"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"presentation"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"collectTerm"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("genericBinary"|"image"|"sound")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"binary"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("coraUser"|"systemOneUser")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"user"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("loginToken"|"loginWebRedirect"|"loginLDAP")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"login"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("guiElementLink")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"guiElement"\}
+
+
+
+
+
+
+
+-- Fitness change recordtypes
+
+\|\s*(coraText|textSystemOne)\s*\|
+\| text \|
+
+\|\s*(metadataGroup|metadataItemCollection|genericCollectionItem|genericCollectionItem|metadataNumberVariable|metadataResourceLink|metadataRecordLink|metadataTextVariable|metadataCollectionVariable)\s*\|
+\| metadata \|
+
+\|\s*(presentationVar|presentationSurroundingContainer|presentationNumberVar|presentationGroup|presentationRecordLink|presentationCollectionVar|presentationResourceLink|presentationRepeatingContainer)\s*\|
+\| presentation \|
+
+\|\s*(collectPermissionTerm|collectStorageTerm|collectIndexTerm)\s*\|
+\| collectTerm \|
+
+\|\s*(genericBinary|image|sound)\s*\|
+\| binary \|
+
+\|\s*(coraUser|systemOneUser)\s*\|
+\| user \|
+
+\|\s*(loginToken|loginWebRedirect|loginLDAP)\s*\|
+\| login \|
+
+\|\s*(guiElementLink)\s*\|
+\| guiElement \|
+
+
+
+\{\s*(coraText|textSystemOne)\s*\}
+
+
 
 
