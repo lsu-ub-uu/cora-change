@@ -33,9 +33,9 @@
 
 	<properties>
 		<json.version>3.8.0</json.version>
-		<javaclient.version>2.0.0</javaclient.version>
+		<javaclient.version>2.2.0</javaclient.version>
 		<testutils.version>1.10.0</testutils.version>
-		<clientdata-spies.version>1.0.0</clientdata-spies.version>
+		<clientdata-spies.version>1.1.0</clientdata-spies.version>
 	</properties>
 
 	<scm>
