@@ -31,6 +31,24 @@ public class ChangeValidatesForValidationTypeTest {
 		updater.changeValidationTypes();
 	}
 
+	// @Test(enabled = true)
+	// public void runChangeValidationTypesDiva() throws Exception {
+	//
+	// ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
+	// DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL);
+	//
+	// updater.changeValidationTypes();
+	// }
+
+	@Test(enabled = false)
+	public void runChangeValidationTypesToAbstractLevelForDiVA() throws Exception {
+
+		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
+				DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL);
+
+		updater.changeValidationTypesToAbstractLevel("SystemOne");
+	}
+
 	@Test(enabled = false)
 	public void runChangeValidationTypesToAbstractLevel() throws Exception {
 

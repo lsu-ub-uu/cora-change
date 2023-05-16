@@ -12,71 +12,175 @@
 
 -- result of change to abstract level for Cora + SystemOne
 Optional[{presentationVar=presentation, collectPermissionTerm=collectTerm, metadata=metadata, presentationSurroundingContainer=presentation, coraText=text, presentationNumberVar=presentation, sound=binary, validationType=validationType, guiElement=guiElement, loginUnit=loginUnit, systemOneUser=user, collectStorageTerm=collectTerm, presentation=presentation, loginLDAP=login, metadataRecordLink=metadata, presentationCollectionVar=presentation, searchTerm=searchTerm, systemSecret=systemSecret, text=text, workOrder=workOrder, image=binary, permissionRole=permissionRole, textSystemOne=text, appToken=appToken, loginToken=login, permissionRule=permissionRule, system=system, metadataTextVariable=metadata, binary=binary, permissionUnit=permissionUnit, validationOrder=validationOrder, genericBinary=binary, collectTerm=collectTerm, indexBatchJob=indexBatchJob, metadataGroup=metadata, presentationRecordLink=presentation, login=login, demo=demo, genericCollectionItem=metadata, metadataNumberVariable=metadata, metadataResourceLink=metadata, example=example, guiElementLink=guiElement, loginWebRedirect=login, search=search, presentationResourceLink=presentation, collectIndexTerm=collectTerm, recordType=recordType, coraUser=user, metadataCollectionItem=metadata, presentationRepeatingContainer=presentation, metadataCollectionVariable=metadata, presentationGroup=presentation, user=user, metadataItemCollection=metadata}]
-
-UpdatedvalidatesRecordTypeId: coraText --> text
-UpdatedvalidatesRecordTypeId: textSystemOne --> text
-
-
-UpdatedvalidatesRecordTypeId: metadataGroup --> metadata
-UpdatedvalidatesRecordTypeId: metadataItemCollection --> metadata
-UpdatedvalidatesRecordTypeId: genericCollectionItem --> metadata
-UpdatedvalidatesRecordTypeId: metadataNumberVariable --> metadata
-UpdatedvalidatesRecordTypeId: metadataResourceLink --> metadata
-UpdatedvalidatesRecordTypeId: metadataRecordLink --> metadata
-UpdatedvalidatesRecordTypeId: metadataTextVariable --> metadata
-UpdatedvalidatesRecordTypeId: metadataCollectionVariable --> metadata
--- metadataCollectionItem
-
+Checking: presentationVar
 UpdatedvalidatesRecordTypeId: presentationVar --> presentation
-UpdatedvalidatesRecordTypeId: presentationSurroundingContainer --> presentation
-UpdatedvalidatesRecordTypeId: presentationNumberVar --> presentation
-UpdatedvalidatesRecordTypeId: presentationGroup --> presentation
-UpdatedvalidatesRecordTypeId: presentationRecordLink --> presentation
-UpdatedvalidatesRecordTypeId: presentationCollectionVar --> presentation
-UpdatedvalidatesRecordTypeId: presentationResourceLink --> presentation
-UpdatedvalidatesRecordTypeId: presentationRepeatingContainer --> presentation
-
+Current validatesRecordTypeId not found in map: funder
+Checking: funder
+Checking: collectPermissionTerm
 UpdatedvalidatesRecordTypeId: collectPermissionTerm --> collectTerm
-UpdatedvalidatesRecordTypeId: collectStorageTerm --> collectTerm
-UpdatedvalidatesRecordTypeId: collectIndexTerm --> collectTerm
-
-UpdatedvalidatesRecordTypeId: genericBinary --> binary
-UpdatedvalidatesRecordTypeId: image --> binary
+Checking: presentationSurroundingContainer
+UpdatedvalidatesRecordTypeId: presentationSurroundingContainer --> presentation
+Checking: studentThesis
+Current validatesRecordTypeId not found in map: studentThesis
+Checking: coraText
+UpdatedvalidatesRecordTypeId: coraText --> text
+Checking: presentationNumberVar
+UpdatedvalidatesRecordTypeId: presentationNumberVar --> presentation
+Checking: sound
 UpdatedvalidatesRecordTypeId: sound --> binary
-
-UpdatedvalidatesRecordTypeId: coraUser --> user
+Checking: validationType
+Current validatesRecordTypeId not found in map: project
+Skipping same in map: validationType
+Checking: project
+Checking: artisticOutput
+Current validatesRecordTypeId not found in map: artisticOutput
+Checking: loginUnit
+Skipping same in map: loginUnit
+Checking: systemOneUser
 UpdatedvalidatesRecordTypeId: systemOneUser --> user
-
-UpdatedvalidatesRecordTypeId: loginToken --> login
-UpdatedvalidatesRecordTypeId: loginWebRedirect --> login
+Current validatesRecordTypeId not found in map: subOrganisation
+Checking: subOrganisation
+Checking: collectStorageTerm
+UpdatedvalidatesRecordTypeId: collectStorageTerm --> collectTerm
+Current validatesRecordTypeId not found in map: comprehensiveLicentiateThesis
+Checking: comprehensiveLicentiateThesis
+Checking: conferencePaper
+Checking: loginLDAP
+Current validatesRecordTypeId not found in map: conferencePaper
 UpdatedvalidatesRecordTypeId: loginLDAP --> login
-
+Checking: metadataRecordLink
+UpdatedvalidatesRecordTypeId: metadataRecordLink --> metadata
+Checking: presentationCollectionVar
+UpdatedvalidatesRecordTypeId: presentationCollectionVar --> presentation
+Checking: searchTerm
+Skipping same in map: searchTerm
+Checking: contribution
+Current validatesRecordTypeId not found in map: contribution
+Current validatesRecordTypeId not found in map: sustainableDevelopment
+Current validatesRecordTypeId not found in map: comprehensiveDoctoralThesis
+Current validatesRecordTypeId not found in map: divaOrganisation
+Checking: sustainableDevelopment
+Checking: comprehensiveDoctoralThesis
+Checking: systemSecret
+Skipping same in map: systemSecret
+Checking: divaOrganisation
+Checking: workOrder
+Skipping same in map: workOrder
+Checking: image
+UpdatedvalidatesRecordTypeId: image --> binary
+Checking: permissionRole
+Skipping same in map: permissionRole
+Checking: textSystemOne
+UpdatedvalidatesRecordTypeId: textSystemOne --> text
+Checking: appToken
+Skipping same in map: appToken
+Checking: loginToken
+UpdatedvalidatesRecordTypeId: loginToken --> login
+Current validatesRecordTypeId not found in map: publishingHouse
+Checking: publishingHouse
+Checking: permissionRule
+Skipping same in map: permissionRule
+Checking: article
+Checking: educationalProgram
+Current validatesRecordTypeId not found in map: article
+Current validatesRecordTypeId not found in map: educationalProgram
+Checking: system
+Skipping same in map: system
+Checking: metadataTextVariable
+UpdatedvalidatesRecordTypeId: metadataTextVariable --> metadata
+Current validatesRecordTypeId not found in map: person
+Current validatesRecordTypeId not found in map: domain
+Checking: person
+Checking: domain
+Checking: permissionUnit
+Skipping same in map: permissionUnit
+Checking: validationOrder
+Skipping same in map: validationOrder
+Checking: genericBinary
+UpdatedvalidatesRecordTypeId: genericBinary --> binary
+Checking: indexBatchJob
+Skipping same in map: indexBatchJob
+Checking: other
+Checking: patent
+Current validatesRecordTypeId not found in map: other
+Current validatesRecordTypeId not found in map: patent
+Current validatesRecordTypeId not found in map: languageCollectionItem
+Checking: languageCollectionItem
+Checking: monographDoctoralThesis
+Current validatesRecordTypeId not found in map: monographDoctoralThesis
+Checking: book
+Current validatesRecordTypeId not found in map: book
+Checking: topOrganisation
+Current validatesRecordTypeId not found in map: topOrganisation
+Checking: metadataGroup
+UpdatedvalidatesRecordTypeId: metadataGroup --> metadata
+Current validatesRecordTypeId not found in map: countryCollectionItem
+Checking: countryCollectionItem
+Checking: researchSubject
+Current validatesRecordTypeId not found in map: researchSubject
+Checking: presentationRecordLink
+UpdatedvalidatesRecordTypeId: presentationRecordLink --> presentation
+Checking: genericCollectionItem
+UpdatedvalidatesRecordTypeId: genericCollectionItem --> metadata
+Checking: metadataNumberVariable
+UpdatedvalidatesRecordTypeId: metadataNumberVariable --> metadata
+Checking: metadataResourceLink
+UpdatedvalidatesRecordTypeId: metadataResourceLink --> metadata
+Checking: guiElementLink
 UpdatedvalidatesRecordTypeId: guiElementLink --> guiElement
-
-coraText, textSystemOne --> text
-metadataGroup, metadataItemCollection, genericCollectionItem, metadataNumberVariable, metadataResourceLink, metadataRecordLink, metadataTextVariable, metadataCollectionVariable --> metadata
-
-presentationVar, presentationSurroundingContainer, presentationNumberVar, presentationGroup, presentationRecordLink, presentationCollectionVar, presentationResourceLink, presentationRepeatingContainer --> presentation
-
-collectPermissionTerm, collectStorageTerm, collectIndexTerm --> collectTerm
-
-genericBinary, image, sound --> binary
-
-coraUser, systemOneUser --> user
-
-loginToken, loginWebRedirect, loginLDAP --> login
-
-guiElementLink --> guiElement
-
-
+Checking: loginWebRedirect
+UpdatedvalidatesRecordTypeId: loginWebRedirect --> login
+Checking: search
+Skipping same in map: search
+Checking: presentationResourceLink
+UpdatedvalidatesRecordTypeId: presentationResourceLink --> presentation
+Checking: journal
+Current validatesRecordTypeId not found in map: journal
+Checking: collectIndexTerm
+UpdatedvalidatesRecordTypeId: collectIndexTerm --> collectTerm
+Current validatesRecordTypeId not found in map: dissertation
+Current validatesRecordTypeId not found in map: nationalSubjectCategory
+Checking: dissertation
+Checking: nationalSubjectCategory
+Checking: rootOrganisation
+Current validatesRecordTypeId not found in map: rootOrganisation
+Checking: conferenceProceedingsEditor
+Current validatesRecordTypeId not found in map: conferenceProceedingsEditor
+Checking: recordType
+Skipping same in map: recordType
+Checking: coraUser
+UpdatedvalidatesRecordTypeId: coraUser --> user
+Checking: monographLicentiateThesis
+Checking: collectionEditor
+Current validatesRecordTypeId not found in map: monographLicentiateThesis
+Current validatesRecordTypeId not found in map: collectionEditor
+Checking: personDomainPart
+Current validatesRecordTypeId not found in map: personDomainPart
+Checking: manuscript
+Current validatesRecordTypeId not found in map: manuscript
+Checking: presentationRepeatingContainer
+UpdatedvalidatesRecordTypeId: presentationRepeatingContainer --> presentation
+Checking: series
+Current validatesRecordTypeId not found in map: series
+Current validatesRecordTypeId not found in map: subjectCourse
+Current validatesRecordTypeId not found in map: report
+Checking: subjectCourse
+Checking: report
+Checking: metadataCollectionVariable
+UpdatedvalidatesRecordTypeId: metadataCollectionVariable --> metadata
+Checking: presentationGroup
+UpdatedvalidatesRecordTypeId: presentationGroup --> presentation
+Checking: dataset
+Current validatesRecordTypeId not found in map: dataset
+Checking: metadataItemCollection
+UpdatedvalidatesRecordTypeId: metadataItemCollection --> metadata
 
 --select * from link where fromtype in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+
 
 ALTER TABLE link ALTER CONSTRAINT fk_fromrecord DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE storageterm ALTER CONSTRAINT fk_record DEFERRABLE INITIALLY IMMEDIATE;
 
--- coraText, textSystemOne --> text
--- problems that needed to be fixed:
 select * from record
 	where type in ('coraText', 'textSystemOne')
 	and id = 'idTextVarDefText';
@@ -366,6 +470,21 @@ update link set fromtype = 'guiElement'
 	where fromtype in ('guiElementLink');
 COMMIT;
 
+-- subOrganisation, topOrganisation, rootOrganisation --> organisation
+select * from record where type in ('subOrganisation', 'topOrganisation', 'rootOrganisation');
+
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'organisation'  
+	where type in ('subOrganisation', 'topOrganisation', 'rootOrganisation');
+update storageterm set recordtype = 'organisation'  
+	where recordtype in ('subOrganisation', 'topOrganisation', 'rootOrganisation');
+update link set totype = 'organisation'  
+	where totype in ('subOrganisation', 'topOrganisation', 'rootOrganisation');
+update link set fromtype = 'organisation'  
+	where fromtype in ('subOrganisation', 'topOrganisation', 'rootOrganisation');
+COMMIT;
+
 
 BEGIN;
 select distinct l.fromtype , l.fromid , l.totype , 'text' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in('text','coraText','textSystemOne');
@@ -395,6 +514,12 @@ update link set toid = 'login' where (totype = 'recordType' and toid in ('loginT
 update link set toid = 'guiElement' where (totype = 'recordType' and toid in ('guiElementLink'));
 
 
+BEGIN;
+select distinct l.fromtype , l.fromid , l.totype , 'organisation' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in('subOrganisation', 'topOrganisation', 'rootOrganisation');
+delete from link l where l.totype like 'recordType' and l.toid in('subOrganisation', 'topOrganisation', 'rootOrganisation');
+insert into link select * from linktemp;
+drop table linktemp;
+COMMIT;
 
 
 
@@ -498,56 +623,6 @@ update link set toid = 'guiElement' where (totype = 'recordType' and toid in ('g
 \{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
 \{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"presentation"\}
 
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"collectTerm"\}
-
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("genericBinary"|"image"|"sound")\}
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"binary"\}
-
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("coraUser"|"systemOneUser")\}
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"user"\}
-
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("loginToken"|"loginWebRedirect"|"loginLDAP")\}
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"login"\}
-
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("guiElementLink")\}
-\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"guiElement"\}
-
-
-
-
-
-
-
--- Fitness change recordtypes
-
-\|\s*(coraText|textSystemOne)\s*\|
-\| text \|
-
-\|\s*(metadataGroup|metadataItemCollection|genericCollectionItem|genericCollectionItem|metadataNumberVariable|metadataResourceLink|metadataRecordLink|metadataTextVariable|metadataCollectionVariable)\s*\|
-\| metadata \|
-
-\|\s*(presentationVar|presentationSurroundingContainer|presentationNumberVar|presentationGroup|presentationRecordLink|presentationCollectionVar|presentationResourceLink|presentationRepeatingContainer)\s*\|
-\| presentation \|
-
-\|\s*(collectPermissionTerm|collectStorageTerm|collectIndexTerm)\s*\|
-\| collectTerm \|
-
-\|\s*(genericBinary|image|sound)\s*\|
-\| binary \|
-
-\|\s*(coraUser|systemOneUser)\s*\|
-\| user \|
-
-\|\s*(loginToken|loginWebRedirect|loginLDAP)\s*\|
-\| login \|
-
-\|\s*(guiElementLink)\s*\|
-\| guiElement \|
-
-
-
-\{\s*(coraText|textSystemOne)\s*\}
 
 
 
