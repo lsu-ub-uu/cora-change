@@ -666,6 +666,15 @@ recordType languageCollectionItem search metadataSearch
 \{"name":"linkedRecordType","value":("guiElementLink")\}
 \{"name":"linkedRecordType","value":"guiElement"\}
 
+\{"name":"linkedRecordType","value":("subOrganisation"|"topOrganisation"|"rootOrganisation")\}
+\{"name":"linkedRecordType","value":"organisation"\}
+
+\{"name":"linkedRecordType","value":("metadataCollectionItem"|"countryCollectionItem"|"languageCollectionItem")\}
+\{"name":"linkedRecordType","value":"metadata"\}
+
+\{"name":"linkedRecordType","value":"search"\},\{"name":"linkedRecordId","value":"metadataCollectionItemSearch"\}
+\{"name":"linkedRecordType","value":"search"\},\{"name":"linkedRecordId","value":"metadataSearch"\}
+
 
 --changesforlinkedRecordType=recordtype
 
@@ -677,6 +686,48 @@ recordType languageCollectionItem search metadataSearch
 
 \{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
 \{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"presentation"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("subOrganisation"|"topOrganisation"|"rootOrganisation")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"organisation"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("metadataCollectionItem"|"countryCollectionItem"|"languageCollectionItem")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"metadata"\}
+
+\|.s*(coraText|textSystemOne).s*\|
+\| text \|
+
+\|.s*(metadataCollectionItem|countryCollectionItem|languageCollectionItem|metadataGroup|metadataItemCollection|genericCollectionItem|genericCollectionItem|metadataNumberVariable|metadataResourceLink|metadataRecordLink|metadataTextVariable|metadataCollectionVariable).s*\|
+\| metadata \|
+
+\|.s*(presentationVar|presentationSurroundingContainer|presentationNumberVar|presentationGroup|presentationRecordLink|presentationCollectionVar|presentationResourceLink|presentationRepeatingContainer).s*\|
+\| presentation \|
+
+\|.s*(collectPermissionTerm|collectStorageTerm|collectIndexTerm).s*\|
+\| collectTerm \|
+
+#\{"name":"linkedRecordType","value":("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
+#\{"name":"linkedRecordType","value":"collectTerm"\}
+
+\{"name":"linkedRecordType","value":("genericBinary"|"image"|"sound")\}
+\{"name":"linkedRecordType","value":"binary"\}
+
+\|.s*(genericBinary|image|sound).s*\|
+\| binary \|
+
+\|.s*(coraUser|systemOneUser).s*\|
+\| user \|
+
+\|.s*(loginToken|loginWebRedirect|loginLDAP).s*\|
+\| login \|
+
+\|.s*(guiElementLink).s*\|
+\| guiElement \|
+
+\|.s*(subOrganisation|topOrganisation|rootOrganisation).s*\|
+\| organisation \|
+
+\|.s*(metadataCollectionItem|countryCollectionItem|languageCollectionItem).s*\|
+\| metadata \|
 
 
 
