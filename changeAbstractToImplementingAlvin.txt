@@ -1,0 +1,726 @@
+0. Run CollectAllFieldsForAbstractRecordTypes (Manual step)
+1. Export current state (commit to git)
+2. Run script to change validationTypes to implementing level (save console output, needed later) 
+	ChangeValidatesForValidationType.changeValidationTypesToAbstractLevel, ange system
+3. Export current state (commit to git)
+4. Pick out allchanges from console output and create sql changes 
+5. Alter table constraints to be possible to turn off in transaction
+6. run sql scripts to update all abstract types to implementing
+7. Export current state (commit to git)
+8. Pick out allchanges from console output and create regexp changes 
+9. Run regexp changes on all metadata and fitnesse files
+
+-- result of change to abstract level for Cora + Alvin
+Optional[{presentationVar=presentation, collectPermissionTerm=collectTerm, metadata=metadata, presentationSurroundingContainer=presentation, coraText=text, presentationNumberVar=presentation, sound=binary, validationType=validationType, organisation=organisation, guiElement=guiElement, loginUnit=loginUnit, systemOneUser=user, collectStorageTerm=collectTerm, presentation=presentation, loginLDAP=login, metadataRecordLink=metadata, presentationCollectionVar=presentation, searchTerm=searchTerm, record=record, systemSecret=systemSecret, text=text, writtenText=bibliographic, workOrder=workOrder, image=binary, permissionRole=permissionRole, textSystemOne=text, appToken=appToken, bibliographic=bibliographic, work=work, loginToken=login, movingImage=record, permissionRule=permissionRule, system=system, metadataTextVariable=metadata, person=person, binary=binary, authority=authority, permissionUnit=permissionUnit, validationOrder=validationOrder, genericBinary=binary, collectTerm=collectTerm, indexBatchJob=indexBatchJob, languageCollectionItem=metadata, metadataGroup=metadata, countryCollectionItem=metadata, presentationRecordLink=presentation, login=login, genericCollectionItem=metadata, metadataNumberVariable=metadata, metadataResourceLink=metadata, guiElementLink=guiElement, loginWebRedirect=login, cartographic=record, search=search, presentationResourceLink=presentation, collectIndexTerm=collectTerm, place=place, languageMaterial=record, locationUnit=locationUnit, soundRecording=soundRecording, recordType=recordType, coraUser=user, metadataCollectionItem=metadata, musicalWork=work, presentationRepeatingContainer=presentation, metadataCollectionVariable=metadata, location=location, presentationGroup=presentation, user=user, metadataItemCollection=metadata}]
+Checking: presentationVar
+UpdatedvalidatesRecordTypeId: presentationVar --> presentation
+Checking: collectPermissionTerm
+UpdatedvalidatesRecordTypeId: collectPermissionTerm --> collectTerm
+Checking: presentationSurroundingContainer
+UpdatedvalidatesRecordTypeId: presentationSurroundingContainer --> presentation
+Checking: coraText
+UpdatedvalidatesRecordTypeId: coraText --> text
+Checking: presentationNumberVar
+UpdatedvalidatesRecordTypeId: presentationNumberVar --> presentation
+Checking: sound
+UpdatedvalidatesRecordTypeId: sound --> binary
+Checking: validationType
+Skipping same in map: validationType
+Checking: organisation
+Skipping same in map: organisation
+Checking: loginUnit
+Skipping same in map: loginUnit
+Checking: systemOneUser
+UpdatedvalidatesRecordTypeId: systemOneUser --> user
+Checking: collectStorageTerm
+UpdatedvalidatesRecordTypeId: collectStorageTerm --> collectTerm
+Checking: loginLDAP
+UpdatedvalidatesRecordTypeId: loginLDAP --> login
+Checking: metadataRecordLink
+UpdatedvalidatesRecordTypeId: metadataRecordLink --> metadata
+Checking: presentationCollectionVar
+UpdatedvalidatesRecordTypeId: presentationCollectionVar --> presentation
+Checking: searchTerm
+Skipping same in map: searchTerm
+Checking: systemSecret
+Skipping same in map: systemSecret
+Checking: writtenText
+UpdatedvalidatesRecordTypeId: writtenText --> bibliographic
+Checking: workOrder
+Skipping same in map: workOrder
+Checking: image
+UpdatedvalidatesRecordTypeId: image --> binary
+Checking: permissionRole
+Skipping same in map: permissionRole
+Checking: textSystemOne
+UpdatedvalidatesRecordTypeId: textSystemOne --> text
+Checking: appToken
+Skipping same in map: appToken
+Checking: loginToken
+UpdatedvalidatesRecordTypeId: loginToken --> login
+Checking: movingImage
+UpdatedvalidatesRecordTypeId: movingImage --> record
+Checking: permissionRule
+Skipping same in map: permissionRule
+Checking: system
+Skipping same in map: system
+Checking: metadataTextVariable
+UpdatedvalidatesRecordTypeId: metadataTextVariable --> metadata
+Checking: person
+Skipping same in map: person
+Checking: permissionUnit
+Skipping same in map: permissionUnit
+Checking: validationOrder
+Skipping same in map: validationOrder
+Checking: genericBinary
+UpdatedvalidatesRecordTypeId: genericBinary --> binary
+Checking: indexBatchJob
+Skipping same in map: indexBatchJob
+Checking: languageCollectionItem
+UpdatedvalidatesRecordTypeId: languageCollectionItem --> metadata
+Checking: metadataGroup
+UpdatedvalidatesRecordTypeId: metadataGroup --> metadata
+Checking: countryCollectionItem
+UpdatedvalidatesRecordTypeId: countryCollectionItem --> metadata
+Checking: presentationRecordLink
+UpdatedvalidatesRecordTypeId: presentationRecordLink --> presentation
+Checking: genericCollectionItem
+UpdatedvalidatesRecordTypeId: genericCollectionItem --> metadata
+Checking: metadataNumberVariable
+UpdatedvalidatesRecordTypeId: metadataNumberVariable --> metadata
+Checking: metadataResourceLink
+UpdatedvalidatesRecordTypeId: metadataResourceLink --> metadata
+Checking: guiElementLink
+UpdatedvalidatesRecordTypeId: guiElementLink --> guiElement
+Checking: loginWebRedirect
+UpdatedvalidatesRecordTypeId: loginWebRedirect --> login
+Checking: cartographic
+UpdatedvalidatesRecordTypeId: cartographic --> record
+Checking: search
+Skipping same in map: search
+Checking: presentationResourceLink
+UpdatedvalidatesRecordTypeId: presentationResourceLink --> presentation
+Checking: collectIndexTerm
+UpdatedvalidatesRecordTypeId: collectIndexTerm --> collectTerm
+Checking: place
+Skipping same in map: place
+Checking: languageMaterial
+UpdatedvalidatesRecordTypeId: languageMaterial --> record
+Checking: locationUnit
+Skipping same in map: locationUnit
+Checking: soundRecording
+Skipping same in map: soundRecording
+Checking: recordType
+Skipping same in map: recordType
+Checking: coraUser
+UpdatedvalidatesRecordTypeId: coraUser --> user
+Checking: musicalWork
+UpdatedvalidatesRecordTypeId: musicalWork --> work
+Checking: presentationRepeatingContainer
+UpdatedvalidatesRecordTypeId: presentationRepeatingContainer --> presentation
+Checking: metadataCollectionVariable
+UpdatedvalidatesRecordTypeId: metadataCollectionVariable --> metadata
+Checking: location
+Skipping same in map: location
+Checking: presentationGroup
+UpdatedvalidatesRecordTypeId: presentationGroup --> presentation
+Checking: metadataItemCollection
+UpdatedvalidatesRecordTypeId: metadataItemCollection --> metadata
+
+
+--SQL scripts for DIVA
+select r.type, count(1) from record r group by r."type" ; 
+select l.fromtype, count(1) from link l group by l.fromtype;
+select l.totype, count(1) from link l group by l.totype;
+select * from storageterm s;
+
+
+ALTER TABLE link ALTER CONSTRAINT fk_fromrecord DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE storageterm ALTER CONSTRAINT fk_record DEFERRABLE INITIALLY IMMEDIATE;
+
+select * from record
+	where type in ('coraText', 'textSystemOne')
+	and id = 'idTextVarDefText';
+select * from link
+	where (fromtype = 'coraText' and fromid = 'idTextVarDefText')
+	or (totype = 'coraText' and toid = 'idTextVarDefText');
+
+delete from link
+	where (fromtype = 'coraText' and fromid = 'idTextVarDefText')
+	or (totype = 'coraText' and toid = 'idTextVarDefText');
+delete from record 
+	where type = 'coraText'
+	and id = 'idTextVarDefText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'idTextVarTextVarDefText')
+	or (totype = 'coraText' and toid = 'idTextVarTextVarDefText');
+delete from record 
+	where type = 'coraText'
+	and id = 'idTextVarTextVarDefText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'idTextVarTextVarText')
+	or (totype = 'coraText' and toid = 'idTextVarTextVarText');
+delete from record 
+	where type = 'coraText'
+	and id = 'idTextVarTextVarText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'systemOneUserText')
+	or (totype = 'coraText' and toid = 'systemOneUserText');
+delete from record 
+	where type = 'coraText'
+	and id = 'systemOneUserText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'systemOneUserDefText')
+	or (totype = 'coraText' and toid = 'systemOneUserDefText');
+delete from record 
+	where type = 'coraText'
+	and id = 'systemOneUserDefText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'userDefText')
+	or (totype = 'coraText' and toid = 'userDefText');
+delete from record 
+	where type = 'coraText'
+	and id = 'userDefText';
+delete from link
+	where (fromtype = 'coraText' and fromid = 'userText')
+	or (totype = 'coraText' and toid = 'userText');
+delete from record 
+	where type = 'coraText'
+	and id = 'userText';
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'bookTitleTextVarText')
+	or (totype = 'textSystemOne' and toid = 'bookTitleTextVarText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'bookTitleTextVarText';	
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'firstNameTextVarText')
+	or (totype = 'textSystemOne' and toid = 'firstNameTextVarText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'firstNameTextVarText';	
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'lastNameTextVarText')
+	or (totype = 'textSystemOne' and toid = 'lastNameTextVarText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'lastNameTextVarText';	
+delete from link
+	where (fromtype = 'coraText' and fromid = 'releatedPersonsGroupText')
+	or (totype = 'coraText' and toid = 'releatedPersonsGroupText');
+delete from record 
+	where type = 'coraText'
+	and id = 'releatedPersonsGroupText';
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'firstNameTextVarDefText')
+	or (totype = 'textSystemOne' and toid = 'firstNameTextVarDefText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'firstNameTextVarDefText';
+delete from link
+	where (fromtype = 'textSystemOne' and fromid = 'lastNameTextVarDefText')
+	or (totype = 'textSystemOne' and toid = 'lastNameTextVarDefText');
+delete from record 
+	where type = 'textSystemOne'
+	and id = 'lastNameTextVarDefText';
+	
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'text'  
+	where type in ('coraText', 'textSystemOne');
+update storageterm set recordtype = 'text'  
+	where recordtype in ('coraText', 'textSystemOne');
+update link set totype = 'text'  
+	where totype in ('coraText', 'textSystemOne');
+update link set fromtype = 'text'  
+	where fromtype in ('coraText', 'textSystemOne');
+COMMIT;
+
+
+-- metadataGroup, metadataItemCollection, genericCollectionItem, metadataNumberVariable, metadataResourceLink, metadataRecordLink, metadataTextVariable, metadataCollectionVariable --> metadata
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'metadata'  
+	where type in ('metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+update storageterm set recordtype = 'metadata'  
+	where recordtype in ('metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+update link set totype = 'metadata'  
+	where totype in ('metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+update link set fromtype = 'metadata'  
+	where fromtype in ('metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+COMMIT;
+
+-- presentationVar, presentationSurroundingContainer, presentationNumberVar, presentationGroup, presentationRecordLink, presentationCollectionVar, presentationResourceLink, presentationRepeatingContainer --> presentation
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'presentation'  
+	where type in ('presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+update storageterm set recordtype = 'presentation'  
+	where recordtype in ('presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+update link set totype = 'presentation'  
+	where totype in ('presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+update link set fromtype = 'presentation'  
+	where fromtype in ('presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+COMMIT;
+
+-- collectPermissionTerm, collectStorageTerm, collectIndexTerm --> collectTerm
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'collectTerm'  
+	where type in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm');
+update storageterm set recordtype = 'collectTerm'  
+	where recordtype in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm');
+update link set totype = 'collectTerm'  
+	where totype in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm');
+update link set fromtype = 'collectTerm'  
+	where fromtype in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm');
+COMMIT;
+
+-- genericBinary, image, sound --> binary
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'binary'  
+	where type in ('genericBinary', 'image', 'sound');
+update storageterm set recordtype = 'binary'  
+	where recordtype in ('genericBinary', 'image', 'sound');
+update link set totype = 'binary'  
+	where totype in ('genericBinary', 'image', 'sound');
+update link set fromtype = 'binary'  
+	where fromtype in ('genericBinary', 'image', 'sound');
+COMMIT;
+
+-- coraUser, systemOneUser --> user
+-- problems that needed to be fixed:
+select * from link
+	where totype in ('user','coraUser', 'systemOneUser')
+	and fromid = 'linkedTextIndexTerm';
+
+delete from link
+	where totype in ('user')
+	and fromid = 'linkedTextIndexTerm';
+delete from link
+	where totype in ('user')
+	and fromid = 'recordIdCollectIndexTerm';
+delete from link
+	where totype in ('user')
+	and fromid = 'autocompleteItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'blockChildStyleItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'compactChildStyleItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'defaultNameItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'familyNameItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'finalItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'indexTypeNumberItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'indexTypeStringItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'indexTypeTextItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'mapItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'metadataItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'multiQueryItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'permissionItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'idtemCollectionTextVarDefText';
+delete from link
+	where totype in ('user')
+	and fromid = 'recordRelationItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'textInCollectionItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'yesItem';
+delete from link
+	where totype in ('user')
+	and fromid = 'collectIndexTermTypeCollectionVar';
+delete from link
+	where totype in ('user')
+	and fromid = 'collectStorageTermTypeCollectionVar';
+delete from link
+	where totype in ('user')
+	and fromid = 'collectTermTypeCollectionVar';
+delete from link
+	where totype in ('user')
+	and fromid = 'excludePGroupCreationCollectionVar';
+delete from link
+	where totype in ('user')
+	and fromid = 'groupOfRecordTypeCollectionVar';
+
+select l2.* from link l2
+	join link l on l.fromid = l2.fromid and l.toid = l2.toid 
+	where l.totype in ('user','coraUser')
+	and l2.totype = 'systemOneUser';
+	and l.fromid = 'languageCollectionVar';
+
+select l2.* into templink from link l2
+	join link l on l.fromid = l2.fromid and l.toid = l2.toid 
+	where l.totype in ('user','coraUser')
+	and l2.totype = 'systemOneUser';
+
+select * from templink;
+
+delete  from link l
+	using templink t 
+where  
+	l.fromtype = t.fromtype 
+	and l.fromid = t.fromid
+	and l.totype = t.totype
+	and l.toid = t.toid;
+
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'user'  
+	where type in ('coraUser', 'systemOneUser');
+update storageterm set recordtype = 'user'  
+	where recordtype in ('coraUser', 'systemOneUser');
+update link set totype = 'user'  
+	where totype in ('coraUser', 'systemOneUser');
+update link set fromtype = 'user'  
+	where fromtype in ('coraUser', 'systemOneUser');
+COMMIT;
+
+-- loginToken, loginWebRedirect, loginLDAP --> login
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'login'  
+	where type in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+update storageterm set recordtype = 'login'  
+	where recordtype in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+update link set totype = 'login'  
+	where totype in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+update link set fromtype = 'login'  
+	where fromtype in ('loginToken', 'loginWebRedirect', 'loginLDAP');
+COMMIT;
+
+-- guiElementLink --> guiElement
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'guiElement'  
+	where type in ('guiElementLink');
+update storageterm set recordtype = 'guiElement'  
+	where recordtype in ('guiElementLink');
+update link set totype = 'guiElement'  
+	where totype in ('guiElementLink');
+update link set fromtype = 'guiElement'  
+	where fromtype in ('guiElementLink');
+COMMIT;
+
+
+-- countryCollectionItem, languageCollectionItem --> metadata
+select * from record where type in ('countryCollectionItem', 'languageCollectionItem');
+
+select s.recordtype , count(1) from storageterm s group by s.recordtype;
+
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'metadata'  
+	where type in ('countryCollectionItem', 'languageCollectionItem');
+update storageterm set recordtype = 'metadata'  
+	where recordtype in ('countryCollectionItem', 'languageCollectionItem');
+update link set totype = 'metadata'  
+	where totype in ('countryCollectionItem', 'languageCollectionItem');
+update link set fromtype = 'metadata'  
+	where fromtype in ('countryCollectionItem', 'languageCollectionItem');
+COMMIT;
+
+
+-- musicalWork --> work
+select * from record where type in ('work', 'musicalWork');
+
+select s.recordtype , count(1) from storageterm s group by s.recordtype;
+
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'work'  
+	where type in ('work', 'musicalWork');
+update storageterm set recordtype = 'work'  
+	where recordtype in ('work', 'musicalWork');
+update link set totype = 'work'  
+	where totype in ('work', 'musicalWork');
+update link set fromtype = 'work'  
+	where fromtype in ('work', 'musicalWork');
+COMMIT;
+
+-- movingImage, cartographic, languageMaterial --> record
+select * from record where type in ('movingImage', 'cartographic', 'languageMaterial');
+
+select s.recordtype , count(1) from storageterm s group by s.recordtype;
+
+BEGIN;
+SET CONSTRAINTS ALL DEFERRED;
+update record set type = 'record'  
+	where type in ('movingImage', 'cartographic', 'languageMaterial');
+update storageterm set recordtype = 'record'  
+	where recordtype in ('movingImage', 'cartographic', 'languageMaterial');
+update link set totype = 'record'  
+	where totype in ('movingImage', 'cartographic', 'languageMaterial');
+update link set fromtype = 'record'  
+	where fromtype in ('movingImage', 'cartographic', 'languageMaterial');
+COMMIT;
+
+
+BEGIN;
+select distinct l.fromtype , l.fromid , l.totype , 'text' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in('text','coraText','textSystemOne');
+delete from link l where l.totype like 'recordType' and l.toid in('text','coraText','textSystemOne');
+insert into link select * from linktemp;
+drop table linktemp;
+COMMIT;
+
+select distinct l.fromtype , l.fromid , l.totype , 'metadata' as toid from link l where l.totype like 'recordType' and l.toid in('metadata','countryCollectionItem', 'languageCollectionItem');
+
+BEGIN;
+select distinct l.fromtype , l.fromid , l.totype , 'metadata' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in('metadata','metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+delete from link l where l.totype like 'recordType' and l.toid in('metadata','metadataGroup', 'metadataItemCollection', 'genericCollectionItem', 'metadataNumberVariable', 'metadataResourceLink', 'metadataRecordLink', 'metadataTextVariable', 'metadataCollectionVariable');
+insert into link select * from linktemp;
+drop table linktemp;
+COMMIT;
+
+BEGIN;
+select distinct l.fromtype , l.fromid , l.totype , 'metadata' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in('metadata','countryCollectionItem', 'languageCollectionItem');
+delete from link l where l.totype like 'recordType' and l.toid in('metadata','countryCollectionItem', 'languageCollectionItem');
+insert into link select * from linktemp;
+drop table linktemp;
+COMMIT;
+
+BEGIN;
+select distinct l.fromtype , l.fromid , l.totype , 'presentation' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in('presentation','presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+delete from link l where l.totype like 'recordType' and l.toid in('presentation','presentationVar', 'presentationSurroundingContainer', 'presentationNumberVar', 'presentationGroup', 'presentationRecordLink', 'presentationCollectionVar', 'presentationResourceLink', 'presentationRepeatingContainer');
+insert into link select * from linktemp;
+drop table linktemp;
+COMMIT;
+
+
+
+update link set toid = 'collectTerm' where (totype = 'recordType' and toid in ('collectPermissionTerm', 'collectStorageTerm', 'collectIndexTerm'));
+update link set toid = 'binary' where (totype = 'recordType' and toid in ('genericBinary', 'image', 'sound'));
+update link set toid = 'user' where (totype = 'recordType' and toid in ('coraUser', 'systemOneUser'));
+update link set toid = 'login' where (totype = 'recordType' and toid in ('loginToken', 'loginWebRedirect', 'loginLDAP'));
+update link set toid = 'guiElement' where (totype = 'recordType' and toid in ('guiElementLink'));
+
+
+-- musicalWork --> work
+update link set toid = 'work' where (totype = 'recordType' and toid in ('musicalWork'));
+
+-- movingImage, cartographic, languageMaterial --> record
+update link set toid = 'record' where (totype = 'recordType' and toid in ('movingImage','cartographic','languageMaterial'));
+
+BEGIN;
+select distinct l.fromtype , l.fromid , l.totype , 'record' as toid into linktemp from link l where l.totype like 'recordType' and l.toid in ('record','movingImage','cartographic','languageMaterial');
+delete from link l where l.totype like 'recordType' and l.toid in ('record','movingImage','cartographic','languageMaterial');
+insert into link select * from linktemp;
+drop table linktemp;
+COMMIT;
+
+
+
+
+
+
+-- data changes
+\{"name": "linkedRecordType", "value": ("coraText"|"textSystemOne")\}
+\{"name": "linkedRecordType", "value": "text"\}
+
+\{"name": "linkedRecordType", "value": ("metadataGroup"|"metadataItemCollection"|"genericCollectionItem"|"genericCollectionItem"|"metadataNumberVariable"|"metadataResourceLink"|"metadataRecordLink"|"metadataTextVariable"|"metadataCollectionVariable")\}
+\{"name": "linkedRecordType", "value": "metadata"\}
+
+\{"name": "linkedRecordType", "value": ("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
+\{"name": "linkedRecordType", "value": "presentation"\}
+
+\{"name": "linkedRecordType", "value": ("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
+\{"name": "linkedRecordType", "value": "collectTerm"\}
+
+\{"name": "linkedRecordType", "value": ("genericBinary"|"image"|"sound")\}
+\{"name": "linkedRecordType", "value": "binary"\}
+
+\{"name": "linkedRecordType", "value": ("coraUser"|"systemOneUser")\}
+\{"name": "linkedRecordType", "value": "user"\}
+
+\{"name": "linkedRecordType", "value": ("loginToken"|"loginWebRedirect"|"loginLDAP")\}
+\{"name": "linkedRecordType", "value": "login"\}
+
+\{"name": "linkedRecordType", "value": ("guiElementLink")\}
+\{"name": "linkedRecordType", "value": "guiElement"\}
+
+
+
+\{"name": "linkedRecordType", "value": ("countryCollectionItem"|"languageCollectionItem")\}
+\{"name": "linkedRecordType", "value": "metadata"\}
+
+\{"name": "linkedRecordType", "value": "search"\}, \{"name": "linkedRecordId", "value": "metadataCollectionItemSearch"\}
+\{"name": "linkedRecordType", "value": "search"\}, \{"name": "linkedRecordId", "value": "metadataSearch"\}
+
+recordType countryCollectionItem search metadataCollectionItemSearch 
+recordType countryCollectionItem search metadataSearch 
+
+recordType languageCollectionItem search metadataCollectionItemSearch 
+recordType languageCollectionItem search metadataSearch 
+
+\{"name": "linkedRecordType", "value": ("movingImage"|"cartographic"|"languageMaterial")\}
+\{"name": "linkedRecordType", "value": "record"\}
+
+\{"name": "linkedRecordType", "value": ("musicalWork")\}
+\{"name": "linkedRecordType", "value": "work"\}
+
+
+-- changes for linkedRecordType = recordtype
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("coraText"|"textSystemOne")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "text"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("metadataGroup"|"metadataItemCollection"|"genericCollectionItem"|"genericCollectionItem"|"metadataNumberVariable"|"metadataResourceLink"|"metadataRecordLink"|"metadataTextVariable"|"metadataCollectionVariable")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "metadata"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "presentation"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "collectTerm"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("genericBinary"|"image"|"sound")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "binary"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("coraUser"|"systemOneUser")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "user"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("loginToken"|"loginWebRedirect"|"loginLDAP")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "login"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("guiElementLink")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "guiElement"\}
+
+-specific for Alvin
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("subOrganisation"|"topOrganisation"|"rootOrganisation")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "organisation"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("countryCollectionItem"|"languageCollectionItem")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "metadata"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("movingImage"|"cartographic"|"languageMaterial")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "record"\}
+
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": ("musicalWork")\}
+\{"name": "linkedRecordType", "value": "recordType"\}, \{"name": "linkedRecordId", "value": "work"\}
+
+
+
+-- FITNESSE
+\{"name":"linkedRecordType","value":("coraText"|"textSystemOne")\}
+\{"name":"linkedRecordType","value":"text"\}
+
+\{"name":"linkedRecordType","value":("metadataGroup"|"metadataItemCollection"|"genericCollectionItem"|"genericCollectionItem"|"metadataNumberVariable"|"metadataResourceLink"|"metadataRecordLink"|"metadataTextVariable"|"metadataCollectionVariable")\}
+\{"name":"linkedRecordType","value":"metadata"\}
+
+\{"name":"linkedRecordType","value":("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
+\{"name":"linkedRecordType","value":"presentation"\}
+
+\{"name":"linkedRecordType","value":("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
+\{"name":"linkedRecordType","value":"collectTerm"\}
+
+\{"name":"linkedRecordType","value":("genericBinary"|"image"|"sound")\}
+\{"name":"linkedRecordType","value":"binary"\}
+
+\{"name":"linkedRecordType","value":("coraUser"|"systemOneUser")\}
+\{"name":"linkedRecordType","value":"user"\}
+
+\{"name":"linkedRecordType","value":("loginToken"|"loginWebRedirect"|"loginLDAP")\}
+\{"name":"linkedRecordType","value":"login"\}
+
+\{"name":"linkedRecordType","value":("guiElementLink")\}
+\{"name":"linkedRecordType","value":"guiElement"\}
+
+\{"name":"linkedRecordType","value":("subOrganisation"|"topOrganisation"|"rootOrganisation")\}
+\{"name":"linkedRecordType","value":"organisation"\}
+
+\{"name":"linkedRecordType","value":("metadataCollectionItem"|"countryCollectionItem"|"languageCollectionItem")\}
+\{"name":"linkedRecordType","value":"metadata"\}
+
+\{"name":"linkedRecordType","value":"search"\},\{"name":"linkedRecordId","value":"metadataCollectionItemSearch"\}
+\{"name":"linkedRecordType","value":"search"\},\{"name":"linkedRecordId","value":"metadataSearch"\}
+
+\{"name": "linkedRecordType", "value": ("movingImage"|"cartographic"|"languageMaterial")\}
+\{"name": "linkedRecordType", "value": "record"\}
+
+\{"name": "linkedRecordType", "value": ("musicalWork")\}
+\{"name": "linkedRecordType", "value": "work"\}
+
+
+--changesforlinkedRecordType=recordtype
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("coraText"|"textSystemOne")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"text"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("metadataGroup"|"metadataItemCollection"|"genericCollectionItem"|"genericCollectionItem"|"metadataNumberVariable"|"metadataResourceLink"|"metadataRecordLink"|"metadataTextVariable"|"metadataCollectionVariable")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"metadata"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("presentationVar"|"presentationSurroundingContainer"|"presentationNumberVar"|"presentationGroup"|"presentationRecordLink"|"presentationCollectionVar"|"presentationResourceLink"|"presentationRepeatingContainer")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"presentation"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("subOrganisation"|"topOrganisation"|"rootOrganisation")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"organisation"\}
+
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":("metadataCollectionItem"|"countryCollectionItem"|"languageCollectionItem")\}
+\{"name":"linkedRecordType","value":"recordType"\},\{"name":"linkedRecordId","value":"metadata"\}
+
+\|.s*(coraText|textSystemOne).s*\|
+\| text \|
+
+\|.s*(metadataCollectionItem|countryCollectionItem|languageCollectionItem|metadataGroup|metadataItemCollection|genericCollectionItem|genericCollectionItem|metadataNumberVariable|metadataResourceLink|metadataRecordLink|metadataTextVariable|metadataCollectionVariable).s*\|
+\| metadata \|
+
+\|.s*(presentationVar|presentationSurroundingContainer|presentationNumberVar|presentationGroup|presentationRecordLink|presentationCollectionVar|presentationResourceLink|presentationRepeatingContainer).s*\|
+\| presentation \|
+
+\|.s*(collectPermissionTerm|collectStorageTerm|collectIndexTerm).s*\|
+\| collectTerm \|
+
+#\{"name":"linkedRecordType","value":("collectPermissionTerm"|"collectStorageTerm"|"collectIndexTerm")\}
+#\{"name":"linkedRecordType","value":"collectTerm"\}
+
+\{"name":"linkedRecordType","value":("genericBinary"|"image"|"sound")\}
+\{"name":"linkedRecordType","value":"binary"\}
+
+\|.s*(genericBinary|image|sound).s*\|
+\| binary \|
+
+\|.s*(coraUser|systemOneUser).s*\|
+\| user \|
+
+\|.s*(loginToken|loginWebRedirect|loginLDAP).s*\|
+\| login \|
+
+\|.s*(guiElementLink).s*\|
+\| guiElement \|
+
+\|.s*(subOrganisation|topOrganisation|rootOrganisation).s*\|
+\| organisation \|
+
+\|.s*(metadataCollectionItem|countryCollectionItem|languageCollectionItem).s*\|
+\| metadata \|
+
+
+
+
+

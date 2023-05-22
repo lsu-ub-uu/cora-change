@@ -41,12 +41,21 @@ public class ChangeValidatesForValidationTypeTest {
 	// }
 
 	@Test(enabled = false)
+	public void runChangeValidationTypesToAbstractLevelForAlvin() throws Exception {
+
+		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
+				ALVIN_LOCAL_APPTOKEN_URL, ALVIN_LOCAL_BASE_URL);
+
+		updater.changeValidationTypesToAbstractLevel("Alvin");
+	}
+
+	@Test(enabled = false)
 	public void runChangeValidationTypesToAbstractLevelForDiVA() throws Exception {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
 				DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL);
 
-		updater.changeValidationTypesToAbstractLevel("SystemOne");
+		updater.changeValidationTypesToAbstractLevel("Diva");
 	}
 
 	@Test(enabled = false)
