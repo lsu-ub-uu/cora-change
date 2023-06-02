@@ -554,3 +554,6 @@ update link set toid = 'guiElement' where (totype = 'recordType' and toid in ('g
 (\{.*\{"name":"linkedRecordType","value":"validationType"\},\{"name":"linkedRecordId","value":"recordType"\}\],"name":"validationType"\}.*)\{"children":\[\{"name":"linkedRecordType","value":"presentation"},\{"name":"linkedRecordId","value":".*"}\],"name":"presentationFormId"},(.*\})
 
 (\{.*\{"name":"linkedRecordType","value":"validationType"\},\{"name":"linkedRecordId","value":"recordType"\}\],"name":"validationType"\}.*)\{"children":\[\{"name":"linkedRecordType","value":"presentation"},\{"name":"linkedRecordId","value":".*"}\],"name":"newPresentationFormId"},(.*\})
+
+# Fitnesse: Remove abstarct field from recordTypes
+\{"name":\s*"abstract",\s*"value":\s*"\w*"\},
