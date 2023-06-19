@@ -22,7 +22,7 @@ public class SetFinalValueForValidationTypeTest {
 	private static final String DIVA_DEV_APPTOKEN_URL = "http://130.238.171.238:38182/apptokenverifier/rest/";
 	private static final String DIVA_DEV_BASE_URL = "http://130.238.171.238:38082/diva/rest/";
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void addFinalValueForValidationType() throws Exception {
 
 		SetFinalValueForValidationType updater = new SetFinalValueForValidationType(
