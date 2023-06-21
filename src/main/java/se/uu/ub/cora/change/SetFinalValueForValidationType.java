@@ -14,6 +14,7 @@ import se.uu.ub.cora.clientdata.ClientDataProvider;
 import se.uu.ub.cora.clientdata.ClientDataRecord;
 import se.uu.ub.cora.clientdata.ClientDataRecordGroup;
 import se.uu.ub.cora.clientdata.ClientDataRecordLink;
+import se.uu.ub.cora.clientdata.converter.ClientDataToJsonConverter;
 import se.uu.ub.cora.clientdata.converter.ClientDataToJsonConverterFactory;
 import se.uu.ub.cora.clientdata.converter.ClientDataToJsonConverterProvider;
 import se.uu.ub.cora.javaclient.cora.DataClient;
@@ -21,6 +22,13 @@ import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
 
 public class SetFinalValueForValidationType {
 
+	private static final String REF = "ref";
+	private static final String CHILD_REFERENCES = "childReferences";
+	private static final String CHILD_REFERENCE = "childReference";
+	private static final String RECORD_INFO = "recordInfo";
+	private static final String DATA_DIVIDER = "dataDivider";
+	private static final String DEF_TEXT = "DefText";
+	private static final String TEXT = "Text";
 	private static final String METADATA = "metadata";
 	private static final String TEXT_SV = "RecordInfo för {0}";
 	private static final String TEXT_EN = "RecordInfo for {0}";
@@ -30,23 +38,18 @@ public class SetFinalValueForValidationType {
 	private static final String DEF_TEXT_EN = "The record info group contains technical "
 			+ "information about the record, such as, id, when the record was created, which part "
 			+ "of the system the record belongs to etc. This recordInfo belongs to {0}";
-	private String apptokenUrl;
-	private String baseUrl;
+
+	private static final String RECORD_INFO_ID_PATTERN = "recordInfoFor{0}{1}Group";
+	private static final String PRESENTATION_ID_PATTERN = "recordInfoFor{0}{1}PGroup";
+	private static final String VAL_TYPE_LINK_ID_PATTERN = "validationType{0}Link";
+	private static final String TEXT_ID_PATTERN = "{0}{1}";
 	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
 	private int repeatId = 1000;
 
-	private static final String REF = "ref";
-	private static final String CHILD_REFERENCES = "childReferences";
-	private static final String CHILD_REFERENCE = "childReference";
-	private static final String RECORD_INFO = "recordInfo";
-	private static final String DATA_DIVIDER = "dataDivider";
-
 	private ClientDataToJsonConverterFactory dataToJsonConverterFactory;
 
 	public SetFinalValueForValidationType(String apptokenUrl, String baseUrl) {
-		this.apptokenUrl = apptokenUrl;
-		this.baseUrl = baseUrl;
 		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
 				baseUrl);
 		dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
@@ -62,92 +65,204 @@ public class SetFinalValueForValidationType {
 	// 5 create as new validationType link with final value
 	// 6 create new recordInfos for new and update with new link
 	// 7 update newGroup and updateGroup with new recordInfos.
+	// 8 update with presentations
 
 	public void addFinalValueForValidationType() {
-		// TODO Auto-generated method stub
-
 		System.out.println("Start");
 
 		ClientDataList listOfValidationTypes = dataClient.readList("validationType");
+		loopValidationTypes(listOfValidationTypes);
+
+		System.out.println("Maybe finished :-)");
+	}
+
+	private void loopValidationTypes(ClientDataList listOfValidationTypes) {
 		for (ClientData validationTypeData : listOfValidationTypes.getDataList()) {
-			ClientDataRecord validationTypeRecord = (ClientDataRecord) validationTypeData;
-			ClientDataRecordGroup validationTypeRecordGroup = validationTypeRecord
-					.getDataRecordGroup();
-			// String id = validationTypeRecordGroup.getId();
-			System.out.println(validationTypeRecordGroup.getId());
-			System.out.println("-------------------------------------");
+			ClientDataRecordGroup validationTypeRecordGroup = getDataRecordGroup(
+					validationTypeData);
+
+			printHeaderValidationType(validationTypeRecordGroup);
 
 			readDefinitions(validationTypeRecordGroup);
 
-			System.out.println();
+			printExtraLine();
 
 		}
+	}
 
-		System.out.println("Maybe finished :-)");
+	private ClientDataRecordGroup getDataRecordGroup(ClientData validationTypeData) {
+		ClientDataRecord validationTypeRecord = (ClientDataRecord) validationTypeData;
+		ClientDataRecordGroup validationTypeRecordGroup = validationTypeRecord.getDataRecordGroup();
+		return validationTypeRecordGroup;
+	}
 
+	private void printHeaderValidationType(ClientDataRecordGroup validationTypeRecordGroup) {
+		System.out.println(validationTypeRecordGroup.getId());
+		System.out.println("-------------------------------------");
 	}
 
 	private void readDefinitions(ClientDataRecordGroup validationTypeRecordGroup) {
 
 		try {
-			ClientDataRecord orginalNewDefRecordInfo = getRecordInfo(validationTypeRecordGroup,
-					"newMetadataId");
-			ClientDataRecord originalUpdateDefRecordInfo = getRecordInfo(validationTypeRecordGroup,
-					"metadataId");
-			ClientDataRecord oldValidationTypeRecordLinkRecord = readValidationTypeLinkFromRecordInfo(
-					originalUpdateDefRecordInfo.getDataRecordGroup());
+			// ReadDefinitions for new and update
+			ClientDataRecordGroup definitionForNewRecord = readRecordFromMetadaLink(
+					validationTypeRecordGroup, "newMetadataId");
+			ClientDataRecordGroup definitionForUpdateRecord = readRecordFromMetadaLink(
+					validationTypeRecordGroup, "metadataId");
 
-			String newValidationTypeLinkId = copyAndCreateValidationTypeLink(
-					validationTypeRecordGroup.getId(), oldValidationTypeRecordLinkRecord);
+			// Read RecordInfos
+			ClientDataRecord orginalNewDefRecordInfo = findChildReferenceUsingNameInData(
+					definitionForNewRecord, "recordInfo");
+			ClientDataRecord originalUpdateDefRecordInfo = findChildReferenceUsingNameInData(
+					definitionForUpdateRecord, "recordInfo");
+			String orginalNewDefRecordInfoId = orginalNewDefRecordInfo.getId();
+			String originalUpdateDefRecordInfoId = originalUpdateDefRecordInfo.getId();
 
-			String copyOfNewRecordInfoId = copyAndCreateRecordInfo(
-					validationTypeRecordGroup.getId(), orginalNewDefRecordInfo,
-					newValidationTypeLinkId, "New");
-			String copyUpdateRecordInfoId = copyAndCreateRecordInfo(
-					validationTypeRecordGroup.getId(), orginalNewDefRecordInfo,
-					newValidationTypeLinkId, "Update");
+			// Create ValidationTypeLink
+			String newValidationTypeLinkId = createValidationTypeLink(validationTypeRecordGroup,
+					originalUpdateDefRecordInfo);
 
-			updateDefinitionReplacingRecordInfo(validationTypeRecordGroup,
-					orginalNewDefRecordInfo.getId(), copyOfNewRecordInfoId, "newMetadataId");
-			updateDefinitionReplacingRecordInfo(validationTypeRecordGroup,
-					originalUpdateDefRecordInfo.getId(), copyUpdateRecordInfoId, "metadataId");
+			updatedDefinitionWithNewValidationTypeLink("New", validationTypeRecordGroup.getId(),
+					definitionForNewRecord, orginalNewDefRecordInfo, newValidationTypeLinkId);
+
+			updatedDefinitionWithNewValidationTypeLink("Update", validationTypeRecordGroup.getId(),
+					definitionForUpdateRecord, originalUpdateDefRecordInfo,
+					newValidationTypeLinkId);
+
+			// Presenentation
+			System.out.println("readPresentations1");
+			ClientDataRecordGroup presentNew = readRecordFromMetadaLink(validationTypeRecordGroup,
+					"newPresentationFormId");
+			System.out.println("readPresentations2");
+			ClientDataRecordGroup presentUpdate = readRecordFromMetadaLink(
+					validationTypeRecordGroup, "presentationFormId");
+
+			System.out.println("findChildReferences1");
+			ClientDataRecord originalPresentNew = findChildReferenceUsingNameInData(presentNew,
+					orginalNewDefRecordInfoId);
+			System.out.println("findChildReferences2");
+			ClientDataRecord originalPresentUpdate = findChildReferenceUsingNameInData(
+					presentUpdate, originalUpdateDefRecordInfoId);
+
+			System.out.println("replace1");
+			replaceChildReferenceAndUpdateInStorage("presentation", presentNew,
+					originalPresentNew.getId(), MessageFormat.format(PRESENTATION_ID_PATTERN, "New",
+							validationTypeRecordGroup.getId()));
+
+			System.out.println("replace2");
+			replaceChildReferenceAndUpdateInStorage("presentation", presentUpdate,
+					originalPresentUpdate.getId(), MessageFormat.format(PRESENTATION_ID_PATTERN,
+							"Update", validationTypeRecordGroup.getId()));
 
 		} catch (Exception e) {
 			System.err.println(e);
 		}
 	}
 
-	private void updateDefinitionReplacingRecordInfo(
-			ClientDataRecordGroup validationTypeRecordGroup, String originalRecordInfoId,
-			String newRecordInfoId, String childNameInDataToReplace) {
-		ClientDataRecordGroup originalDefinition = readRecordFromMetadaLink(
-				validationTypeRecordGroup, childNameInDataToReplace);
-		replaceChildReference(originalDefinition.getId(), originalDefinition, newRecordInfoId);
-
-		dataClient.update(METADATA, originalRecordInfoId, originalDefinition);
-		System.out.println("Group updated: " + originalRecordInfoId);
+	private void updatedDefinitionWithNewValidationTypeLink(String mode, String validationTypeId,
+			ClientDataRecordGroup definitionRecord, ClientDataRecord orginalDefinitionRecordInfo,
+			String newValidationTypeLinkId) {
+		String orginalNewDefRecordInfoId = orginalDefinitionRecordInfo.getId();
+		String copyOfNewRecordInfoId = copyAndCreateRecordInfo(orginalDefinitionRecordInfo,
+				validationTypeId, newValidationTypeLinkId, mode);
+		replaceChildReferenceAndUpdateInStorage(METADATA, definitionRecord,
+				orginalNewDefRecordInfoId, copyOfNewRecordInfoId);
 	}
 
-	private String copyAndCreateRecordInfo(String validationTypeId,
-			ClientDataRecord originalRecordInfo, String newValidationTypeId, String mode) {
+	private String createValidationTypeLink(ClientDataRecordGroup validationTypeRecordGroup,
+			ClientDataRecord originalUpdateDefRecordInfo) throws Exception {
+		ClientDataRecord oldValidationTypeRecordLinkRecord = readValidationTypeLinkFromRecordInfo(
+				originalUpdateDefRecordInfo.getDataRecordGroup());
+		return copyAndCreateValidationTypeLink(validationTypeRecordGroup.getId(),
+				oldValidationTypeRecordLinkRecord);
+	}
+
+	private ClientDataRecord findChildReferenceUsingNameInData(
+			ClientDataRecordGroup definitionRecord, String nameInDataToMatch) {
+		List<ClientDataChild> childReferences = getChildReferences(definitionRecord);
+		for (ClientDataChild childReference : childReferences) {
+			ClientDataRecord mightBeRecordInfoGroup = readRefLinkFromStorage(childReference);
+			if (mightBeRecordInfoGroup.getDataRecordGroup()
+					.getFirstAtomicValueWithNameInData("nameInData").equals(nameInDataToMatch)) {
+				return mightBeRecordInfoGroup;
+			}
+		}
+		throw new RuntimeException("NO RECORDINFO FOUND FOR:" + definitionRecord.getId());
+	}
+
+	private ClientDataRecordGroup readRecordFromMetadaLink(ClientDataRecordGroup dataRecordGroup,
+			String nameInData) {
+		ClientDataRecordLink linkNew = (ClientDataRecordLink) dataRecordGroup
+				.getFirstChildWithNameInData(nameInData);
+		return readMetadata(linkNew);
+	}
+
+	private ClientDataRecordGroup readMetadata(ClientDataRecordLink linkToDataGroup) {
+		ClientDataRecord metadataGroupRecord = dataClient
+				.read(linkToDataGroup.getLinkedRecordType(), linkToDataGroup.getLinkedRecordId());
+		return metadataGroupRecord.getDataRecordGroup();
+	}
+
+	private List<ClientDataChild> getChildReferences(ClientDataRecordGroup metadataGroup) {
+		ClientDataGroup childReferencesGroup = metadataGroup
+				.getFirstGroupWithNameInData(CHILD_REFERENCES);
+		return childReferencesGroup.getAllChildrenWithNameInData(CHILD_REFERENCE);
+	}
+
+	private ClientDataRecord readRefLinkFromStorage(ClientDataChild clientDataChild) {
+		ClientDataRecordLink ref = (ClientDataRecordLink) ((ClientDataGroup) clientDataChild)
+				.getFirstChildWithNameInData(REF);
+		return dataClient.read(ref.getLinkedRecordType(), ref.getLinkedRecordId());
+	}
+
+	private void printExtraLine() {
+		System.out.println();
+	}
+
+	private void replaceChildReferenceAndUpdateInStorage(String type,
+			ClientDataRecordGroup definitionRecord, String childReferenceTobeReplaced,
+			String childReferenceToReplaceWith) {
+
+		replaceChildReference(type, definitionRecord, childReferenceTobeReplaced,
+				childReferenceToReplaceWith);
+
+		dataClient.update(type, definitionRecord.getId(), definitionRecord);
+		System.out.println("Group updated: " + definitionRecord.getId());
+	}
+
+	private String copyAndCreateRecordInfo(ClientDataRecord originalRecordInfo,
+			String validationTypeId, String newValidationTypeLinkId, String mode) {
 
 		ClientDataRecordGroup newRecordInfo = copyAsNew(originalRecordInfo);
 		removeObsoleteChildrenForRecordInfo(newRecordInfo);
-		removeObsoleteChildrenFromDataRecordGroup(newRecordInfo, "text", "defText");
-		replaceChildReference("validationTypeLink", newRecordInfo, newValidationTypeId);
-		newRecordInfo
-				.setId("recordInfoFor" + mode + firstLetterUpperCase(validationTypeId) + "Group");
-		// createAndStoreText(newRecordInfo, "Text");
-		// createAndStoreText(newRecordInfo, "DefText");
+		removeObsoleteChildrenFromDataRecordGroup(newRecordInfo, "textId", "defTextId");
+		replaceChildReference(METADATA, newRecordInfo, "validationTypeLink",
+				newValidationTypeLinkId);
+		String recordInfoId = MessageFormat.format(RECORD_INFO_ID_PATTERN, mode,
+				firstLetterUpperCase(validationTypeId));
+		newRecordInfo.setId(recordInfoId);
 
-		// CONVERT TO JSON
-		// ClientDataToJsonConverter factorUsingConvertible = dataToJsonConverterFactory
-		// .factorUsingConvertible(newRecordInfo);
-		// System.out.println(factorUsingConvertible.toJson());
-		ClientDataRecord created = dataClient.create(METADATA, newRecordInfo);
-		System.out.println("Created RecordInfo: " + created.getId());
+		createAndStoreText(newRecordInfo, TEXT);
+		createAndStoreText(newRecordInfo, DEF_TEXT);
 
-		return created.getId();
+		newRecordInfo.addChild(
+				ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId("textId", "text",
+						MessageFormat.format(TEXT_ID_PATTERN, newRecordInfo.getId(), TEXT)));
+		newRecordInfo.addChild(
+				ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId("defTextId", "text",
+						MessageFormat.format(TEXT_ID_PATTERN, newRecordInfo.getId(), DEF_TEXT)));
+
+		// convertToJson(newRecordInfo);
+
+		try {
+			ClientDataRecord created = dataClient.create(METADATA, newRecordInfo);
+			System.out.println("Created RecordInfo: " + created.getId());
+			return created.getId();
+		} catch (Exception e) {
+			System.err.println("Created RecordInfo already exists: " + newRecordInfo.getId());
+			System.err.println(e.getMessage());
+			return recordInfoId;
+		}
 
 	}
 
@@ -169,47 +284,56 @@ public class SetFinalValueForValidationType {
 		}
 	}
 
-	private void replaceChildReference(String childNameToReplace, ClientDataRecordGroup dataGroup,
-			String linkId) {
-		ClientDataGroup childReferenceValidationType = createChildReferenceGroup(METADATA, linkId);
+	private void replaceChildReference(String type, ClientDataRecordGroup definitionGroup,
+			String childToBeReplaced, String childToBeReplacedWith) {
 
-		List<ClientDataChild> listOfChildReferences = getListOfChildReferences(dataGroup);
+		ClientDataGroup childReferenceValidationType = createChildReferenceGroup(type,
+				childToBeReplacedWith);
 
-		dataGroup.removeFirstChildWithNameInData("childReferences");
+		List<ClientDataChild> listOfChildReferences = getListOfChildReferences(definitionGroup);
+
+		definitionGroup.removeFirstChildWithNameInData(CHILD_REFERENCES);
 
 		Optional<ClientDataChild> oChildReference = Optional.empty();
 
-		System.out.println("trying to find: " + childNameToReplace);
+		// System.out.println("trying to find: " + childToBeReplaced);
 		for (ClientDataChild childReference : listOfChildReferences) {
 			ClientDataRecordLink ref = ((ClientDataGroup) childReference)
 					.getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
 
-			if (childNameToReplace.equals(ref.getLinkedRecordId())) {
+			if (childToBeReplaced.equals(ref.getLinkedRecordId())) {
 				oChildReference = Optional.of(childReference);
 			}
 		}
 		if (oChildReference.isPresent()) {
-			System.out.println("Found childrefernece: " + childNameToReplace);
 			listOfChildReferences.remove(oChildReference.get());
 			listOfChildReferences.add(childReferenceValidationType);
-			System.out.println("Replace " + childNameToReplace + ": " + linkId);
 
 			ClientDataGroup newChildReferences = ClientDataProvider
-					.createGroupUsingNameInData("childReferences");
+					.createGroupUsingNameInData(CHILD_REFERENCES);
 			newChildReferences.addChildren(listOfChildReferences);
-			dataGroup.addChild(newChildReferences);
+			definitionGroup.addChild(newChildReferences);
+			System.out.println(
+					"Child replaced from " + childToBeReplaced + " to " + childToBeReplacedWith);
 
 		} else {
-			throw new RuntimeException("Failed to replace/find " + childNameToReplace);
+
+			throw new RuntimeException("Failed to replace/find " + childToBeReplaced);
 		}
+	}
+
+	private void convertToJson(ClientDataRecordGroup definitionGroup) {
+		ClientDataToJsonConverter factorUsingConvertible = dataToJsonConverterFactory
+				.factorUsingConvertible(definitionGroup);
+		System.out.println(factorUsingConvertible.toJson());
 	}
 
 	private List<ClientDataChild> getListOfChildReferences(ClientDataRecordGroup dataGroup) {
 		ClientDataGroup childReferences = dataGroup
-				.getFirstChildOfTypeAndName(ClientDataGroup.class, "childReferences");
+				.getFirstChildOfTypeAndName(ClientDataGroup.class, CHILD_REFERENCES);
 
 		List<ClientDataChild> listOfChildReferences = childReferences
-				.getAllChildrenWithNameInData("childReference");
+				.getAllChildrenWithNameInData(CHILD_REFERENCE);
 		return new ArrayList<>(listOfChildReferences);
 	}
 
@@ -220,7 +344,7 @@ public class SetFinalValueForValidationType {
 		String validationTypeIdUpperCase = firstLetterUpperCase(validationTypeId);
 
 		newValidationTypeLinkRecordGroup
-				.setId("validationType" + validationTypeIdUpperCase + "Link");
+				.setId(MessageFormat.format(VAL_TYPE_LINK_ID_PATTERN, validationTypeIdUpperCase));
 
 		ClientDataAtomic finalValue = ClientDataProvider
 				.createAtomicUsingNameInDataAndValue("finalValue", validationTypeId);
@@ -254,15 +378,13 @@ public class SetFinalValueForValidationType {
 			String... listOfChildrenToRemove) {
 		for (String childName : listOfChildrenToRemove) {
 			dataGroup.removeAllChildrenWithNameInData(childName);
-			System.out.println("removed from DataGroup: " + childName);
 		}
 	}
 
 	private void removeObsoleteChildrenFromDataRecordGroup(ClientDataRecordGroup dataRecordGroup,
 			String... listOfChildrenToRemove) {
 		for (String childName : listOfChildrenToRemove) {
-			dataRecordGroup.removeAllChildrenWithNameInData(childName);
-			System.out.println("removed from DataRecordGroup: " + childName);
+			dataRecordGroup.removeFirstChildWithNameInData(childName);
 		}
 	}
 
@@ -287,67 +409,24 @@ public class SetFinalValueForValidationType {
 		throw new RuntimeException("failed to find validationTypeLink");
 	}
 
-	private ClientDataRecord getRecordInfo(ClientDataRecordGroup dataRecordGroup,
-			String nameInData) {
-		ClientDataRecordGroup definitionRecord = readRecordFromMetadaLink(dataRecordGroup,
-				nameInData);
-		List<ClientDataChild> children = getListChildReferences(definitionRecord);
-		for (ClientDataChild clientDataChild : children) {
-			ClientDataRecord mightBeRecordInfoGroup = readChildren(clientDataChild);
-			if (mightBeRecordInfoGroup.getDataRecordGroup()
-					.getFirstAtomicValueWithNameInData("nameInData").equals("recordInfo")) {
-				return mightBeRecordInfoGroup;
-			}
-		}
-		throw new RuntimeException("NO RECORDINFO FOUND FOR:" + nameInData);
-	}
-
-	private ClientDataRecordGroup readRecordFromMetadaLink(ClientDataRecordGroup dataRecordGroup,
-			String nameInData) {
-		ClientDataRecordLink linkNew = (ClientDataRecordLink) dataRecordGroup
-				.getFirstChildWithNameInData(nameInData);
-		ClientDataRecordGroup definitionRecord = readMetadata(linkNew);
-		return definitionRecord;
-	}
-
-	private ClientDataRecordGroup readMetadata(ClientDataRecordLink linkToDataGroup) {
-		ClientDataRecord metadataGroupRecord = dataClient
-				.read(linkToDataGroup.getLinkedRecordType(), linkToDataGroup.getLinkedRecordId());
-		return metadataGroupRecord.getDataRecordGroup();
-	}
-
-	private List<ClientDataChild> getListChildReferences(ClientDataRecordGroup metadataGroup) {
-		ClientDataGroup childReferencesGroup = metadataGroup
-				.getFirstGroupWithNameInData(CHILD_REFERENCES);
-		return childReferencesGroup.getAllChildrenWithNameInData(CHILD_REFERENCE);
-	}
-
-	private ClientDataRecord readChildren(ClientDataChild clientDataChild) {
-		ClientDataRecordLink ref = (ClientDataRecordLink) ((ClientDataGroup) clientDataChild)
-				.getFirstChildWithNameInData(REF);
-		return dataClient.read(ref.getLinkedRecordType(), ref.getLinkedRecordId());
-	}
-
-	private void createAndStoreText(ClientDataRecordGroup readRecordTypeRecordGroup, String mode) {
+	private void createAndStoreText(ClientDataRecordGroup readRecordTypeRecordGroup,
+			String textMode) {
 		String messageSv = TEXT_SV;
 		String messageEn = TEXT_EN;
-		if ("DefText".equals(mode)) {
+		if (DEF_TEXT.equals(textMode)) {
 			messageSv = DEF_TEXT_SV;
 			messageEn = DEF_TEXT_EN;
 		}
 
-		ClientDataGroup readRecordInfo = (ClientDataGroup) readRecordTypeRecordGroup
-				.getFirstChildWithNameInData(RECORD_INFO);
-
 		ClientDataRecordGroup dataRecordGroupText = ClientDataProvider
 				.createRecordGroupUsingNameInData("text");
-		ClientDataGroup recordInfoText = ClientDataProvider.createGroupUsingNameInData(RECORD_INFO);
-		recordInfoText.addChild(copyLink(readRecordInfo, DATA_DIVIDER));
 
-		ClientDataAtomic idText = ClientDataProvider.createAtomicUsingNameInDataAndValue("id",
-				readRecordTypeRecordGroup.getId() + mode);
-		recordInfoText.addChild(idText);
-		dataRecordGroupText.addChild(recordInfoText);
+		dataRecordGroupText.setId(
+				MessageFormat.format(TEXT_ID_PATTERN, readRecordTypeRecordGroup.getId(), textMode));
+		dataRecordGroupText.setDataDivider(readRecordTypeRecordGroup.getDataDivider());
+
+		setValidationTypeIntoRecordInfo(dataRecordGroupText);
+
 		// sv
 		ClientDataGroup textPartSv = ClientDataProvider.createGroupUsingNameInData("textPart");
 		dataRecordGroupText.addChild(textPartSv);
@@ -365,27 +444,20 @@ public class SetFinalValueForValidationType {
 				MessageFormat.format(messageEn, readRecordTypeRecordGroup.getId()));
 		textPartEn.addChild(textEn);
 
-		ClientDataRecord created = dataClient.create("coraText", dataRecordGroupText);
-		System.out.println("Created text: " + created.getId());
+		// convertToJson(dataRecordGroupText);
+		try {
+			ClientDataRecord created = dataClient.create("text", dataRecordGroupText);
+			System.out.println("Created text: " + created.getId());
+		} catch (Exception e) {
+			System.out.println("Created text: " + dataRecordGroupText.getId());
+		}
 	}
 
-	private ClientDataRecordLink copyLink(ClientDataGroup recordTypeRecordGroup,
-			String nameInData) {
-		ClientDataRecordLink link = getLinkIdByNameInData(recordTypeRecordGroup, nameInData);
-		return createLink(nameInData, link.getLinkedRecordType(), link.getLinkedRecordId());
-	}
-
-	private ClientDataRecordLink createLink(String nameInData, String linkType, String linkId) {
-
-		return ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId(nameInData, linkType,
-				linkId);
-
-	}
-
-	private ClientDataRecordLink getLinkIdByNameInData(ClientDataGroup recordTypeRecordGroup,
-			String linkNameInData) {
-		return (ClientDataRecordLink) recordTypeRecordGroup
-				.getFirstChildWithNameInData(linkNameInData);
+	private void setValidationTypeIntoRecordInfo(ClientDataRecordGroup dataRecordGroupText) {
+		ClientDataGroup recordInfo = dataRecordGroupText
+				.getFirstChildOfTypeAndName(ClientDataGroup.class, RECORD_INFO);
+		recordInfo.addChild(ClientDataProvider.createRecordLinkUsingNameInDataAndTypeAndId(
+				"validationType", "validationType", "coraText"));
 	}
 
 	private ClientDataGroup createChildReferenceGroup(String linkType, String linkId) {
