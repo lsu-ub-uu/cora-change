@@ -38,7 +38,6 @@ public class SetFinalValueForValidationType {
 	private static final String DEF_TEXT_EN = "The record info group contains technical "
 			+ "information about the record, such as, id, when the record was created, which part "
 			+ "of the system the record belongs to etc. This recordInfo belongs to {0}";
-
 	private static final String RECORD_INFO_ID_PATTERN = "recordInfoFor{0}{1}Group";
 	private static final String PRESENTATION_ID_PATTERN = "recordInfoFor{0}{1}PGroup";
 	private static final String VAL_TYPE_LINK_ID_PATTERN = "validationType{0}Link";
@@ -83,7 +82,8 @@ public class SetFinalValueForValidationType {
 
 			printHeaderValidationType(validationTypeRecordGroup);
 
-			readDefinitions(validationTypeRecordGroup);
+			createValidationTypeLinkAndUpdateRelatedMetadataAndPresentations(
+					validationTypeRecordGroup);
 
 			printExtraLine();
 
@@ -101,7 +101,8 @@ public class SetFinalValueForValidationType {
 		System.out.println("-------------------------------------");
 	}
 
-	private void readDefinitions(ClientDataRecordGroup validationTypeRecordGroup) {
+	private void createValidationTypeLinkAndUpdateRelatedMetadataAndPresentations(
+			ClientDataRecordGroup validationTypeRecordGroup) {
 
 		try {
 			// ReadDefinitions for new and update
@@ -138,25 +139,38 @@ public class SetFinalValueForValidationType {
 					validationTypeRecordGroup, "presentationFormId");
 
 			System.out.println("findChildReferences1");
-			ClientDataRecord originalPresentNew = findChildReferenceUsingNameInData(presentNew,
-					orginalNewDefRecordInfoId);
+			ClientDataRecord originalPresentNew = findChildReferenceForPresentationUsingNameInData(
+					presentNew, orginalNewDefRecordInfoId);
 			System.out.println("findChildReferences2");
-			ClientDataRecord originalPresentUpdate = findChildReferenceUsingNameInData(
+			ClientDataRecord originalPresentUpdate = findChildReferenceForPresentationUsingNameInData(
 					presentUpdate, originalUpdateDefRecordInfoId);
 
-			System.out.println("replace1");
-			replaceChildReferenceAndUpdateInStorage("presentation", presentNew,
-					originalPresentNew.getId(), MessageFormat.format(PRESENTATION_ID_PATTERN, "New",
-							validationTypeRecordGroup.getId()));
+			String recordinfoPNameForNew = MessageFormat.format(PRESENTATION_ID_PATTERN, "New",
+					firstLetterUpperCase(validationTypeRecordGroup.getId()));
+			String recordInfoPNameForUpdate = MessageFormat.format(PRESENTATION_ID_PATTERN,
+					"Update", firstLetterUpperCase(validationTypeRecordGroup.getId()));
+
+			System.out.println("replace1 ( definitionRecord:" + presentNew.getId()
+					+ " childReferenceTobeReplaced: " + originalPresentNew.getId()
+					+ " childReferenceToReplaceWith: " + recordinfoPNameForNew + " )");
+			replaceChildReferenceAndUpdateInStorageForPresentation("presentation", presentNew,
+					originalPresentNew.getId(), recordinfoPNameForNew);
 
 			System.out.println("replace2");
-			replaceChildReferenceAndUpdateInStorage("presentation", presentUpdate,
-					originalPresentUpdate.getId(), MessageFormat.format(PRESENTATION_ID_PATTERN,
-							"Update", validationTypeRecordGroup.getId()));
+			replaceChildReferenceAndUpdateInStorageForPresentation("presentation", presentUpdate,
+					originalPresentUpdate.getId(), recordInfoPNameForUpdate);
 
 		} catch (Exception e) {
 			System.err.println(e);
 		}
+	}
+
+	private void systemOutPrintlnBoldGreen(String string) {
+		System.out.println("\033[0;1m\u001B[32m" + string + "\u001B[0m");
+	}
+
+	private void systemOutPrintlnBoldYellow(String string) {
+		System.out.println("\033[0;1m\u001B[33m" + string + "\u001B[0m");
 	}
 
 	private void updatedDefinitionWithNewValidationTypeLink(String mode, String validationTypeId,
@@ -185,6 +199,36 @@ public class SetFinalValueForValidationType {
 			if (mightBeRecordInfoGroup.getDataRecordGroup()
 					.getFirstAtomicValueWithNameInData("nameInData").equals(nameInDataToMatch)) {
 				return mightBeRecordInfoGroup;
+			}
+		}
+		throw new RuntimeException("NO RECORDINFO FOUND FOR:" + definitionRecord.getId());
+	}
+
+	private ClientDataRecord findChildReferenceForPresentationUsingNameInData(
+			ClientDataRecordGroup definitionRecord, String nameInDataToMatch) {
+		List<ClientDataChild> childReferences = getChildReferences(definitionRecord);
+		for (ClientDataChild childReference : childReferences) {
+			ClientDataChild refGroup = ((ClientDataGroup) childReference)
+					.getFirstChildWithNameInData("refGroup");
+			ClientDataRecordLink ref = (ClientDataRecordLink) ((ClientDataGroup) refGroup)
+					.getFirstChildWithNameInData(REF);
+			if (ref.getAttributeValue("type").get().equals("presentation")) {
+				systemOutPrintlnBoldYellow("Ref linkId: " + ref.getLinkedRecordId());
+				ClientDataRecord mightBeRecordInfoGroup = dataClient.read(ref.getLinkedRecordType(),
+						ref.getLinkedRecordId());
+				ClientDataRecordGroup recordInfoGroup = mightBeRecordInfoGroup.getDataRecordGroup();
+				ClientDataRecordLink presentationOfLink = recordInfoGroup
+						.getFirstChildOfTypeAndName(ClientDataRecordLink.class, "presentationOf");
+
+				ClientDataRecord presentationOfLinkDR = dataClient.read(
+						presentationOfLink.getLinkedRecordType(),
+						presentationOfLink.getLinkedRecordId());
+				ClientDataRecordGroup presentationOfLinkDRG = presentationOfLinkDR
+						.getDataRecordGroup();
+				if (presentationOfLinkDRG.getFirstAtomicValueWithNameInData("nameInData")
+						.equals("recordInfo")) {
+					return mightBeRecordInfoGroup;
+				}
 			}
 		}
 		throw new RuntimeException("NO RECORDINFO FOUND FOR:" + definitionRecord.getId());
@@ -219,6 +263,18 @@ public class SetFinalValueForValidationType {
 		System.out.println();
 	}
 
+	private void replaceChildReferenceAndUpdateInStorageForPresentation(String type,
+			ClientDataRecordGroup definitionRecord, String childReferenceTobeReplaced,
+			String childReferenceToReplaceWith) {
+
+		replaceChildReferenceForPresentation(type, definitionRecord, childReferenceTobeReplaced,
+				childReferenceToReplaceWith);
+
+		dataClient.update(type, definitionRecord.getId(), definitionRecord);
+		// System.out.println("PGroup updated: " + definitionRecord.getId());
+		systemOutPrintlnBoldGreen("PGroup updated: " + definitionRecord.getId());
+	}
+
 	private void replaceChildReferenceAndUpdateInStorage(String type,
 			ClientDataRecordGroup definitionRecord, String childReferenceTobeReplaced,
 			String childReferenceToReplaceWith) {
@@ -227,7 +283,8 @@ public class SetFinalValueForValidationType {
 				childReferenceToReplaceWith);
 
 		dataClient.update(type, definitionRecord.getId(), definitionRecord);
-		System.out.println("Group updated: " + definitionRecord.getId());
+		// System.out.println("Group updated: " + definitionRecord.getId());
+		systemOutPrintlnBoldGreen("Group updated: " + definitionRecord.getId());
 	}
 
 	private String copyAndCreateRecordInfo(ClientDataRecord originalRecordInfo,
@@ -320,6 +377,64 @@ public class SetFinalValueForValidationType {
 
 			throw new RuntimeException("Failed to replace/find " + childToBeReplaced);
 		}
+	}
+
+	private void replaceChildReferenceForPresentation(String type,
+			ClientDataRecordGroup definitionGroup, String childToBeReplaced,
+			String childToBeReplacedWith) {
+		// TODO: wrong childreference type, should be other for presentations....
+		// ClientDataGroup childReferenceValidationType = createChildReferenceGroup(type,
+		// childToBeReplacedWith);
+		ClientDataGroup childReferenceValidationType = createChildReferenceGroupForPresentation(
+				type, childToBeReplacedWith);
+
+		List<ClientDataChild> listOfChildReferences = getListOfChildReferences(definitionGroup);
+
+		definitionGroup.removeFirstChildWithNameInData(CHILD_REFERENCES);
+
+		Optional<ClientDataChild> oChildReference = Optional.empty();
+
+		// System.out.println("trying to find: " + childToBeReplaced);
+		for (ClientDataChild childReference : listOfChildReferences) {
+			ClientDataChild refGroup = ((ClientDataGroup) childReference)
+					.getFirstChildWithNameInData("refGroup");
+			ClientDataRecordLink ref = ((ClientDataGroup) refGroup)
+					.getFirstChildOfTypeAndName(ClientDataRecordLink.class, "ref");
+
+			if (childToBeReplaced.equals(ref.getLinkedRecordId())) {
+				oChildReference = Optional.of(childReference);
+			}
+		}
+		if (oChildReference.isPresent()) {
+			listOfChildReferences.remove(oChildReference.get());
+			listOfChildReferences.add(childReferenceValidationType);
+
+			ClientDataGroup newChildReferences = ClientDataProvider
+					.createGroupUsingNameInData(CHILD_REFERENCES);
+			newChildReferences.addChildren(listOfChildReferences);
+			definitionGroup.addChild(newChildReferences);
+			System.out.println(
+					"Child replaced from " + childToBeReplaced + " to " + childToBeReplacedWith);
+
+		} else {
+
+			throw new RuntimeException("Failed to replace/find " + childToBeReplaced);
+		}
+	}
+
+	private ClientDataGroup createChildReferenceGroupForPresentation(String linkType,
+			String linkId) {
+		ClientDataGroup referenceGroup = createChildReferenceGroup();
+		ClientDataGroup refGroup = ClientDataProvider.createGroupUsingNameInData("refGroup");
+		referenceGroup.addChild(refGroup);
+		refGroup.setRepeatId("0");
+
+		ClientDataRecordLink ref = ClientDataProvider
+				.createRecordLinkUsingNameInDataAndTypeAndId("ref", linkType, linkId);
+		ref.addAttributeByIdWithValue("type", "presentation");
+		refGroup.addChild(ref);
+
+		return referenceGroup;
 	}
 
 	private void convertToJson(ClientDataRecordGroup definitionGroup) {
@@ -461,7 +576,7 @@ public class SetFinalValueForValidationType {
 	}
 
 	private ClientDataGroup createChildReferenceGroup(String linkType, String linkId) {
-		ClientDataGroup referenceGroup = createChildReference();
+		ClientDataGroup referenceGroup = createChildReferenceGroup();
 		ClientDataAtomic repeatMin = ClientDataProvider
 				.createAtomicUsingNameInDataAndValue("repeatMin", "1");
 		ClientDataAtomic repeatMax = ClientDataProvider
@@ -475,7 +590,7 @@ public class SetFinalValueForValidationType {
 		return referenceGroup;
 	}
 
-	private ClientDataGroup createChildReference() {
+	private ClientDataGroup createChildReferenceGroup() {
 		ClientDataGroup referenceGroup = ClientDataProvider
 				.createGroupUsingNameInData(CHILD_REFERENCE);
 		referenceGroup.setRepeatId(getRepeatId());

@@ -30,5 +30,4 @@ public class SetFinalValueForValidationTypeTest {
 
 		updater.addFinalValueForValidationType();
 	}
-
 }
