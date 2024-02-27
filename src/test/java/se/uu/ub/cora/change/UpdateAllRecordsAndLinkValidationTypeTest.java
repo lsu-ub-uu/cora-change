@@ -55,28 +55,37 @@ public class UpdateAllRecordsAndLinkValidationTypeTest {
 	}
 
 	@Test(enabled = false)
+	public void runLocalDiva() throws Exception {
+		UpdateAllRecordsAndLinkValidationType updater = new UpdateAllRecordsAndLinkValidationType(
+				DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL, DIVA_USER, DIVA_APPTOKEN_USER);
+
+		updater.updateOnlyRecordsForTheseTypes(List.of("metadata", "text", "presentation"), "diva");
+	}
+
+	@Test(enabled = false)
 	public void runLocalAlvinPSurroundingContainer() throws Exception {
 		UpdateAllRecordsAndLinkValidationType updater = createLocalAlvinUpdater();
-		updater.updateOnlyRecordsForTheseTypes(List.of("presentationSurroundingContainer"));
+		updater.updateOnlyRecordsForTheseTypes(List.of("presentationSurroundingContainer"), "cora");
 	}
 
 	@Test(enabled = false)
 	public void runLocalText() throws Exception {
 		UpdateAllRecordsAndLinkValidationType updater = createLocalAlvinUpdater();
-		updater.updateOnlyRecordsForTheseTypes(List.of("text", "coraText", "systemOneText"));
+		updater.updateOnlyRecordsForTheseTypes(List.of("text", "coraText", "systemOneText"),
+				"cora");
 	}
 
 	@Test(enabled = false)
 	public void runLocalItems() throws Exception {
 		UpdateAllRecordsAndLinkValidationType updater = createLocalAlvinUpdater();
 		updater.updateOnlyRecordsForTheseTypes(List.of("metadataCollectionItem",
-				"languageCollectionItem", "countryCollectionItem"));
+				"languageCollectionItem", "countryCollectionItem"), "cora");
 	}
 
 	@Test(enabled = false)
 	public void runLocalItems2() throws Exception {
 		UpdateAllRecordsAndLinkValidationType updater = createLocalAlvinUpdater();
-		updater.updateOnlyRecordsForTheseTypes(List.of("genericCollectionItem"));
+		updater.updateOnlyRecordsForTheseTypes(List.of("genericCollectionItem"), "cora");
 	}
 
 	@Test(enabled = false)
@@ -105,15 +114,6 @@ public class UpdateAllRecordsAndLinkValidationTypeTest {
 		DataClientFactoryImp dataClientFactory = DataClientFactoryImp
 				.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl, baseUrl);
 		return dataClientFactory.factorUsingUserIdAndAppToken(user, appToken);
-	}
-
-	@Test(enabled = false)
-	public void runLocalDiva() throws Exception {
-
-		UpdateAllRecordsAndLinkValidationType updater = new UpdateAllRecordsAndLinkValidationType(
-				DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL, DIVA_USER, DIVA_APPTOKEN_USER);
-
-		updater.updateAllRecords(Collections.emptyList());
 	}
 
 	@Test(enabled = false)
