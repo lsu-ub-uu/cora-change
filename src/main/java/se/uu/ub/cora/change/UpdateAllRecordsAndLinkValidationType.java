@@ -43,7 +43,7 @@ public class UpdateAllRecordsAndLinkValidationType {
 				System.out.println("Listing type: " + recordTypeDataRecord.getId()
 						+ " partial counting: " + count);
 				if (allowedRecordTypeAndDataDivider(recordTypeDataRecord, dataDivider)) {
-					updateRecord(recordTypeDataRecord);
+					updateRecords(recordTypeDataRecord, dataDivider);
 				}
 				System.out.println("---");
 			}
@@ -54,11 +54,11 @@ public class UpdateAllRecordsAndLinkValidationType {
 
 	private boolean allowedRecordTypeAndDataDivider(ClientDataRecord dataRecord,
 			String dataDivider) {
-		return forbiddenRecordTypes(dataRecord) && isCorrectDataDivider(dataRecord, dataDivider);
+		return forbiddenRecordTypes(dataRecord);
 	}
 
-	private boolean isCorrectDataDivider(ClientDataRecord recordData, String dataDivider) {
-		ClientDataRecordGroup dataRecordGroup = recordData.getDataRecordGroup();
+	private boolean isCorrectDataDivider(ClientDataRecordGroup dataRecordGroup,
+			String dataDivider) {
 		String dataDividerForRecord = dataRecordGroup.getDataDivider();
 		return dataDivider.equals(dataDividerForRecord);
 	}
@@ -71,6 +71,32 @@ public class UpdateAllRecordsAndLinkValidationType {
 
 	private boolean forbiddenRecordTypes(ClientDataRecord dataRecord) {
 		return !dataRecord.getId().equals("systemSecret") && !dataRecord.getId().equals("appToken");
+	}
+
+	private void updateRecords(ClientDataRecord recordTypeDataRecord, String dataDivider) {
+		ClientDataList listRecordsForType = dataClient.readList(recordTypeDataRecord.getId());
+		for (ClientData recordData : listRecordsForType.getDataList()) {
+			updateRecord(recordData, dataDivider);
+		}
+	}
+
+	private void updateRecord(ClientData recordData, String dataDivider) {
+		ClientDataRecord recordDataRecord = (ClientDataRecord) recordData;
+		ClientDataRecordGroup dataRecordGroup = recordDataRecord.getDataRecordGroup();
+
+		if (isCorrectDataDivider(dataRecordGroup, dataDivider)) {
+
+			try {
+				System.out.println("Updating record: " + recordDataRecord.getType() + ":"
+						+ recordDataRecord.getId());
+				dataClient.update(dataRecordGroup.getType(), dataRecordGroup.getId(),
+						dataRecordGroup);
+				count++;
+			} catch (Exception e) {
+				System.out.println("Error: " + recordDataRecord.getType() + ":"
+						+ recordDataRecord.getId() + ":" + e.getMessage());
+			}
+		}
 	}
 
 	public void updateAllRecordsExceptTheseTypes(List<String> runOthersThisListOfRecordTypes) {
@@ -117,22 +143,6 @@ public class UpdateAllRecordsAndLinkValidationType {
 			addValidationTypeAndupdateRecord(recordData);
 			count++;
 		}
-	}
-
-	private void updateRecord(ClientData recordData) {
-		ClientDataRecord recordDataRecord = (ClientDataRecord) recordData;
-		ClientDataRecordGroup dataRecordGroup = recordDataRecord.getDataRecordGroup();
-
-		try {
-			System.out.println("Updating record: " + recordDataRecord.getType() + ":"
-					+ recordDataRecord.getId());
-			// dataClient.update(dataRecordGroup.getType(), dataRecordGroup.getId(),
-			// dataRecordGroup);
-		} catch (Exception e) {
-			System.out.println("Error: " + recordDataRecord.getType() + ":"
-					+ recordDataRecord.getId() + ":" + e.getMessage());
-		}
-
 	}
 
 	private void addValidationTypeAndupdateRecord(ClientData recordData) {

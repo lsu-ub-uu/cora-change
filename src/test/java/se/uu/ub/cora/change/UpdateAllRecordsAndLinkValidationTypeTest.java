@@ -59,7 +59,9 @@ public class UpdateAllRecordsAndLinkValidationTypeTest {
 		UpdateAllRecordsAndLinkValidationType updater = new UpdateAllRecordsAndLinkValidationType(
 				DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL, DIVA_USER, DIVA_APPTOKEN_USER);
 
-		updater.updateOnlyRecordsForTheseTypes(List.of("metadata", "text", "presentation"), "diva");
+		updater.updateOnlyRecordsForTheseTypes(List.of("collectTerm", "metadata", "presentation",
+				"system", "text", "user", "permissionRole", "permissionRule", "validationType"),
+				"diva");
 	}
 
 	@Test(enabled = false)
