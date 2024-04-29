@@ -11,13 +11,13 @@ import java.util.Optional;
 import org.testng.annotations.Test;
 
 public class ImplementingToParentTest {
-	private static final String SYSTEMONE_LOCAL_APPTOKEN_URL = "http://localhost:8180/apptokenverifier/rest/";
+	private static final String SYSTEMONE_LOCAL_APPTOKEN_URL = "http://localhost:8180/login/rest/";
 	private static final String SYSTEMONE_LOCAL_BASE_URL = "http://localhost:8080/systemone/rest/";
 
-	private static final String ALVIN_LOCAL_APPTOKEN_URL = "http://localhost:8181/apptokenverifier/rest/";
+	private static final String ALVIN_LOCAL_APPTOKEN_URL = "http://localhost:8181/login/rest/";
 	private static final String ALVIN_LOCAL_BASE_URL = "http://localhost:8081/alvin/rest/";
 
-	private static final String DIVA_LOCAL_APPTOKEN_URL = "http://localhost:8182/apptokenverifier/rest/";
+	private static final String DIVA_LOCAL_APPTOKEN_URL = "http://localhost:8182/login/rest/";
 	private static final String DIVA_LOCAL_BASE_URL = "http://localhost:8082/diva/rest/";
 
 	public void storeMap(Map<String, String> map, String filePath) {

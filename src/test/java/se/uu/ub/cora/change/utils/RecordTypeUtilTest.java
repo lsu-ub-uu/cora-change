@@ -169,7 +169,7 @@ public class RecordTypeUtilTest {
 
 	@Test(enabled = false)
 	public void realTest() throws Exception {
-		String apptokenUrl = "http://130.238.171.238:38180/apptokenverifier/rest/";
+		String apptokenUrl = "http://130.238.171.238:38180/login/rest/";
 		String baseUrl = "http://130.238.171.238:38080/systemone/rest/";
 		DataClientFactoryImp dataClientFactory = DataClientFactoryImp
 				.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl, baseUrl);
