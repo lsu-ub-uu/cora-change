@@ -173,8 +173,8 @@ public class RecordTypeUtilTest {
 		String baseUrl = "http://130.238.171.238:38080/systemone/rest/";
 		DataClientFactoryImp dataClientFactory = DataClientFactoryImp
 				.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl, baseUrl);
-		DataClient dataClient = dataClientFactory.factorUsingUserIdAndAppToken("141414",
-				"63e6bd34-02a1-4c82-8001-158c104cae0e");
+		DataClient dataClient = dataClientFactory.factorUsingUserIdAndAppToken(
+				"jsClientUser@system.cora.uu.se", "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
 		RecordTypeUtilImp recordTypeUtil = RecordTypeUtilImp.usingDataClient(dataClient);
 
 		Map<String, String> mapOfImp = recordTypeUtil.getMapOfImplementingToParent();
