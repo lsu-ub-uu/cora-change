@@ -60,7 +60,7 @@ public class ImplementingToParentTest {
 		// DataClientFactoryImp dataClientFactory = DataClientFactoryImp
 		// .usingAppTokenVerifierUrlAndBaseUrl(appTokenUrl, baseUrl);
 		// DataClient dataClient =
-		// dataClientFactory.factorUsingUserIdAndAppToken("jsClientUser@system.cora.uu.se",
+		// dataClientFactory.factorUsingUserIdAndAppToken("systemoneAdmin@system.cora.uu.se",
 		// "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
 		//
 		// RecordTypeUtil recordTypeUtil = RecordTypeUtilImp.usingDataClient(dataClient);

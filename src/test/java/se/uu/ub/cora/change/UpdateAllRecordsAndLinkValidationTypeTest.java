@@ -28,7 +28,7 @@ public class UpdateAllRecordsAndLinkValidationTypeTest {
 	private static final String DIVA_DEV_APPTOKEN_URL = "http://130.238.171.238:38182/login/rest/";
 	private static final String DIVA_DEV_BASE_URL = "http://130.238.171.238:38082/diva/rest/";
 
-	private static final String SYSTEMONE_USER = "jsClientUser@system.cora.uu.se";
+	private static final String SYSTEMONE_USER = "systemoneAdmin@system.cora.uu.se";
 	private static final String SYSTEMONE_APPTOKEN_USER = "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e";
 
 	private static final String DIVA_USER = "divaEverything@diva.cora.uu.se";

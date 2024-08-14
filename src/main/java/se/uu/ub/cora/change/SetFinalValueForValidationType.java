@@ -52,7 +52,7 @@ public class SetFinalValueForValidationType {
 		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
 				baseUrl);
 		dataClient = dataClientFactory.factorUsingUserIdAndAppToken(
-				"jsClientUser@system.cora.uu.se", "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+				"systemoneAdmin@system.cora.uu.se", "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
 		dataToJsonConverterFactory = ClientDataToJsonConverterProvider.createImplementingFactory();
 
 	}

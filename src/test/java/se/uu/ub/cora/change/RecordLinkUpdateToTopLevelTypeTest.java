@@ -56,7 +56,7 @@ public class RecordLinkUpdateToTopLevelTypeTest {
 	private static final String SOME_BASE_URL = "http://localhost:8080/someBase/rest/";
 	private static final Object LINKED_RECORD_TYPE = "linkedRecordType";
 
-	private static final String SYSTEMONE_USER = "jsClientUser@system.cora.uu.se";
+	private static final String SYSTEMONE_USER = "systemoneAdmin@system.cora.uu.se";
 	private static final String SYSTEMONE_APPTOKEN_USER = "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e";
 
 	private static final String DIVA_USER = "divaEverything@diva.cora.uu.se";
@@ -172,7 +172,7 @@ public class RecordLinkUpdateToTopLevelTypeTest {
 	// recordLinkUpdater.updateAllRecordLinksWithTopLevelType();
 	//
 	// dataClientFactorySpy.MCR.assertParameters("factorUsingUserIdAndAppToken", 0,
-	// "jsClientUser@system.cora.uu.se",
+	// "systemoneAdmin@system.cora.uu.se",
 	// "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
 	//
 	// }
@@ -219,7 +219,7 @@ public class RecordLinkUpdateToTopLevelTypeTest {
 	// "metadataRecordLink");
 	//
 	// dataClientFactorySpy.MRV.setSpecificReturnValuesSupplier("factorUsingUserIdAndAppToken",
-	// () -> dataClientSpy, "jsClientUser@system.cora.uu.se",
+	// () -> dataClientSpy, "systemoneAdmin@system.cora.uu.se",
 	// "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
 	//
 	// mapOfTopLevelTypes = new HashMapSpy();
