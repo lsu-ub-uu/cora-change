@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>2.4.0</version>
+		<version>2.7.0</version>
 	</parent>
 
 	<artifactId>cora-change</artifactId>
@@ -75,6 +75,11 @@
 			<artifactId>clientdata-spies</artifactId>
 			<version>${clientdata-spies.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.ocfl</groupId>
+			<artifactId>ocfl-java-core</artifactId>
+			<version>2.2.2</version>
 		</dependency>
 	</dependencies>
 
