@@ -5,6 +5,7 @@ import static org.testng.Assert.assertEquals;
 import java.io.File;
 import java.nio.file.Paths;
 
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import io.ocfl.api.OcflOption;
@@ -18,22 +19,35 @@ public class OCFLwrappereTest {
 
 	private static final File TEMP_DIRECTORY = new File(System.getProperty("java.io.tmpdir"));
 
+	@BeforeTest
+	public void beforeTest() {
+		createDir("ocfl/ocfl-repo");
+		createDir("ocfl/ocfl-work");
+	}
+
+	@Test
+	public void testDirs() throws Exception {
+		createDir("ocfl/ocfl-repo2");
+		createDir("ocfl/ocfl-work2");
+
+	}
+
 	@Test
 	public void testPutOneBinary() throws Exception {
-		createDir("test-output/ocfl-repo");
-		createDir("test-output/ocfl-work");
+		// createDir("ocfl/ocfl-repo");
+		// createDir("ocfl/ocfl-work");
 
-		var repoDir = Paths.get("test-output/ocfl-repo"); // This directory contains the OCFL
-															// storage root.
-		var workDir = Paths.get("test-output/ocfl-work"); // This directory is used to assemble OCFL
-															// versions.
+		var repoDir = Paths.get("ocfl/ocfl-repo"); // This directory contains the OCFL
+													// storage root.
+		var workDir = Paths.get("ocfl/ocfl-work"); // This directory is used to assemble OCFL
+													// versions.
 		// It cannot be within the OCFL storage root.
 
 		var repo = new OcflRepositoryBuilder().defaultLayoutConfig(new HashedNTupleLayoutConfig())
 				.storage(storage -> storage.fileSystem(repoDir)).workDir(workDir).build();
 
-		// repo.putObject(ObjectVersionId.head("o1"), Paths.get("test-output/object-out-dir"),
-		repo.putObject(ObjectVersionId.head("o1"), Paths.get("test-output/failed.png"),
+		// repo.putObject(ObjectVersionId.head("o1"), Paths.get("ocfl/object-out-dir"),
+		repo.putObject(ObjectVersionId.head("o1"), Paths.get("ocfl/failedHard.png"),
 				new VersionInfo().setMessage("initial commit"), OcflOption.MOVE_SOURCE);
 
 		// Contains object details and lazy-load resource handles
@@ -45,22 +59,22 @@ public class OCFLwrappereTest {
 
 	@Test
 	public void testName() throws Exception {
-		createDir("test-output/ocfl-repo");
-		createDir("test-output/ocfl-work");
+		createDir("ocfl/ocfl-repo");
+		createDir("ocfl/ocfl-work");
 
-		var repoDir = Paths.get("test-output/ocfl-repo"); // This directory contains the OCFL
+		var repoDir = Paths.get("ocfl/ocfl-repo"); // This directory contains the OCFL
 		// storage root.
-		var workDir = Paths.get("test-output/ocfl-work"); // This directory is used to assemble OCFL
+		var workDir = Paths.get("ocfl/ocfl-work"); // This directory is used to assemble OCFL
 		// versions.
 		// It cannot be within the OCFL storage root.
 
 		var repo = new OcflRepositoryBuilder().defaultLayoutConfig(new HashedNTupleLayoutConfig())
 				.storage(storage -> storage.fileSystem(repoDir)).workDir(workDir).build();
 
-		// repo.putObject(ObjectVersionId.head("o1"), Paths.get("test-output/object-out-dir"),
-		repo.putObject(ObjectVersionId.head("o1"), Paths.get("test-output/failed.png"),
+		// repo.putObject(ObjectVersionId.head("o1"), Paths.get("ocfl/object-out-dir"),
+		repo.putObject(ObjectVersionId.head("o1"), Paths.get("ocfl/failed.png"),
 				new VersionInfo().setMessage("initial commit"));
-		// repo.getObject(ObjectVersionId.head("o1"), Paths.get("test-output/object-in-dir"));
+		// repo.getObject(ObjectVersionId.head("o1"), Paths.get("ocfl/object-in-dir"));
 		//
 		repo.updateObject(ObjectVersionId.head("o1"), new VersionInfo().setMessage("update"),
 				updater -> {
