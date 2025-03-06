@@ -9,7 +9,6 @@ import java.text.MessageFormat;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import io.ocfl.api.OcflOption;
 import io.ocfl.api.model.ObjectVersionId;
 import io.ocfl.api.model.OcflObjectVersion;
 import io.ocfl.api.model.VersionInfo;
@@ -57,9 +56,15 @@ public class OCFLwrappereTest {
 		versionInfo.setMessage("initial commit");
 		versionInfo.setUser("fedoraAdmin", "info:fedora/fedoraAdmin");
 
+		// repo.putObject(ObjectVersionId.head(objectId),
+		// Paths.get("ocfl/systemOne:binary:binary:001-master",""), versionInfo,
+		// OcflOption.MOVE_SOURCE);
 		repo.putObject(ObjectVersionId.head(objectId),
-				Paths.get("ocfl/systemOne:binary:binary:001-master"), versionInfo,
-				OcflOption.MOVE_SOURCE);
+				Paths.get("ocfl/systemOne:binary:binary:001-master", ""), versionInfo);
+		// repo.putObject(
+		// ObjectVersionId.head(objectId), Paths.get("ocfl/systemOne:binary:binary:001-master",
+		// "ocfl/.fcrepo", "ocfl/systemOne:binary:binary:001-master~fcr-desc.nt"),
+		// versionInfo);
 
 		// Contains object details and lazy-load resource handles
 		OcflObjectVersion objectVersion = repo.getObject(ObjectVersionId.version("o1", "v1"));
