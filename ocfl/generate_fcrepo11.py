@@ -136,7 +136,8 @@ def update_inventory(ocfl_object_path, metadata_list, dry_run):
         file_hash = sha512_checksum(os.path.join(ocfl_object_path, file_path))
         inventory['manifest'][file_hash] = [file_path]
     
-    inventory['versions']['v1']['state'] = inventory['manifest']
+#    inventory['versions']['v1']['state'] = inventory['manifest']
+    inventory['versions']['v1']['state'] = remove_prefix(inventory['manifest'])
 
     if dry_run:
         logging.info(f'[Dry Run] Would update {inventory_path}')
@@ -149,6 +150,15 @@ def update_inventory(ocfl_object_path, metadata_list, dry_run):
             sha512_hash = sha512_checksum(inventory_path)
             f.write(f'{sha512_hash}  inventory.json\n')
         logging.info(f'Updated {inventory_sha_path}')
+
+def remove_prefix(obj, prefix="v1/content/"):
+    if isinstance(obj, dict):
+        return {k: remove_prefix(v, prefix) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [remove_prefix(item, prefix) for item in obj]
+    elif isinstance(obj, str):
+        return obj.replace(prefix, "")
+    return obj
 
 def main(base_path, dry_run):
     setup_logging()
