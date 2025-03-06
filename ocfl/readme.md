@@ -25,12 +25,11 @@ to add our binary to fedora
 
 
 ##create needed fedora files using python script
-go into fedoradocker using exec as root
+go into eclipse docker using exec as root
 
 go to folder:
-/tmp/sharedArchive
+/home/youruser/workspace/cora-change/ocfl
 
-add the script generate_fcrepo9.py
 
 run script:
 (you can add --dry-run to the end)

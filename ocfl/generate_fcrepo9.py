@@ -41,7 +41,9 @@ def create_fcrepo_catalog(ocfl_object_path, dry_run):
     fcr_desc_path = os.path.join(fcrepo_path, 'fcr-root~fcr-desc.json')
     fcr_desc_nt_path = os.path.join(v1_content_path, f"{filename}~fcr-desc.nt")
     
-    created_date = datetime.utcnow().isoformat() + 'Z'
+#    created_date = datetime.utcnow().isoformat() + 'Z'
+    created_date = datetime.now(timezone.utc).isoformat() + 'Z'
+     
     state_token = hashlib.md5(created_date.encode()).hexdigest().upper()
     
     file_path = os.path.join(v1_content_path, filename)
