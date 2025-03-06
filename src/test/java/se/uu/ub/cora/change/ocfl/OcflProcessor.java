@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +23,11 @@ import org.json.JSONObject;
 
 public class OcflProcessor {
 	private static final Logger LOGGER = Logger.getLogger(OcflProcessor.class.getName());
+	private static String basePath;
 
 	// public static void main(String[] args) {
 	public static void addFedoraFilesToOcflStructure(String basePath, String options) {
+		OcflProcessor.basePath = basePath;
 		// if (args.length < 1) {
 		// System.out.println("Usage: java OcflProcessor <base_path> [--dry-run]");
 		// return;
@@ -104,7 +108,7 @@ public class OcflProcessor {
 				.format(new Date());
 		String stateToken = UUID.randomUUID().toString().toUpperCase();
 
-		String fileHash = sha512Checksum(filename);
+		String fileHashRoot = sha512Checksum(filename);
 		long fileSize = filename.length();
 
 		JSONObject fcrRootMetadata = new JSONObject();
@@ -115,7 +119,7 @@ public class OcflProcessor {
 		fcrRootMetadata.put("mimeType", "application/octet-stream");
 		fcrRootMetadata.put("filename", "");
 		fcrRootMetadata.put("contentSize", fileSize);
-		fcrRootMetadata.put("digests", Collections.singletonList("urn:sha-512:" + fileHash));
+		fcrRootMetadata.put("digests", Collections.singletonList("urn:sha-512:" + fileHashRoot));
 		fcrRootMetadata.put("createdDate", createdDate);
 		fcrRootMetadata.put("lastModifiedDate", createdDate);
 		fcrRootMetadata.put("mementoCreatedDate", createdDate);
@@ -129,6 +133,19 @@ public class OcflProcessor {
 		fcrDescMetadata.put("id", "info:fedora/" + filename.getName() + "/fcr:metadata");
 		fcrDescMetadata.put("parent", "info:fedora/" + filename.getName());
 		fcrDescMetadata.put("stateToken", UUID.randomUUID().toString().toUpperCase());
+		fcrDescMetadata.put("interactionModel",
+				"http://fedora.info/definitions/v4/repository#NonRdfSourceDescription");
+		fcrDescMetadata.put("contentSize", 0);
+		fcrDescMetadata.put("digests", Collections.singletonList(
+				"urn:sha-512:cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"));
+		fcrDescMetadata.put("createdDate", createdDate);
+		fcrDescMetadata.put("lastModifiedDate", createdDate);
+		fcrDescMetadata.put("mementoCreatedDate", createdDate);
+		fcrDescMetadata.put("archivalGroup", false);
+		fcrDescMetadata.put("objectRoot", false);
+		fcrDescMetadata.put("deleted", false);
+		fcrDescMetadata.put("contentPath", filename.getName() + "~fcr-desc.nt");
+		fcrDescMetadata.put("headersVersion", "1.0");
 
 		if (!dryRun) {
 			try {
@@ -158,9 +175,22 @@ public class OcflProcessor {
 				JSONArray digests = metadata.getJSONArray("digests");
 				for (Object digest : digests) {
 					String digestStr = digest.toString().replace("urn:sha-512:", "");
-					inventory.getJSONObject("manifest").put(digestStr,
-							Collections.singletonList("v1/content/" + metadata.getString("id")));
+					inventory.getJSONObject("manifest").put(digestStr, Collections
+							.singletonList("v1/content/" + metadata.getString("contentPath")));
+					inventory.getJSONObject("versions").getJSONObject("v1").getJSONObject("state")
+							.put(digestStr,
+									Collections.singletonList(metadata.getString("contentPath")));
 				}
+			}
+
+			List<String> fcrepoFiles = List.of(".fcrepo/fcr-root.json",
+					".fcrepo/fcr-root~fcr-desc.json");
+			for (String filePath : fcrepoFiles) {
+				String digestStr = generateSha512(basePath + "v1/content/" + filePath);
+				inventory.getJSONObject("manifest").put(digestStr,
+						Collections.singletonList("v1/content/" + filePath));
+				inventory.getJSONObject("versions").getJSONObject("v1").getJSONObject("state")
+						.put(digestStr, Collections.singletonList(filePath));
 			}
 
 			if (dryRun) {
@@ -196,4 +226,43 @@ public class OcflProcessor {
 		}
 		return sb.toString();
 	}
+
+	private static String generateSha512(String fedoraId) {
+		MessageDigest digest = tryToGetDigestAlgorithm();
+
+		final byte[] hashbytes = digest.digest(fedoraId.getBytes(StandardCharsets.UTF_8));
+		return bytesToHex2(hashbytes);
+	}
+
+	private static MessageDigest tryToGetDigestAlgorithm() {
+		try {
+			return MessageDigest.getInstance("SHA-512");
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException("Error while analyzing image.", e);
+		}
+	}
+
+	protected static String bytesToHex2(byte[] hash) {
+		final int initialFactorBytesToHex = 2;
+		StringBuilder hexString = new StringBuilder(initialFactorBytesToHex * hash.length);
+		bytesToHexInStringBuilder(hash, hexString);
+		return hexString.toString();
+	}
+
+	private static void bytesToHexInStringBuilder(byte[] hash, StringBuilder hexString) {
+		for (int i = 0; i < hash.length; i++) {
+			byte byteOfHash = hash[i];
+			String hex = byteToHex(byteOfHash);
+			hexString.append(hex);
+		}
+	}
+
+	private static String byteToHex(byte byteOfHash) {
+		String hex = Integer.toHexString(0xff & byteOfHash);
+		if (hex.length() == 1) {
+			hex = "0" + hex;
+		}
+		return hex;
+	}
+
 }
