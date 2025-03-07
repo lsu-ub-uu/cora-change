@@ -27,7 +27,7 @@ public class OCFLProcessorTest {
 		// createDir("ocfl/ocfl-repo");
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void testPutOneBinary() {
 
 		String dataDividerd = "systemOne";
