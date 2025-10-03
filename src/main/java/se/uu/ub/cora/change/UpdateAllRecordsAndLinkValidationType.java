@@ -1,3 +1,21 @@
+/*
+ * Copyright 2025 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.change;
 
 import java.util.List;
@@ -10,8 +28,9 @@ import se.uu.ub.cora.clientdata.ClientDataProvider;
 import se.uu.ub.cora.clientdata.ClientDataRecord;
 import se.uu.ub.cora.clientdata.ClientDataRecordGroup;
 import se.uu.ub.cora.clientdata.ClientDataRecordLink;
-import se.uu.ub.cora.javaclient.cora.DataClient;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
+import se.uu.ub.cora.javaclient.JavaClientAppTokenCredentials;
+import se.uu.ub.cora.javaclient.JavaClientProvider;
+import se.uu.ub.cora.javaclient.data.DataClient;
 
 public class UpdateAllRecordsAndLinkValidationType {
 
@@ -22,15 +41,15 @@ public class UpdateAllRecordsAndLinkValidationType {
 	private static final String ID = "id";
 	private static final String DATA_DIVIDER = "dataDivider";
 	private static final String RECORD_INFO = "recordInfo";
-	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
 	private int count = 0;
 
 	public UpdateAllRecordsAndLinkValidationType(String apptokenUrl, String baseUrl, String user,
 			String appToken) {
-		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
-				baseUrl);
-		dataClient = dataClientFactory.factorUsingUserIdAndAppToken(user, appToken);
+		JavaClientAppTokenCredentials appTokenCredentials = new JavaClientAppTokenCredentials(
+				baseUrl, apptokenUrl, user, appToken);
+		dataClient = JavaClientProvider
+				.createDataClientUsingJavaClientAppTokenCredentials(appTokenCredentials);
 	}
 
 	public void updateOnlyRecordsForTheseTypes(List<String> runOnlyThisListOfRecordTypes,

@@ -21,7 +21,6 @@ package se.uu.ub.cora.change;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.change.spy.CoraClientFactorySpy;
 import se.uu.ub.cora.change.spy.DataClientSpy;
 import se.uu.ub.cora.change.spy.HashMapSpy;
 import se.uu.ub.cora.change.spy.RecordTypeUtilSpy;
@@ -65,7 +64,6 @@ public class RecordLinkUpdateToTopLevelTypeTest {
 	private static final String ALVIN_USER = "alvinAdmin@cora.epc.ub.uu.se";
 	private static final String ALVIN_APPTOKEN_USER = "a50ca087-a3f5-4393-b2bb-315436d3c3be";
 
-	CoraClientFactorySpy dataClientFactorySpy;
 	ClientDataFactorySpy datafactory;
 	private ClientDataRecordGroupSpy recordGroup;
 	private DataClientSpy dataClientSpy;
@@ -77,7 +75,6 @@ public class RecordLinkUpdateToTopLevelTypeTest {
 	@BeforeMethod
 	private void beforeMethod() {
 		recordTypeUtil = new RecordTypeUtilSpy();
-		dataClientFactorySpy = new CoraClientFactorySpy();
 		datafactory = new ClientDataFactorySpy();
 		recordGroup = new ClientDataRecordGroupSpy();
 

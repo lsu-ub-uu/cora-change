@@ -1,3 +1,21 @@
+/*
+ * Copyright 2025 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.change;
 
 import java.text.MessageFormat;
@@ -18,8 +36,9 @@ import se.uu.ub.cora.clientdata.ClientDataProvider;
 import se.uu.ub.cora.clientdata.ClientDataRecord;
 import se.uu.ub.cora.clientdata.ClientDataRecordGroup;
 import se.uu.ub.cora.clientdata.ClientDataRecordLink;
-import se.uu.ub.cora.javaclient.cora.DataClient;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
+import se.uu.ub.cora.javaclient.JavaClientAppTokenCredentials;
+import se.uu.ub.cora.javaclient.JavaClientProvider;
+import se.uu.ub.cora.javaclient.data.DataClient;
 
 public class ChangeTextsToDivaText {
 	public static final String ANSI_BOLD = "\033[0;1m";
@@ -37,10 +56,7 @@ public class ChangeTextsToDivaText {
 	private static final String VALIDATION_TYPE = "validationType";
 	private static final int DEFAULT_THREAD_COUNT = 20;
 	private static final int DEFAULT_QUEUE_LENGTH = 20;
-	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
-	private String apptokenUrl;
-	private String baseUrl;
 	private int totalDivaTexts = 0;
 	private int divaTextChangeNeeded = 0;
 	private int totalOtherTexts = 0;
@@ -48,13 +64,11 @@ public class ChangeTextsToDivaText {
 	private ExecutorService executorService;
 
 	public ChangeTextsToDivaText(String apptokenUrl, String baseUrl) {
-		this.apptokenUrl = apptokenUrl;
-		this.baseUrl = baseUrl;
-		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
-				baseUrl);
-		dataClient = dataClientFactory.factorUsingUserIdAndAppToken(
-				"systemoneAdmin@system.cora.uu.se", "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
-
+		JavaClientAppTokenCredentials appTokenCredentials = new JavaClientAppTokenCredentials(
+				baseUrl, apptokenUrl, "systemoneAdmin@system.cora.uu.se",
+				"5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+		dataClient = JavaClientProvider
+				.createDataClientUsingJavaClientAppTokenCredentials(appTokenCredentials);
 	}
 
 	public void changeValidationTypeForDivaTexts() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Uppsala University Library
+ * Copyright 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -29,9 +29,9 @@ import se.uu.ub.cora.clientdata.ClientDataProvider;
 import se.uu.ub.cora.clientdata.ClientDataRecord;
 import se.uu.ub.cora.clientdata.ClientDataRecordGroup;
 import se.uu.ub.cora.clientdata.ClientDataRecordLink;
-import se.uu.ub.cora.javaclient.cora.CoraClientFactory;
-import se.uu.ub.cora.javaclient.cora.DataClient;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
+import se.uu.ub.cora.javaclient.JavaClientAppTokenCredentials;
+import se.uu.ub.cora.javaclient.JavaClientProvider;
+import se.uu.ub.cora.javaclient.data.DataClient;
 
 public class RecordLinkUpdateToTopLevelType {
 
@@ -39,7 +39,6 @@ public class RecordLinkUpdateToTopLevelType {
 	private String apptokenUrl;
 	private String baseUrl;
 
-	private CoraClientFactory clientFactory;
 	private DataClient dataClient;
 	private Map<String, String> mapOfTopLevelTypes;
 	private String user;
@@ -58,8 +57,10 @@ public class RecordLinkUpdateToTopLevelType {
 		this.user = user;
 		this.apptoken = apptoken;
 
-		clientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
-				baseUrl);
+		JavaClientAppTokenCredentials appTokenCredentials = new JavaClientAppTokenCredentials(
+				baseUrl, apptokenUrl, user, apptoken);
+		dataClient = JavaClientProvider
+				.createDataClientUsingJavaClientAppTokenCredentials(appTokenCredentials);
 
 	}
 
@@ -107,7 +108,6 @@ public class RecordLinkUpdateToTopLevelType {
 	}
 
 	private void factorDataClient() {
-		dataClient = clientFactory.factorUsingUserIdAndAppToken(user, apptoken);
 
 		RecordTypeUtil recordTypeUtil = RecordTypeUtilImp.usingDataClient(dataClient);
 		mapOfTopLevelTypes = recordTypeUtil.getMapOfImplementingToParent();
@@ -120,13 +120,4 @@ public class RecordLinkUpdateToTopLevelType {
 	public String onlyForTestGetBaseUrl() {
 		return baseUrl;
 	}
-
-	public CoraClientFactory onlyForTestGetCoraClientFactory() {
-		return clientFactory;
-	}
-
-	public void onlyForTestSetRestClientFactory(CoraClientFactory dataClientFactorySpy) {
-		clientFactory = dataClientFactorySpy;
-	}
-
 }

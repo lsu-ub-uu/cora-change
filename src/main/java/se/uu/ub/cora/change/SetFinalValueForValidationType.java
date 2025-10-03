@@ -1,3 +1,21 @@
+/*
+ * Copyright 2025 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.change;
 
 import java.text.MessageFormat;
@@ -17,8 +35,9 @@ import se.uu.ub.cora.clientdata.ClientDataRecordLink;
 import se.uu.ub.cora.clientdata.converter.ClientDataToJsonConverter;
 import se.uu.ub.cora.clientdata.converter.ClientDataToJsonConverterFactory;
 import se.uu.ub.cora.clientdata.converter.ClientDataToJsonConverterProvider;
-import se.uu.ub.cora.javaclient.cora.DataClient;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
+import se.uu.ub.cora.javaclient.JavaClientAppTokenCredentials;
+import se.uu.ub.cora.javaclient.JavaClientProvider;
+import se.uu.ub.cora.javaclient.data.DataClient;
 
 public class SetFinalValueForValidationType {
 
@@ -42,17 +61,17 @@ public class SetFinalValueForValidationType {
 	private static final String PRESENTATION_ID_PATTERN = "recordInfoFor{0}{1}PGroup";
 	private static final String VAL_TYPE_LINK_ID_PATTERN = "validationType{0}Link";
 	private static final String TEXT_ID_PATTERN = "{0}{1}";
-	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
 	private int repeatId = 1000;
 
 	private ClientDataToJsonConverterFactory dataToJsonConverterFactory;
 
 	public SetFinalValueForValidationType(String apptokenUrl, String baseUrl) {
-		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
-				baseUrl);
-		dataClient = dataClientFactory.factorUsingUserIdAndAppToken(
-				"systemoneAdmin@system.cora.uu.se", "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+		JavaClientAppTokenCredentials appTokenCredentials = new JavaClientAppTokenCredentials(
+				baseUrl, apptokenUrl, "systemoneAdmin@system.cora.uu.se",
+				"5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+		dataClient = JavaClientProvider
+				.createDataClientUsingJavaClientAppTokenCredentials(appTokenCredentials);
 		dataToJsonConverterFactory = ClientDataToJsonConverterProvider.createImplementingFactory();
 
 	}

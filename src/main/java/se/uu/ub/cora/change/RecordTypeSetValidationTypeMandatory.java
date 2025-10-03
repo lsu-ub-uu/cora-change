@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Uppsala University Library
+ * Copyright 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -30,8 +30,9 @@ import se.uu.ub.cora.clientdata.ClientDataProvider;
 import se.uu.ub.cora.clientdata.ClientDataRecord;
 import se.uu.ub.cora.clientdata.ClientDataRecordGroup;
 import se.uu.ub.cora.clientdata.ClientDataRecordLink;
-import se.uu.ub.cora.javaclient.cora.DataClient;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
+import se.uu.ub.cora.javaclient.JavaClientAppTokenCredentials;
+import se.uu.ub.cora.javaclient.JavaClientProvider;
+import se.uu.ub.cora.javaclient.data.DataClient;
 
 public class RecordTypeSetValidationTypeMandatory {
 
@@ -39,15 +40,15 @@ public class RecordTypeSetValidationTypeMandatory {
 	private static final String REF = "ref";
 	private static final String CHILD_REFERENCES = "childReferences";
 	private static final String CHILD_REFERENCE = "childReference";
-	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
 	private int groupsUpdated;
 
 	public RecordTypeSetValidationTypeMandatory(String apptokenUrl, String baseUrl) {
-		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
-				baseUrl);
-		dataClient = dataClientFactory.factorUsingUserIdAndAppToken(
-				"systemoneAdmin@system.cora.uu.se", "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+		JavaClientAppTokenCredentials appTokenCredentials = new JavaClientAppTokenCredentials(
+				baseUrl, apptokenUrl, "systemoneAdmin@system.cora.uu.se",
+				"5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+		dataClient = JavaClientProvider
+				.createDataClientUsingJavaClientAppTokenCredentials(appTokenCredentials);
 		groupsUpdated = 0;
 	}
 

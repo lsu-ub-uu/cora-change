@@ -5,9 +5,6 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.javaclient.cora.DataClient;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
-
 public class UpdateAllRecordsAndLinkValidationTypeTest {
 
 	private static final String SYSTEMONE_LOCAL_APPTOKEN_URL = "http://localhost:8180/login/rest/";
@@ -109,13 +106,6 @@ public class UpdateAllRecordsAndLinkValidationTypeTest {
 		// "coraText", "systemOneText", "metadataCollectionItem", "languageCollectionItem",
 		// "countryCollectionItem", "genericCollectionItem", "languageMaterial",
 		// "locationUnit", "soundRecording", "musicalWork", "location"));
-	}
-
-	private DataClient createDataClient(String apptokenUrl, String baseUrl, String user,
-			String appToken) {
-		DataClientFactoryImp dataClientFactory = DataClientFactoryImp
-				.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl, baseUrl);
-		return dataClientFactory.factorUsingUserIdAndAppToken(user, appToken);
 	}
 
 	@Test(enabled = false)

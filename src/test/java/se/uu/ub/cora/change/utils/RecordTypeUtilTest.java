@@ -37,8 +37,9 @@ import se.uu.ub.cora.clientdata.spies.ClientDataListSpy;
 import se.uu.ub.cora.clientdata.spies.ClientDataRecordGroupSpy;
 import se.uu.ub.cora.clientdata.spies.ClientDataRecordLinkSpy;
 import se.uu.ub.cora.clientdata.spies.ClientDataRecordSpy;
-import se.uu.ub.cora.javaclient.cora.DataClient;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
+import se.uu.ub.cora.javaclient.JavaClientAppTokenCredentials;
+import se.uu.ub.cora.javaclient.JavaClientProvider;
+import se.uu.ub.cora.javaclient.data.DataClient;
 
 public class RecordTypeUtilTest {
 	private static final String PARENT_ID = "parentId";
@@ -171,10 +172,13 @@ public class RecordTypeUtilTest {
 	public void realTest() throws Exception {
 		String apptokenUrl = "http://130.238.171.238:38180/login/rest/";
 		String baseUrl = "http://130.238.171.238:38080/systemone/rest/";
-		DataClientFactoryImp dataClientFactory = DataClientFactoryImp
-				.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl, baseUrl);
-		DataClient dataClient = dataClientFactory.factorUsingUserIdAndAppToken(
-				"systemoneAdmin@system.cora.uu.se", "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+
+		JavaClientAppTokenCredentials appTokenCredentials = new JavaClientAppTokenCredentials(
+				baseUrl, apptokenUrl, "systemoneAdmin@system.cora.uu.se",
+				"5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+		DataClient dataClient = JavaClientProvider
+				.createDataClientUsingJavaClientAppTokenCredentials(appTokenCredentials);
+
 		RecordTypeUtilImp recordTypeUtil = RecordTypeUtilImp.usingDataClient(dataClient);
 
 		Map<String, String> mapOfImp = recordTypeUtil.getMapOfImplementingToParent();

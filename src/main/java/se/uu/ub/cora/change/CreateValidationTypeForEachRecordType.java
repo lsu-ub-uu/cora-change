@@ -1,3 +1,21 @@
+/*
+ * Copyright 2025 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.change;
 
 import se.uu.ub.cora.clientdata.ClientData;
@@ -8,9 +26,10 @@ import se.uu.ub.cora.clientdata.ClientDataProvider;
 import se.uu.ub.cora.clientdata.ClientDataRecord;
 import se.uu.ub.cora.clientdata.ClientDataRecordGroup;
 import se.uu.ub.cora.clientdata.ClientDataRecordLink;
-import se.uu.ub.cora.javaclient.cora.CoraClientException;
-import se.uu.ub.cora.javaclient.cora.DataClient;
-import se.uu.ub.cora.javaclient.cora.DataClientFactoryImp;
+import se.uu.ub.cora.javaclient.JavaClientAppTokenCredentials;
+import se.uu.ub.cora.javaclient.JavaClientProvider;
+import se.uu.ub.cora.javaclient.data.DataClient;
+import se.uu.ub.cora.javaclient.data.DataClientException;
 
 public class CreateValidationTypeForEachRecordType {
 
@@ -18,14 +37,14 @@ public class CreateValidationTypeForEachRecordType {
 	private static final String ID = "id";
 	private static final String DATA_DIVIDER = "dataDivider";
 	private static final String RECORD_INFO = "recordInfo";
-	private DataClientFactoryImp dataClientFactory;
 	private DataClient dataClient;
 
 	public CreateValidationTypeForEachRecordType(String apptokenUrl, String baseUrl) {
-		dataClientFactory = DataClientFactoryImp.usingAppTokenVerifierUrlAndBaseUrl(apptokenUrl,
-				baseUrl);
-		dataClient = dataClientFactory.factorUsingUserIdAndAppToken(
-				"systemoneAdmin@system.cora.uu.se", "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+		JavaClientAppTokenCredentials appTokenCredentials = new JavaClientAppTokenCredentials(
+				baseUrl, apptokenUrl, "systemoneAdmin@system.cora.uu.se",
+				"5d3f3ed4-4931-4924-9faa-8eaf5ac6457e");
+		dataClient = JavaClientProvider
+				.createDataClientUsingJavaClientAppTokenCredentials(appTokenCredentials);
 
 	}
 
@@ -63,7 +82,7 @@ public class CreateValidationTypeForEachRecordType {
 		try {
 			dataClient.read("validationType", recordTypeRecordGroup.getId());
 			return false;
-		} catch (CoraClientException e) {
+		} catch (DataClientException e) {
 			return true;
 		}
 	}
