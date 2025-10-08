@@ -95,4 +95,18 @@ public class RecordTypeSetIdSource {
 		return "timestamp";
 	}
 
+	public void removeUserSupplierFromAllRecordTypes() {
+		for (ClientData recordType : readAllRecordTypes()) {
+			ClientDataRecordGroup dataRecordGroup = ((ClientDataRecord) recordType)
+					.getDataRecordGroup();
+			if (dataRecordGroup.containsChildWithNameInData("idSource")) {
+				dataRecordGroup.removeFirstChildWithNameInData("userSuppliedId");
+			} else {
+				String message = "IdSource must be created first for typr:{0}, and id:{1}";
+				System.out.println(MessageFormat.format(message, dataRecordGroup.getType(),
+						dataRecordGroup.getId()));
+			}
+		}
+	}
+
 }
