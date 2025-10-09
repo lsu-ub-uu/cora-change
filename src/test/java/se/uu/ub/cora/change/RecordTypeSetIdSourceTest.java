@@ -50,11 +50,11 @@ public class RecordTypeSetIdSourceTest {
 	private static final String SYSTEMONE_USER = "systemoneAdmin@system.cora.uu.se";
 	private static final String SYSTEMONE_APPTOKEN = "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e";
 
-	private static final String ALVIN_USER = "";
-	private static final String ALVIN_APPTOKEN = "";
+	private static final String ALVIN_USER = "alvinAdmin@cora.epc.ub.uu.se";
+	private static final String ALVIN_APPTOKEN = "a50ca087-a3f5-4393-b2bb-315436d3c3be";
 
-	private static final String DIVA_USER = "";
-	private static final String DIVA_APPTOKEN = "";
+	private static final String DIVA_USER = "divaAdmin@cora.epc.ub.uu.se";
+	private static final String DIVA_APPTOKEN = "49ce00fb-68b5-4089-a5f7-1c225d3cf156";
 
 	private static final String SYSTEMONE_UTV_LOGIN_URL = "http://localhost:8180/login/rest/";
 	private static final String SYSTEMONE_UTV_REST_URL = "http://localhost:8080/systemone/rest/";
@@ -193,16 +193,16 @@ public class RecordTypeSetIdSourceTest {
 	public void testListRecordTypes_SystemOne_Dev() {
 		var credentials = new JavaClientAppTokenCredentials(SYSTEMONE_DEV_REST_URL,
 				SYSTEMONE_DEV_LOGIN_URL, SYSTEMONE_USER, SYSTEMONE_APPTOKEN);
-		updater = new RecordTypeSetIdSource(credentials);
-		updater.addSourceIdToAllRecordTypes();
+		RecordTypeSetIdSource realUpdater = new RecordTypeSetIdSource(credentials);
+		realUpdater.addSourceIdToAllRecordTypes();
 	}
 
 	@Test(enabled = false)
 	public void testListRecordTypes_Alvin_Dev() {
 		var credentials = new JavaClientAppTokenCredentials(ALVIN_DEV_REST_URL, ALVIN_DEV_LOGIN_URL,
 				ALVIN_USER, ALVIN_APPTOKEN);
-		updater = new RecordTypeSetIdSource(credentials);
-		updater.addSourceIdToAllRecordTypes();
+		RecordTypeSetIdSource realUpdater = new RecordTypeSetIdSource(credentials);
+		realUpdater.addSourceIdToAllRecordTypes();
 	}
 
 	@Test(enabled = false)

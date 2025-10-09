@@ -50,10 +50,16 @@ public class RecordTypeSetIdSource {
 			ClientDataRecordGroup dataRecordGroup = ((ClientDataRecord) recordType)
 					.getDataRecordGroup();
 			if (!dataRecordGroup.containsChildWithNameInData("idSource")) {
-				updateRecordWithSourceIdAndLog(dataRecordGroup);
-				String message = "Record updated with type: {0} id: {1}";
-				System.out.println(MessageFormat.format(message, dataRecordGroup.getType(),
-						dataRecordGroup.getId()));
+				try {
+					updateRecordWithSourceIdAndLog(dataRecordGroup);
+					String message = "Record updated with type: {0} id: {1}";
+					System.out.println(MessageFormat.format(message, dataRecordGroup.getType(),
+							dataRecordGroup.getId()));
+				} catch (Exception e) {
+					String message = "Record could not be updated with type: {0} id: {1}";
+					System.out.println(MessageFormat.format(message, dataRecordGroup.getType(),
+							dataRecordGroup.getId()));
+				}
 			} else {
 				printIdSourceAlreadyExists(dataRecordGroup);
 			}
