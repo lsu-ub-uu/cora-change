@@ -107,6 +107,7 @@ public class RecordTypeSetIdSource {
 					.getDataRecordGroup();
 			if (dataRecordGroup.containsChildWithNameInData("idSource")) {
 				dataRecordGroup.removeFirstChildWithNameInData("userSuppliedId");
+				dataClient.update("recordType", dataRecordGroup.getId(), dataRecordGroup);
 			} else {
 				String message = "IdSource must be created first for typr:{0}, and id:{1}";
 				System.out.println(MessageFormat.format(message, dataRecordGroup.getType(),

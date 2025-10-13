@@ -166,7 +166,7 @@ public class RecordTypeSetIdSourceTest {
 	}
 
 	@Test(enabled = false)
-	public void testListRecordTypes_SystemOne_Utv() {
+	public void testAddIdSource_SystemOne_Utv() {
 		var credentials = new JavaClientAppTokenCredentials(SYSTEMONE_UTV_REST_URL,
 				SYSTEMONE_UTV_LOGIN_URL, SYSTEMONE_USER, SYSTEMONE_APPTOKEN);
 		updater = new RecordTypeSetIdSource(credentials);
@@ -174,7 +174,15 @@ public class RecordTypeSetIdSourceTest {
 	}
 
 	@Test(enabled = false)
-	public void testListRecordTypes_Alvin_Utv() {
+	public void testRemoveUserSupplied_SystemOne_Utv() {
+		var credentials = new JavaClientAppTokenCredentials(SYSTEMONE_UTV_REST_URL,
+				SYSTEMONE_UTV_LOGIN_URL, SYSTEMONE_USER, SYSTEMONE_APPTOKEN);
+		updater = new RecordTypeSetIdSource(credentials);
+		updater.removeUserSupplierFromAllRecordTypes();
+	}
+
+	@Test(enabled = false)
+	public void testAddIdSource_Alvin_Utv() {
 		var credentials = new JavaClientAppTokenCredentials(ALVIN_UTV_REST_URL, ALVIN_UTV_LOGIN_URL,
 				ALVIN_USER, ALVIN_APPTOKEN);
 		updater = new RecordTypeSetIdSource(credentials);
@@ -182,7 +190,7 @@ public class RecordTypeSetIdSourceTest {
 	}
 
 	@Test(enabled = false)
-	public void testListRecordTypes_Diva_Utv() {
+	public void testAddIdSource_Diva_Utv() {
 		var credentials = new JavaClientAppTokenCredentials(DIVA_UTV_REST_URL, DIVA_UTV_LOGIN_URL,
 				DIVA_USER, DIVA_APPTOKEN);
 		updater = new RecordTypeSetIdSource(credentials);
@@ -190,7 +198,7 @@ public class RecordTypeSetIdSourceTest {
 	}
 
 	@Test(enabled = false)
-	public void testListRecordTypes_SystemOne_Dev() {
+	public void testAddIdSource_SystemOne_Dev() {
 		var credentials = new JavaClientAppTokenCredentials(SYSTEMONE_DEV_REST_URL,
 				SYSTEMONE_DEV_LOGIN_URL, SYSTEMONE_USER, SYSTEMONE_APPTOKEN);
 		RecordTypeSetIdSource realUpdater = new RecordTypeSetIdSource(credentials);
@@ -198,7 +206,15 @@ public class RecordTypeSetIdSourceTest {
 	}
 
 	@Test(enabled = false)
-	public void testListRecordTypes_Alvin_Dev() {
+	public void testRemoveUserSupplied_SystemOne_Dev() {
+		var credentials = new JavaClientAppTokenCredentials(SYSTEMONE_DEV_REST_URL,
+				SYSTEMONE_DEV_LOGIN_URL, SYSTEMONE_USER, SYSTEMONE_APPTOKEN);
+		RecordTypeSetIdSource realUpdater = new RecordTypeSetIdSource(credentials);
+		realUpdater.removeUserSupplierFromAllRecordTypes();
+	}
+
+	@Test(enabled = false)
+	public void testAddIdSource_Alvin_Dev() {
 		var credentials = new JavaClientAppTokenCredentials(ALVIN_DEV_REST_URL, ALVIN_DEV_LOGIN_URL,
 				ALVIN_USER, ALVIN_APPTOKEN);
 		RecordTypeSetIdSource realUpdater = new RecordTypeSetIdSource(credentials);
@@ -206,7 +222,7 @@ public class RecordTypeSetIdSourceTest {
 	}
 
 	@Test(enabled = false)
-	public void testListRecordTypes_Diva_Dev() {
+	public void testAddIdSource_Diva_Dev() {
 		var credentials = new JavaClientAppTokenCredentials(DIVA_DEV_REST_URL, DIVA_DEV_LOGIN_URL,
 				DIVA_USER, DIVA_APPTOKEN);
 		updater = new RecordTypeSetIdSource(credentials);
