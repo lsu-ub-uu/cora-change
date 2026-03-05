@@ -28,13 +28,16 @@ public class ChangeRegexpTest {
 
 	@Test(enabled = false)
 	public void runChangeValidationTypeForSystemOneTexts() {
+		ChangeRegexp updater = new ChangeRegexp(SYSTEMONE_DEV_APPTOKEN_URL, SYSTEMONE_DEV_BASE_URL,
+				"systemoneAdmin@system.cora.uu.se", "6cf9a50c-cffb-4945-91c2-4f732654fe8b");
 
-		// ChangeRegexp updater = new ChangeRegexp(
-		// SYSTEMONE_DEV_APPTOKEN_URL, SYSTEMONE_DEV_BASE_URL,
-		// "systemoneAdmin@system.cora.uu.se", "fd0d31c1-5ed1-451c-bb46-6c4b6c9483aa");
-		ChangeRegexp updater = new ChangeRegexp(SYSTEMONE_PREVIEW_APPTOKEN_URL,
-				SYSTEMONE_PREVIEW_BASE_URL, "systemoneAdmin@system.cora.uu.se",
-				"fd0d31c1-5ed1-451c-bb46-6c4b6c9483aa");
+		// ChangeRegexp updater = new ChangeRegexp(SYSTEMONE_PREVIEW_APPTOKEN_URL,
+		// SYSTEMONE_PREVIEW_BASE_URL, "systemoneAdmin@system.cora.uu.se",
+		// "fd0d31c1-5ed1-451c-bb46-6c4b6c9483aa");
+
+		// ChangeRegexp updater = new ChangeRegexp(SYSTEMONE_LOCAL_APPTOKEN_URL,
+		// SYSTEMONE_LOCAL_BASE_URL, "systemoneAdmin@system.cora.uu.se",
+		// "26192c37-f5f9-4f0b-8ef0-94919d9b99c9");
 
 		updater.removeEmptyTexts(DRY_RUN);
 	}
