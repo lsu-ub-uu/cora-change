@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Uppsala University Library
+ * Copyright 2025, 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -62,9 +62,9 @@ public class ChangeFindEmptyAtomics {
 	private static final int DEFAULT_THREAD_COUNT = 20;
 	private static final int DEFAULT_QUEUE_LENGTH = 20;
 	private DataClient dataClient;
-	private int totalTextsWithEmptyText = 0;
-	private int textsCleaned = 0;
-	private int totalOtherTexts = 0;
+	private int totalWithEmptyAtomics = 0;
+	private int recordsCleaned = 0;
+	private int totalOtherRecords = 0;
 	private String totalNumberOfTypeInStorage;
 	private ExecutorService executorService;
 
@@ -103,6 +103,7 @@ public class ChangeFindEmptyAtomics {
 			try {
 				handleRecordType(dryRun, dataRecord.getId());
 			} catch (Exception e) {
+				systemOutPrintlnBoldRed(e.toString());
 				systemOutPrintlnBoldRed("Failed to read records of type: " + dataRecord.getId());
 			}
 		}
@@ -121,40 +122,56 @@ public class ChangeFindEmptyAtomics {
 		ClientDataRecord dataRecord = (ClientDataRecord) clientData;
 		ClientDataRecordGroup recordGroup = dataRecord.getDataRecordGroup();
 		ClientDataGroup dataGroup1 = ClientDataProvider.createGroupFromRecordGroup(recordGroup);
-		// systemOutPrintlnBoldGreen(dataRecord.getId());
 
-		checkGroup(dataRecord, dataGroup1);
-		totalOtherTexts++;
+		boolean recordToBeUpdated = checkGroup(dataRecord, dataGroup1);
+		if (recordToBeUpdated && !dryRun) {
+			ClientDataRecordGroup recordGroupFromDataGroup = ClientDataProvider
+					.createRecordGroupFromDataGroup(dataGroup1);
+			if ("permissionUnit".equals(recordGroupFromDataGroup.getType())) {
+				updateRecord(recordGroupFromDataGroup);
+			}
+		}
+		totalOtherRecords++;
 	}
 
-	private void checkGroup(ClientDataRecord dataRecord, ClientDataGroup dataGroup) {
+	private boolean checkGroup(ClientDataRecord dataRecord, ClientDataGroup dataGroup) {
 		List<ClientDataChild> children = dataGroup.getChildren();
 
-		for (ClientDataChild dataChild : children) {
+		boolean recordToBeUpdated = false;
+		for (ClientDataChild dataChild : List.copyOf(children)) {
 			if (dataChild instanceof ClientDataAtomic atomic) {
 				String value = atomic.getValue();
-				if ("".equals(value)) {
+				// if ("".equals(value)) {
+				if (value.isEmpty() || value.isBlank()) {
 					String message = "Record " + dataRecord.getType() + " " + dataRecord.getId()
 							+ " has empty atomic with nameInData: " + atomic.getNameInData();
 					systemOutPrintlnBoldRed(message);
-					totalTextsWithEmptyText++;
+					totalWithEmptyAtomics++;
+					recordToBeUpdated = true;
+					ClientDataChildFilter filter = createFilterForClientDataChild(dataChild);
+					dataGroup.removeAllChildrenMatchingFilter(filter);
 				}
 			} else if (dataChild instanceof ClientDataGroup childGroup) {
 				if (childGroup.getChildren().isEmpty()) {
 					String message = dataRecord.getId() + " has empty group with nameInData: "
 							+ childGroup.getNameInData();
 					systemOutPrintlnBoldRed(message);
-					totalTextsWithEmptyText++;
+					totalWithEmptyAtomics++;
 				} else {
-					checkGroup(dataRecord, childGroup);
+					boolean checkGroup = checkGroup(dataRecord, childGroup);
+					if (checkGroup) {
+						recordToBeUpdated = true;
+					}
 				}
 			}
 		}
+
+		return recordToBeUpdated;
 	}
 
 	private ClientDataChildFilter createFilterForClientDataChild(ClientDataChild textPartChild) {
 		ClientDataChildFilter filter = ClientDataProvider
-				.createDataChildFilterUsingChildNameInData("textPart");
+				.createDataChildFilterUsingChildNameInData(textPartChild.getNameInData());
 		for (ClientDataAttribute clientDataAttribute : textPartChild.getAttributes()) {
 			String nameInData = clientDataAttribute.getNameInData();
 			String value = clientDataAttribute.getValue();
@@ -194,14 +211,14 @@ public class ChangeFindEmptyAtomics {
 		return "{" + String.join(",", attributesStrings) + "}";
 	}
 
-	private void updateText(ClientDataRecordGroup textRecordGroup) {
+	private void updateRecord(ClientDataRecordGroup recordGroup) {
 		// Runnable runnableTask = () -> {
-		String id = textRecordGroup.getId();
+		String id = recordGroup.getId();
 		System.out.println("updating id: " + id);
 		try {
-			dataClient.update("text", id, textRecordGroup);
+			dataClient.update(recordGroup.getType(), id, recordGroup);
 			systemOutPrintlnBoldGreen("updated: " + id);
-			textsCleaned++;
+			recordsCleaned++;
 		} catch (Exception e) {
 			systemOutPrintlnBoldRed(id + " error: " + e);
 		}
@@ -209,78 +226,11 @@ public class ChangeFindEmptyAtomics {
 		// executorService.execute(runnableTask);
 	}
 
-	// private boolean textHasEmptyText(ClientDataRecordGroup textRecordGroup) {
-	// // TODO: here!!!!
-	// return "diva".equals(textRecordGroup.getDataDivider());
-	// }
-	//
-	// private void handleEmptyText(ClientDataRecordGroup textRecordGroup, String id) {
-	// systemOutPrintlnBoldGreen("id: " + id);
-	// ClientDataGroup recordInfo = textRecordGroup.getFirstGroupWithNameInData(RECORD_INFO);
-	// ClientDataRecordLink validationType = recordInfo
-	// .getFirstChildOfTypeAndName(ClientDataRecordLink.class, VALIDATION_TYPE);
-	// systemOutPrintlnBoldGreen(validationType.getLinkedRecordId());
-	// if (!"divaText".equals(validationType.getLinkedRecordId())) {
-	// handleTextChange(textRecordGroup, id, recordInfo, validationType);
-	// }
-	// }
-	//
-	// private void handleTextChange(ClientDataRecordGroup textRecordGroup, String id,
-	// ClientDataGroup recordInfo, ClientDataRecordLink validationType) {
-	// divaTextChangeNeeded++;
-	// ClientDataRecordLink newValidationType = ClientDataProvider
-	// .createRecordLinkUsingNameInDataAndTypeAndId(validationType.getNameInData(),
-	// validationType.getLinkedRecordType(), "divaText");
-	// recordInfo.removeChildrenWithTypeAndName(ClientDataRecordLink.class, VALIDATION_TYPE);
-	// recordInfo.addChild(newValidationType);
-	// systemOutPrintlnBoldYellow("changed validationType... updating record with id: " + id);
-	//
-	// if (textRecordGroup.getAllChildrenWithNameInData("textPart").size() == 1) {
-	// createAndAddNewEnglishTextPart(textRecordGroup, id);
-	// }
-	// ClientDataChildFilter filter = ClientDataProvider
-	// .createDataChildFilterUsingChildNameInData("textPart");
-	// filter.addAttributeUsingNameInDataAndPossibleValues("lang", Set.of("en"));
-	// filter.addAttributeUsingNameInDataAndPossibleValues("type", Set.of("alternative"));
-	// List<ClientDataChild> enParts = textRecordGroup.getAllChildrenMatchingFilter(filter);
-	// for (ClientDataChild enPart : enParts) {
-	// ClientDataGroup enGroup = (ClientDataGroup) enPart;
-	// if (enGroup.getFirstAtomicValueWithNameInData("text").getBytes().length == 0) {
-	// systemOutPrintlnBoldRed("EMPTY ENGLISH!!!!");
-	// textRecordGroup.removeAllChildrenMatchingFilter(filter);
-	// createAndAddNewEnglishTextPart(textRecordGroup, id);
-	// }
-	// }
-	// if (!id.equals("returnText")
-	// && !id.equals("doctoralThesisContentTypeCollectionVarDefText")) {
-	// updateText(textRecordGroup, id);
-	// }
-	// systemOutPrintlnBoldGreen("...updated");
-	// }
-
-	// private void createAndAddNewEnglishTextPart(ClientDataRecordGroup textRecordGroup, String id)
-	// {
-	// String english = "CHANGE ME, my id is: " + id;
-	// systemOutPrintlnBoldRed(english);
-	// ClientDataGroup textPart = createNewEnglishTextPartWithString(english);
-	// textRecordGroup.addChild(textPart);
-	// }
-
-	// private ClientDataGroup createNewEnglishTextPartWithString(String english) {
-	// ClientDataGroup textPart = ClientDataProvider.createGroupUsingNameInData("textPart");
-	// textPart.addAttributeByIdWithValue("type", "alternative");
-	// textPart.addAttributeByIdWithValue("lang", "en");
-	// ClientDataAtomic englishPart = ClientDataProvider
-	// .createAtomicUsingNameInDataAndValue("text", english);
-	// textPart.addChild(englishPart);
-	// return textPart;
-	// }
-
 	private void printReport() {
-		systemOutPrintlnBoldGreen("Total texts: " + totalNumberOfTypeInStorage);
-		systemOutPrintlnBoldYellow("Total texts with empty value: " + totalTextsWithEmptyText);
-		systemOutPrintlnBoldGreen("Total texts cleaned: " + textsCleaned);
-		systemOutPrintlnBoldYellow("Other texts: " + totalOtherTexts);
+		systemOutPrintlnBoldGreen("Total records: " + totalNumberOfTypeInStorage);
+		systemOutPrintlnBoldYellow("Total records with empty value: " + totalWithEmptyAtomics);
+		systemOutPrintlnBoldGreen("Total records cleaned: " + recordsCleaned);
+		systemOutPrintlnBoldYellow("Other records: " + totalOtherRecords);
 	}
 
 	private void shutDownExecutorService() {

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +31,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import se.uu.ub.cora.clientdata.ClientData;
+import se.uu.ub.cora.clientdata.ClientDataAtomic;
 import se.uu.ub.cora.clientdata.ClientDataAttribute;
 import se.uu.ub.cora.clientdata.ClientDataChild;
 import se.uu.ub.cora.clientdata.ClientDataChildFilter;
@@ -42,7 +44,7 @@ import se.uu.ub.cora.javaclient.JavaClientAppTokenCredentials;
 import se.uu.ub.cora.javaclient.JavaClientProvider;
 import se.uu.ub.cora.javaclient.data.DataClient;
 
-public class ChangeTextsRemoveEmptyTexts {
+public class ChangeRegexp {
 	private static final String TEXT_WRITTER_PATTERN = "Empty text found for id: {0} in name:{1}, attributes:{2}";
 	private static final String ATTRIBUTE_PATTERN = "\"{0}\":\"{1}\"";
 	public static final String ANSI_BOLD = "\033[0;1m";
@@ -61,14 +63,13 @@ public class ChangeTextsRemoveEmptyTexts {
 	private static final int DEFAULT_THREAD_COUNT = 20;
 	private static final int DEFAULT_QUEUE_LENGTH = 20;
 	private DataClient dataClient;
-	private int totalTextsWithEmptyText = 0;
-	private int textsCleaned = 0;
-	private int totalOtherTexts = 0;
+	private int totalFound = 0;
+	private int cleaned = 0;
+	private int totalOther = 0;
 	private String totalNumberOfTypeInStorage;
 	private ExecutorService executorService;
 
-	public ChangeTextsRemoveEmptyTexts(String apptokenUrl, String baseUrl, String user,
-			String appToken) {
+	public ChangeRegexp(String apptokenUrl, String baseUrl, String user, String appToken) {
 		JavaClientAppTokenCredentials appTokenCredentials = new JavaClientAppTokenCredentials(
 				baseUrl, apptokenUrl, user, appToken);
 		dataClient = JavaClientProvider
@@ -78,7 +79,7 @@ public class ChangeTextsRemoveEmptyTexts {
 	public void removeEmptyTexts(String... options) {
 		setUpExecutorService();
 		boolean dryRun = isDryRun(options);
-		changeTexts(dryRun);
+		changeRecords(dryRun);
 		printReport();
 		shutDownExecutorService();
 	}
@@ -94,42 +95,52 @@ public class ChangeTextsRemoveEmptyTexts {
 				new ThreadPoolExecutor.CallerRunsPolicy());
 	}
 
-	private void changeTexts(boolean dryRun) {
-		ClientDataList listOfTexts = dataClient.readList("text");
-		totalNumberOfTypeInStorage = listOfTexts.getTotalNumberOfTypeInStorage();
-		for (ClientData clientData : listOfTexts.getDataList()) {
-			handleOneText(clientData, dryRun);
+	private void changeRecords(boolean dryRun) {
+		ClientDataList listOfRecords = dataClient.readList("metadata");
+		totalNumberOfTypeInStorage = listOfRecords.getTotalNumberOfTypeInStorage();
+		for (ClientData clientData : listOfRecords.getDataList()) {
+			handleOneRecord(clientData, dryRun);
 		}
 	}
 
-	private void handleOneText(ClientData clientData, boolean dryRun) {
-		ClientDataRecord textRecord = (ClientDataRecord) clientData;
-		ClientDataRecordGroup textRecordGroup = textRecord.getDataRecordGroup();
+	private void handleOneRecord(ClientData clientData, boolean dryRun) {
+		ClientDataRecord oneRecord = (ClientDataRecord) clientData;
+		ClientDataRecordGroup recordGroup = oneRecord.getDataRecordGroup();
+		boolean recordToBeUpdated = false;
 
-		List<ClientDataChild> textParts = textRecordGroup.getAllChildrenWithNameInData("textPart");
-
-		boolean textToBeUpdated = false;
-		for (ClientDataChild textPartChild : textParts) {
-			if (hasEmptyText(textPartChild)) {
-				textToBeUpdated = true;
-				printMessage(textRecord, textPartChild);
-				ClientDataChildFilter filter = createFilterForClientDataChild(textPartChild);
-				textRecordGroup.removeAllChildrenMatchingFilter(filter);
-				totalTextsWithEmptyText++;
-			}
-		}
-		if (textToBeUpdated && !dryRun) {
-			updateText(textRecordGroup);
-		}
-		totalOtherTexts++;
-
-		// if (textHasEmptyText(textRecordGroup)) {
-		// handleEmptyText(textRecordGroup, id);
-		// } else {
-		// System.out.println("id: " + id);
+		// List<ClientDataChild> textParts = recordGroup.getAllChildrenWithNameInData("textPart");
+		//
+		// for (ClientDataChild textPartChild : textParts) {
+		// if (hasEmptyText(textPartChild)) {
+		// textToBeUpdated = true;
+		// printMessage(oneRecord, textPartChild);
+		// ClientDataChildFilter filter = createFilterForClientDataChild(textPartChild);
+		// recordGroup.removeAllChildrenMatchingFilter(filter);
+		// totalFound++;
 		// }
-		// System.out.println(MessageFormat.format("Texts handled: {0} / {1}",
-		// totalTextsWithEmptyText + totalOtherTexts, totalNumberOfTypeInStorage));
+		// }
+		Optional<String> type = recordGroup.getAttributeValue("type");
+		if (type.isPresent() && "textVariable".equals(type.get())) {
+
+			String regExValue = recordGroup.getFirstAtomicValueWithNameInData("regEx");
+			if (List.of(".*", ".+").contains(regExValue)) {
+				totalFound++;
+				recordToBeUpdated = true;
+				String message = MessageFormat.format(
+						"Problematic regEx found for type: {0} id: {1} with regEx: {2}",
+						oneRecord.getType(), oneRecord.getId(), regExValue);
+				systemOutPrintlnBoldRed(message);
+				ClientDataAtomic atomic = recordGroup.getFirstDataAtomicWithNameInData("regEx");
+				atomic.setValue("^\\S.*$");
+			}
+		} else {
+			totalOther++;
+		}
+
+		if (recordToBeUpdated && !dryRun) {
+			updateRecord(recordGroup);
+		}
+
 	}
 
 	private ClientDataChildFilter createFilterForClientDataChild(ClientDataChild textPartChild) {
@@ -174,26 +185,27 @@ public class ChangeTextsRemoveEmptyTexts {
 		return "{" + String.join(",", attributesStrings) + "}";
 	}
 
-	private void updateText(ClientDataRecordGroup textRecordGroup) {
+	private void updateRecord(ClientDataRecordGroup recordGroup) {
 		// Runnable runnableTask = () -> {
-		String id = textRecordGroup.getId();
+		String id = recordGroup.getId();
+		String type = recordGroup.getType();
 		System.out.println("updating id: " + id);
 		try {
-			dataClient.update("text", id, textRecordGroup);
-			systemOutPrintlnBoldGreen("updated: " + id);
-			textsCleaned++;
+			dataClient.update(type, id, recordGroup);
+			systemOutPrintlnBoldGreen("updated: " + type + " " + id);
+			cleaned++;
 		} catch (Exception e) {
-			systemOutPrintlnBoldRed(id + " error: " + e);
+			systemOutPrintlnBoldRed(type + " " + id + " error: " + e);
 		}
 		// };
 		// executorService.execute(runnableTask);
 	}
 
 	private void printReport() {
-		systemOutPrintlnBoldGreen("Total texts: " + totalNumberOfTypeInStorage);
-		systemOutPrintlnBoldYellow("Total texts with empty value: " + totalTextsWithEmptyText);
-		systemOutPrintlnBoldGreen("Total texts cleaned: " + textsCleaned);
-		systemOutPrintlnBoldYellow("Other texts: " + totalOtherTexts);
+		systemOutPrintlnBoldGreen("Total records: " + totalNumberOfTypeInStorage);
+		systemOutPrintlnBoldYellow("Total records found: " + totalFound);
+		systemOutPrintlnBoldGreen("Total records changed: " + cleaned);
+		systemOutPrintlnBoldYellow("Other records: " + totalOther);
 	}
 
 	private void shutDownExecutorService() {
