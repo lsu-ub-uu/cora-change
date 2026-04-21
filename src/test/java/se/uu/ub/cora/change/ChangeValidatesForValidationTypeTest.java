@@ -23,7 +23,7 @@ public class ChangeValidatesForValidationTypeTest {
 	private static final String DIVA_DEV_BASE_URL = "http://130.238.171.238:38082/diva/rest/";
 
 	@Test(enabled = false)
-	public void runChangeValidationTypes() throws Exception {
+	public void runChangeValidationTypes() {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
 				SYSTEMONE_LOCAL_APPTOKEN_URL, SYSTEMONE_LOCAL_BASE_URL);
@@ -32,7 +32,7 @@ public class ChangeValidatesForValidationTypeTest {
 	}
 
 	@Test(enabled = false)
-	public void runChangeValidationTypesToAbstractLevelForAlvin() throws Exception {
+	public void runChangeValidationTypesToAbstractLevelForAlvin() {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
 				ALVIN_LOCAL_APPTOKEN_URL, ALVIN_LOCAL_BASE_URL);
@@ -41,7 +41,7 @@ public class ChangeValidatesForValidationTypeTest {
 	}
 
 	@Test(enabled = false)
-	public void runChangeValidationTypesToAbstractLevelForDiVA() throws Exception {
+	public void runChangeValidationTypesToAbstractLevelForDiVA() {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
 				DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL);
@@ -50,7 +50,7 @@ public class ChangeValidatesForValidationTypeTest {
 	}
 
 	@Test(enabled = false)
-	public void runChangeValidationTypesToAbstractLevel() throws Exception {
+	public void runChangeValidationTypesToAbstractLevel() {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
 				SYSTEMONE_LOCAL_APPTOKEN_URL, SYSTEMONE_LOCAL_BASE_URL);
@@ -59,7 +59,7 @@ public class ChangeValidatesForValidationTypeTest {
 	}
 
 	@Test(enabled = false)
-	public void runChangeAbstractRecordTypesToImplementing() throws Exception {
+	public void runChangeAbstractRecordTypesToImplementing() {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
 				SYSTEMONE_LOCAL_APPTOKEN_URL, SYSTEMONE_LOCAL_BASE_URL);
@@ -68,7 +68,7 @@ public class ChangeValidatesForValidationTypeTest {
 	}
 
 	@Test(enabled = false)
-	public void runChangeValidationTypesSystemOneDev() throws Exception {
+	public void runChangeValidationTypesSystemOneDev() {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
 				SYSTEMONE_DEV_APPTOKEN_URL, SYSTEMONE_DEV_BASE_URL);
@@ -77,7 +77,7 @@ public class ChangeValidatesForValidationTypeTest {
 	}
 
 	@Test(enabled = false)
-	public void runChangeValidationTypesAlvinDev() throws Exception {
+	public void runChangeValidationTypesAlvinDev() {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
 				ALVIN_DEV_APPTOKEN_URL, ALVIN_DEV_BASE_URL);
@@ -86,7 +86,7 @@ public class ChangeValidatesForValidationTypeTest {
 	}
 
 	@Test(enabled = false)
-	public void runChangeValidationTypesDivaDev() throws Exception {
+	public void runChangeValidationTypesDivaDev() {
 
 		ChangeValidatesForValidationType updater = new ChangeValidatesForValidationType(
 				DIVA_DEV_APPTOKEN_URL, DIVA_DEV_BASE_URL);
@@ -94,86 +94,3 @@ public class ChangeValidatesForValidationTypeTest {
 		updater.changeValidationTypes();
 	}
 }
-
-// @Test(enabled = false)
-// public void deleteDefTextsLocalSystemOne() throws Exception {
-//
-// CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
-// SYSTEMONE_LOCAL_APPTOKEN_URL, SYSTEMONE_LOCAL_BASE_URL);
-//
-// updater.deleteValidationTypeTexts();
-// }
-//
-// @Test(enabled = false)
-// public void createValidationTypesLocalSystemOne() throws Exception {
-//
-// CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
-// SYSTEMONE_LOCAL_APPTOKEN_URL, SYSTEMONE_LOCAL_BASE_URL);
-//
-// updater.createValidationTypes();
-// }
-//
-// @Test(enabled = false)
-// public void testLocalDiva() throws Exception {
-//
-// CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
-// DIVA_LOCAL_APPTOKEN_URL, DIVA_LOCAL_BASE_URL);
-//
-// updater.createValidationTypes();
-// }
-//
-// @Test(enabled = false)
-// public void testLocalAlvin() throws Exception {
-//
-// CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
-// ALVIN_LOCAL_APPTOKEN_URL, ALVIN_LOCAL_BASE_URL);
-//
-// updater.createValidationTypes();
-// }
-//
-// // system one dev
-// @Test(enabled = false)
-// public void deleteValidationTypesDevSystemOne() throws Exception {
-//
-// CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
-// SYSTEMONE_DEV_APPTOKEN_URL, SYSTEMONE_DEV_BASE_URL);
-//
-// updater.deleteValidationTypes();
-// }
-//
-// @Test(enabled = false)
-// public void deleteDefTextsDevSystemOne() throws Exception {
-//
-// CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
-// SYSTEMONE_DEV_APPTOKEN_URL, SYSTEMONE_DEV_BASE_URL);
-//
-// updater.deleteValidationTypeTexts();
-// }
-//
-// @Test(enabled = false)
-// public void testDevSystemOne() throws Exception {
-//
-// CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
-// SYSTEMONE_DEV_APPTOKEN_URL, SYSTEMONE_DEV_BASE_URL);
-//
-// updater.createValidationTypes();
-// }
-//
-// @Test(enabled = false)
-// public void testDevAlvin() throws Exception {
-//
-// CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
-// ALVIN_DEV_APPTOKEN_URL, ALVIN_DEV_BASE_URL);
-//
-// updater.createValidationTypes();
-// }
-//
-// @Test(enabled = false)
-// public void testDevDiva() throws Exception {
-//
-// CreateValidationTypeForEachRecordType updater = new CreateValidationTypeForEachRecordType(
-// DIVA_DEV_APPTOKEN_URL, DIVA_DEV_BASE_URL);
-//
-// updater.createValidationTypes();
-// }
-// }
