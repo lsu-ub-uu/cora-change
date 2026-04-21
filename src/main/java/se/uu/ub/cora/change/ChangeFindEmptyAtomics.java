@@ -68,10 +68,9 @@ public class ChangeFindEmptyAtomics {
 	private String totalNumberOfTypeInStorage;
 	private ExecutorService executorService;
 
-	public ChangeFindEmptyAtomics(String apptokenUrl, String baseUrl, String user,
-			String appToken) {
+	public ChangeFindEmptyAtomics(String loginUrl, String baseUrl, String user, String appToken) {
 		JavaClientAppTokenCredentials appTokenCredentials = new JavaClientAppTokenCredentials(
-				baseUrl, apptokenUrl, user, appToken);
+				baseUrl, loginUrl, user, appToken);
 		dataClient = JavaClientProvider
 				.createDataClientUsingJavaClientAppTokenCredentials(appTokenCredentials);
 	}
@@ -127,9 +126,9 @@ public class ChangeFindEmptyAtomics {
 		if (recordToBeUpdated && !dryRun) {
 			ClientDataRecordGroup recordGroupFromDataGroup = ClientDataProvider
 					.createRecordGroupFromDataGroup(dataGroup1);
-			if ("permissionUnit".equals(recordGroupFromDataGroup.getType())) {
-				updateRecord(recordGroupFromDataGroup);
-			}
+			// if ("permissionUnit".equals(recordGroupFromDataGroup.getType())) {
+			updateRecord(recordGroupFromDataGroup);
+			// }
 		}
 		totalOtherRecords++;
 	}
